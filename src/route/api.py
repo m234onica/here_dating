@@ -6,9 +6,9 @@ api = Blueprint('api', __name__)
 init_db()
 
 
-@api.route('/api/place/<int:place_id>', methods=["GET"])
+@api.route('/api/place/<int:placeId>', methods=["GET"])
 def get_place_id(place_id):
-    place = db_session.query(Place).filter_by(id=place_id).first()
+    place = db_session.query(Place).filter_by(id=placeId).first()
 
     '''
     # 計算距離
