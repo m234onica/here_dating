@@ -20,4 +20,4 @@ CREATE TABLE pair(
 );
 
 INSERT INTO place (id, name, longitude, latitude) VALUE (2322, "木木卡門市", 25.066765, 121.526336);
-INSERT INTO pair (palceId, playerA) VALUE ("2332", "3564003720340673");
+INSERT INTO pair (placeId, playerA) VALUE ("2332", "3564003720340673");

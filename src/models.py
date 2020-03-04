@@ -23,7 +23,7 @@ class Place(Base):
 class Pair(Base):
     __tablename__ = 'pair'
     id = Column(Integer, primary_key=True, comment="配對代號")
-    palceId = Column(Integer, nullable=False, comment="商店代號")
+    placeId = Column(Integer, nullable=False, comment="商店代號")
     playerA = Column(String(100), nullable=False, comment="使用者A")
     playerB = Column(String(100), nullable=True, comment="使用者B")
     createdAt = Column(DateTime, nullable=False,server_default=func.now(), comment='建立時間')
@@ -31,5 +31,7 @@ class Pair(Base):
     deletedAt = Column(DateTime, nullable=True, comment='刪除時間')
     status = Column(Enum(status_Enum), nullable=True, comment="此配對狀態，僅供數據分析使用")
     
+
     def __repr__(self):
-        return "<Pair: %r, %r, %r, %r>".format(self.id, self.palceId, self.playerA, self.playerB)
+        return "<Pair: {}, {}, {}, {}>".format(self.id, self.placeId, self.playerA, self.playerB)
+
