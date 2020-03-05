@@ -5,7 +5,7 @@ from src.db import Base
 import enum
 
 class status_Enum(enum.Enum):
-    wait = 0
+    wait_expired = 0
     leave = 1
     end = 2
 
