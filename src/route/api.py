@@ -29,14 +29,16 @@ def pair_users():
     pair_data = db_session.query(Pair)
 
     # 檢查此userId是否有配對過聊天室
-    has_paired = pair_data.filter((Pair.playerA == userId) | (
-        Pair.playerB == userId)).filter(Pair.deletedAt == None).first()
+    has_paired = pair_data.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
+        filter(Pair.deletedAt == None).first()
 
     # 若沒有配對過
     if has_paired == None:
+
         # 查找等待中的配對
         pairing_player = pair_data.filter(Pair.playerB == None).\
-            filter(Pair.deletedAt == None).filter(Pair.placeId == placeId).first()
+            filter(Pair.deletedAt == None).\
+            filter(Pair.placeId == placeId).first()
 
         # 若有，配對進去
         if pairing_player != None:
@@ -44,10 +46,10 @@ def pair_users():
             pairint_player.startedAt = datetime.now()
             db_session.commit()
             return {"status_msg": "Paired success."}, 200
-        
-        #若沒有，建立新的配對
+
+        # 若沒有，建立新的配對
         else:
-            db_session.add( Pair( placeId=placeId, playerA=userId) )
+            db_session.add(Pair(placeId=placeId, playerA=userId))
             db_session.commit()
             return {"status_msg": "Paired success. Please wait playerB"}, 200
 
@@ -58,12 +60,10 @@ def pair_users():
         if has_paired.playerB == None:
             return {"status_msg": "This user is waiting."}, 200
 
-        #已經有playerB->已配對
+        # 已經有playerB->已配對
         else:
             return {"status_msg": "This user is already paired."}, 200
 
-    #若用戶是playerB->已配對
+    # 若用戶是playerB->已配對
     elif has_paired.playerB == userId:
         return {"status_msg": "This user is already paired."}, 200
-
-
