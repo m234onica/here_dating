@@ -8,7 +8,7 @@ api = Blueprint('api', __name__)
 init_db()
 
 
-@api.route('/api/place/<int:placeId>', methods=["GET"])
+@api.route('/api/place/<placeId>', methods=["GET"])
 def verify_distance(placeId):
     place = db_session.query(Place).filter_by(id=placeId).first()
 
