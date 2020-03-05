@@ -11,7 +11,7 @@ class status_Enum(enum.Enum):
 
 class Place(Base):
     __tablename__ = 'place'
-    id = Column(Integer, primary_key=True, comment="商店代號")
+    id = Column(String(50), primary_key=True, comment="商店代號")
     name = Column(String(50), nullable=False, comment="商店名")
     longitude = Column(DECIMAL(10, 6), nullable=False, comment="經度")
     latitude = Column(DECIMAL(10, 6), nullable=False, comment="緯度")
@@ -23,7 +23,7 @@ class Place(Base):
 class Pair(Base):
     __tablename__ = 'pair'
     id = Column(Integer, primary_key=True, comment="配對代號")
-    placeId = Column(Integer, nullable=False, comment="商店代號")
+    placeId = Column(String(50), nullable=False, comment="商店代號")
     playerA = Column(String(100), nullable=False, comment="使用者A")
     playerB = Column(String(100), nullable=True, comment="使用者B")
     createdAt = Column(DateTime, nullable=False,server_default=func.now(), comment='建立時間')
