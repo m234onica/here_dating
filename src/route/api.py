@@ -100,3 +100,18 @@ def expired(minutes):
             db_session.commit()
 
         return {"status_msg": "delete success."}, 200
+
+
+# 用戶離開聊天室
+@api.route('/api/leave/<userId>', methods=['GET'])
+def leave(userId):
+    pair = db_session.query(Pair).filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
+        filter(Pair.deletedAt == None).first()
+
+    if pair == None:
+        return {"status_msg": "User isn't in chatroom"}, 200
+
+    pair.deletedAt = datetime.now()
+    pair.status = status_Enum(1)
+    db_session.commit()
+    return {"status_msg": "User leaved."}, 200
