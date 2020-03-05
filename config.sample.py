@@ -12,3 +12,9 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{username}:{passwword}@{host}/{db_name}'
 BASE_URL = ""
+
+# Facebook messenger
+APP_ID = ""
+PAGE_ACCESS_TOKEN = ""
+PAGE_VERIFY_TOKEN = ""
+FB_API_URL = "https://graph.facebook.com/v6.0"

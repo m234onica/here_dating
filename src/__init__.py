@@ -1,7 +1,7 @@
 from flask import Flask
 
 from src.route.api import api
-from src.route.webview import webview
+from src.route.bot import bot
 
 def create_app():
     app = Flask(__name__)
@@ -9,6 +9,6 @@ def create_app():
     app.config.from_object("config")
 
     app.register_blueprint(api)
-    app.register_blueprint(webview)
+    app.register_blueprint(bot)
     
     return app
