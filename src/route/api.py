@@ -9,7 +9,7 @@ init_db()
 
 
 @api.route('/api/place/<int:placeId>', methods=["GET"])
-def get_place_id(place_id):
+def verify_distance(placeId):
     place = db_session.query(Place).filter_by(id=placeId).first()
 
     '''
@@ -24,7 +24,7 @@ def get_place_id(place_id):
 
 # 配對用戶
 @api.route('/api/pair', methods=["POST"])
-def pair_users():
+def pair_user():
     userId = request.json['userId']
     placeId = request.json['placeId']
 
@@ -73,7 +73,7 @@ def pair_users():
 
 # js定時戳這支API來更動該斷掉的配對狀態（等待到期＆聊天到期）
 @api.route('/api/expired/<int:minutes>', methods=['GET'])
-def expired(minutes):
+def expire(minutes):
     expired_time = datetime.now() - timedelta(minutes=minutes)
 
     # 等待到期的資料
