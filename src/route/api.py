@@ -20,7 +20,7 @@ def get_place_id(place_id):
     return {"status_msg": "not found"}, 404
     '''
 
-
+# 配對用戶
 @api.route('/api/pair', methods=["POST"])
 def pair_users():
     userId = request.json['userId']
@@ -41,6 +41,7 @@ def pair_users():
         # 若有，配對進去
         if pairing_player != None:
             pairing_player.playerB = userId
+            pairint_player.startedAt = datetime.now()
             db_session.commit()
             return {"status_msg": "Paired success."}, 200
         
