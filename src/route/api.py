@@ -43,7 +43,7 @@ def pair_users():
         # 若有，配對進去
         if pairing_player != None:
             pairing_player.playerB = userId
-            pairint_player.startedAt = datetime.now()
+            pairing_player.startedAt = datetime.now()
             db_session.commit()
             return {"status_msg": "Paired success."}, 200
 
