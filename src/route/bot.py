@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, jsonify, request, g, redirect, flash, url_for
+import requests
 
 from src.models import Place, Pair
 from src.db import init_db, db_session
-from config import PAGE_ACCESS_TOKEN, PAGE_VERIFY_TOKEN, FB_API_URL, BASE_URL, APP_ID
+from src.sdk import message
+from config import PAGE_VERIFY_TOKEN, APP_ID, FB_API_URL, PAGE_ACCESS_TOKEN
 
 
 bot = Blueprint('bot', __name__)
@@ -22,4 +24,21 @@ def webhook():
 def webhook_handle():
     data = request.get_json()
     messaging = data['entry'][0]['messaging'][0]
+
+    user_id = messaging['sender']['id']
+    recipient_id = messaging['recipient']['id']
+
+    user_info = requests.get(
+        FB_API_URL + '/' + user_id + '?access_token=' + PAGE_ACCESS_TOKEN).json()
+
+    if 'postback' in messaging.keys():
+        get_payload = messaging['postback']['payload']
+        if get_payload == 'GET_STARTED_PAYLOAD':
+            message.push_webview(user_id, user_info['first_name'], '/intro')
+            message.push_menu(user_id)
     return 'ok'
+
+
+@bot.route('/intro', methods=['GET'])
+def intro_page():
+    return render_template('intro.html', app_id=APP_ID)
