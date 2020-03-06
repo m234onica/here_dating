@@ -68,7 +68,7 @@ def leave(userId):
         filter(Pair.deletedAt == None).first()
 
     if pair == None:
-        return {"status_msg": "User isn"t in chatroom"}, 200
+        return {"status_msg": "User isn't in chatroom"}, 200
 
     pair.deletedAt = datetime.now()
     pair.status = status_Enum(1)
