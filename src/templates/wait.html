@@ -1,4 +1,7 @@
 {% extends "base.html" %}
 {% block wait %}
- waiting...
+waiting...
+<script>
+    setInterval("get_status()", 1000);
+</script>
 {% endblock wait %}

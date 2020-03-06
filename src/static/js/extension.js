@@ -59,6 +59,33 @@ $("#intro-submit").on("click", function (e) {
         });
 })
 
+function get_status() {
+    MessengerExtensions.getContext(
+        app_id,
+        function success(uids) {
+            var psid = uids.psid;
+
+            $.ajax({
+                type: "GET",
+                url: base_url + "/api/user/status/" + psid,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+
+                success: function (data) {
+                    if (data.payload == "pairing") {
+                        window.location.href = base_url + "/wait";
+                    } else {
+                        close_Webview();
+                    }
+                },
+                error: function (err) {
+                    window.location.href = base_url + "/leave";
+                }
+            })
+        }
+    )
+}
+
 function close_Webview() {
     MessengerExtensions.requestCloseBrowser(
         function success() {
