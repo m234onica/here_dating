@@ -1,7 +1,7 @@
 import requests
 from config import PAGE_ACCESS_TOKEN, FB_API_URL, BASE_URL
 
-message_api_url = FB_API_URL + '/me/messages?access_token=' + PAGE_ACCESS_TOKEN
+message_api_url = FB_API_URL + "/me/messages?access_token=" + PAGE_ACCESS_TOKEN
 quick_message = [
     {
         "content_type": "text",
@@ -22,11 +22,11 @@ def requests_post(url, payload):
 
 def push_text(id, text):
     data = {
-        'recipient': {
-            'id': id
+        "recipient": {
+            "id": id
         },
-        'message': {
-            'text': text,
+        "message": {
+            "text": text,
             "quick_replies": quick_message
         }
     }
@@ -88,4 +88,4 @@ def push_menu(id):
         ]
     }
     return requests_post(
-        FB_API_URL + '/me/custom_user_settings?access_token=' + PAGE_ACCESS_TOKEN, data)
+        FB_API_URL + "/me/custom_user_settings?access_token=" + PAGE_ACCESS_TOKEN, data)

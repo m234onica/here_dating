@@ -7,11 +7,11 @@ from src.sdk import message
 from config import PAGE_VERIFY_TOKEN, APP_ID, FB_API_URL, PAGE_ACCESS_TOKEN
 
 
-bot = Blueprint('bot', __name__)
+bot = Blueprint("bot", __name__)
 init_db()
 
 
-@bot.route('/webhook', methods=['GET'])
+@bot.route("/webhook", methods=["GET"])
 def webhook():
     if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
         if not request.args.get("hub.verify_token") == PAGE_VERIFY_TOKEN:
@@ -20,34 +20,34 @@ def webhook():
     return "Verification success", 200
 
 
-@bot.route("/webhook", methods=['POST'])
+@bot.route("/webhook", methods=["POST"])
 def webhook_handle():
     data = request.get_json()
-    messaging = data['entry'][0]['messaging'][0]
+    messaging = data["entry"][0]["messaging"][0]
 
-    user_id = messaging['sender']['id']
-    recipient_id = messaging['recipient']['id']
+    user_id = messaging["sender"]["id"]
+    recipient_id = messaging["recipient"]["id"]
 
     user_info = requests.get(
-        FB_API_URL + '/' + user_id + '?access_token=' + PAGE_ACCESS_TOKEN).json()
+        FB_API_URL + "/" + user_id + "?access_token=" + PAGE_ACCESS_TOKEN).json()
 
-    if 'postback' in messaging.keys():
-        get_payload = messaging['postback']['payload']
-        if get_payload == 'GET_STARTED_PAYLOAD':
-            message.push_webview(user_id, user_info['first_name'], '/intro')
+    if "postback" in messaging.keys():
+        get_payload = messaging["postback"]["payload"]
+        if get_payload == "GET_STARTED_PAYLOAD":
+            message.push_webview(user_id, user_info["first_name"], "/intro")
             message.push_menu(user_id)
 
-    if 'message' in messaging.keys():
-        if 'text' in messaging['message'].keys():
-            message.push_text(user_id, messaging['message']['text'])
-            message.push_webview(user_id, user_info['first_name'], '/intro')
-    return 'ok'
+    if "message" in messaging.keys():
+        if "text" in messaging["message"].keys():
+            message.push_text(user_id, messaging["message"]["text"])
+            message.push_webview(user_id, user_info["first_name"], "/intro")
+    return "ok"
 
 
-@bot.route('/intro', methods=['GET'])
+@bot.route("/intro", methods=["GET"])
 def intro_page():
-    return render_template('intro.html', app_id=APP_ID)
+    return render_template("intro.html", app_id=APP_ID)
 
-@bot.route('/wait', methods=['GET'])
+@bot.route("/wait", methods=["GET"])
 def wait_page():
-    return render_template('wait.html', app_id=APP_ID)
+    return render_template("wait.html", app_id=APP_ID)

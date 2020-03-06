@@ -1,13 +1,13 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block intro %}
 
 <br>
 <form class="form" method="POST" id="intro-form" role="form" novalidate autocomplete="off">
     <div class="form-group">
         <label>請輸入店號</label>
-        <input class="form-control" id="placeId" type='text' name='placeId' required>
+        <input class="form-control" id="placeId" type="text" name="placeId" required>
     </div>
 
-    <button class="btn btn-primary btn-block btn-lg" id='intro-submit' type='submit' name='submit'>Submit</button>
+    <button class="btn btn-primary btn-block btn-lg" id="intro-submit" type="submit" name="submit" disabled>Submit</button>
 
     {% endblock intro %}
