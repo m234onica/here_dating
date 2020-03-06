@@ -17,7 +17,7 @@ $("input#placeId")
                 },
                 error: function (data) {
                     $("#placeId").addClass("is-invalid")
-                        .after("<div class="placeId_error invalid-feedback">該店號不存在</div>");
+                        .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
                     $("#intro-submit").attr("disabled", true);
 
                 }
