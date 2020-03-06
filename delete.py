@@ -3,7 +3,7 @@ import schedule
 import time
 
 from src.db import db_session
-from src.models import Pair
+from src.models import Pair, status_Enum
 from config import EXPIRED_TIME, END_TIME
 
 
