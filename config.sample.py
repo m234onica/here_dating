@@ -13,6 +13,10 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{username}:{passwword}@{host}/{db_name}'
 BASE_URL = ""
 
+# delete timing
+EXPIRED_TIME = 5
+END_TIME = 10
+
 # Facebook messenger
 APP_ID = ""
 PAGE_ACCESS_TOKEN = ""
