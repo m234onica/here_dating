@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from config import SQLALCHEMY_DATABASE_URI
 
-engine = create_engine(SQLALCHEMY_DATABASE_URI)
+engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_size=10, max_overflow=20)
 db_session = scoped_session(sessionmaker(bind=engine, autoflush=True))
 
 Base = declarative_base()
