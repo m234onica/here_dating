@@ -11,13 +11,13 @@ $("input#placeId")
                 url: base_url + "/api/place/" + placeId,
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
-                success: function(data) {
+                success: function (data) {
                     $(".placeId_error").remove();
                     $("#intro-submit").attr("disabled", false);
                 },
-                error: function(data) {
-                    $('#placeId').addClass('is-invalid')
-                    .after('<div class="placeId_error invalid-feedback">該店號不存在</div>');
+                error: function (data) {
+                    $("#placeId").addClass("is-invalid")
+                        .after("<div class="placeId_error invalid-feedback">該店號不存在</div>");
                     $("#intro-submit").attr("disabled", true);
 
                 }
@@ -25,7 +25,7 @@ $("input#placeId")
         }
     }).on("keyup", function () {
         $(".placeId_error").remove();
-        $('#placeId').removeClass('is-invalid').removeClass('is-valid')
+        $("#placeId").removeClass("is-invalid").removeClass("is-valid")
     })
 
 $("#intro-submit").on("click", function (e) {
