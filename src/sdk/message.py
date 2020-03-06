@@ -65,28 +65,25 @@ def push_webview(id, username, webview_page):
 def push_menu(id):
     data = {
         "psid": id,
-        "persistent_menu": [
+        "persistent_menu":[
             {
-                "locale": "default",
-                "composer_input_disabled": False,
-                "call_to_actions": [
+            "locale":"default",
+            "composer_input_disabled": False,
+            "call_to_actions":[
+                {
+                "title":"My Account",
+                "type":"nested",
+                "call_to_actions":[
                     {
-                        "type": "postback",
-                        "title": "A",
-                        "payload": "CARE_HELP"
-                    },
-                    {
-                        "type": "postback",
-                        "title": "B",
-                        "payload": "CURATION"
-                    },
-                    {
-                        "type": "web_url",
-                        "title": "C",
-                        "url": "https://www.originalcoastclothing.com/",
-                        "webview_height_ratio": "full"
+                    "type":"web_url",
+                    "url": BASE_URL + "/intro",
+                    "messenger_extensions": True,
+                    "title": "離開聊天...",
+                    "webview_height_ratio": "full"
                     }
                 ]
+                }
+            ]
             }
         ]
     }

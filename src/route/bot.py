@@ -36,9 +36,18 @@ def webhook_handle():
         if get_payload == 'GET_STARTED_PAYLOAD':
             message.push_webview(user_id, user_info['first_name'], '/intro')
             message.push_menu(user_id)
+
+    if 'message' in messaging.keys():
+        if 'text' in messaging['message'].keys():
+            message.push_text(user_id, messaging['message']['text'])
+            message.push_webview(user_id, user_info['first_name'], '/intro')
     return 'ok'
 
 
 @bot.route('/intro', methods=['GET'])
 def intro_page():
     return render_template('intro.html', app_id=APP_ID)
+
+@bot.route('/wait', methods=['GET'])
+def wait_page():
+    return render_template('wait.html', app_id=APP_ID)

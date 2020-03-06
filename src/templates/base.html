@@ -1,0 +1,46 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Intro Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <!-- bootstrap 4.3.1 -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{base_url}}/static/css/style.css?v={{version}}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-6 col-sm-12">
+                {% block intro %}{% endblock intro %}
+                {% block wait %}{% endblock wait %}
+                {% block leave %}{% endblock leave %}
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function (d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) {
+                    return;
+                }
+                js = d.createElement(s);
+                js.id = id;
+                js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'Messenger'));
+    </script>
+    <script type="text/javascript" src="{{base_url}}/static/js/extension.js?v={{version}}"></script>
+    <script>
+        var app_id = "{{app_id}}";
+        var base_url = "{{base_url}}";
+    </script>
+
+</body>
+
+</html>
