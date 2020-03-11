@@ -4,6 +4,7 @@ import requests
 from src.models import Place, Pair
 from src.db import init_db, db_session
 from src.sdk import message
+from src.route.api import leave
 from config import PAGE_VERIFY_TOKEN, APP_ID, FB_API_URL, PAGE_ACCESS_TOKEN
 
 
@@ -43,15 +44,20 @@ def webhook_handle():
             message.push_webview(user_id, user_info["first_name"], "/intro")
             message.push_menu(user_id)
 
-    active = Pair.query.filter(Pair.deletedAt == None)
 
     if "message" in messaging.keys():
         if "text" in messaging["message"].keys():
-            pair = active.filter(
-                (Pair.playerA == user_id) | (Pair.playerB == user_id)).first()
+
+            if messaging["message"]["text"] == "Leave":
+                leave(user_id)
+                return "Pairing is the end."
+
+            else:
+                pair = Pair.query.filter((Pair.playerA == user_id) | (Pair.playerB == user_id)).\
+                        filter(Pair.deletedAt == None).first()
 
             if pair == None:
-                message.push_text(user_id, None, "The chatting is expired.")
+                message.push_text(user_id, None, "This chat is the end.")
                 return "Pairing is the end."
             else:
                 if user_id != pair.playerA:
