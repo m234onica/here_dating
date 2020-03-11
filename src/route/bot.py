@@ -41,7 +41,11 @@ def webhook_handle():
     if "postback" in messaging.keys():
         get_payload = messaging["postback"]["payload"]
         if get_payload == "GET_STARTED_PAYLOAD":
-            message.push_webview(user_id, user_info["first_name"], "/intro")
+            message.push_webview(
+                id=user_id, 
+                text="嗨！" + user_info["first_name"] + ",快開始聊天吧", 
+                webview_page="/intro")
+                
             message.push_menu(user_id)
 
 
@@ -53,8 +57,8 @@ def webhook_handle():
                 return "Pairing is the end."
 
             else:
-                pair = Pair.query.filter((Pair.playerA == user_id) | (Pair.playerB == user_id)).\
-                        filter(Pair.deletedAt == None).first()
+                pair = Pair.query.filter(Pair.deletedAt == None).\
+                        filter((Pair.playerA == user_id) | (Pair.playerB == user_id)).first()
 
             if pair == None:
                 message.push_text(user_id, None, "This chat is the end.")

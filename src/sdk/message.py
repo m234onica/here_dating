@@ -34,7 +34,7 @@ def push_text(id, persona, text):
     return requests_post(message_api_url, data)
 
 
-def push_webview(id, username, webview_page):
+def push_webview(id, text, webview_page):
     data = {
         "recipient": {
             "id": id
@@ -44,7 +44,7 @@ def push_webview(id, username, webview_page):
                 "type": "template",
                 "payload": {
                     "template_type": "button",
-                    "text": "嗨！" + username + ",快開始聊天吧",
+                    "text": text,
                     "buttons": [
                         {
                             "type": "web_url",
