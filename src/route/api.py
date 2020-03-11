@@ -66,8 +66,12 @@ def get_status(userId):
     active = Pair.query.filter(Pair.deletedAt==None)
     user = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).first()
 
-    if user.startedAt == None:
+    if user == None:
+        return make_response({"status_msg": "User leaved", "payload": "leaved"}, 200)
+    
+    elif user.startedAt == None:
         return make_response({"status_msg": "User is pairing", "payload": "pairing" }, 200)
+
     else:
         return make_response({"status_msg": "User is chating", "payload": "paired" }, 200)
 
