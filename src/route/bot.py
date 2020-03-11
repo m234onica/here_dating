@@ -22,6 +22,7 @@ def webhook():
 
 @bot.route("/webhook", methods=["POST"])
 def webhook_handle():
+    
     data = request.get_json()
     messaging = data["entry"][0]["messaging"][0]
 
@@ -29,6 +30,12 @@ def webhook_handle():
 
     user_info = requests.get(
         FB_API_URL + "/" + user_id + "?access_token=" + PAGE_ACCESS_TOKEN).json()
+
+    persona = requests.get(FB_API_URL + "/me/personas?access_token=" + PAGE_ACCESS_TOKEN).json()
+    if persona["data"] == []:
+        message.persona()
+        
+    persona_id = persona["data"][0]["id"]
 
     if "postback" in messaging.keys():
         get_payload = messaging["postback"]["payload"]
@@ -44,7 +51,7 @@ def webhook_handle():
                 (Pair.playerA == user_id) | (Pair.playerB == user_id)).first()
 
             if pair == None:
-                message.push_text(user_id, "The chatting is expired.")
+                message.push_text(user_id, None, "The chatting is expired.")
                 return "Pairing is the end."
             else:
                 if user_id != pair.playerA:
@@ -53,7 +60,7 @@ def webhook_handle():
                 else: 
                     recipient_id = pair.playerB
 
-                message.push_text(recipient_id, messaging["message"]["text"])
+                message.push_text(recipient_id, persona_id, messaging["message"]["text"])
     
     return "ok"
 

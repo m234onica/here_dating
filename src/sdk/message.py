@@ -20,11 +20,12 @@ def requests_post(url, payload):
     return requests.post(url, json=payload).json
 
 
-def push_text(id, text):
+def push_text(id, persona, text):
     data = {
         "recipient": {
             "id": id
         },
+        "persona_id": persona,
         "message": {
             "text": text,
             "quick_replies": quick_message
@@ -89,3 +90,11 @@ def push_menu(id):
     }
     return requests_post(
         FB_API_URL + "/me/custom_user_settings?access_token=" + PAGE_ACCESS_TOKEN, data)
+
+
+def persona():
+    data = {
+        "name": "You Know Who",
+        "profile_picture_url": "https://storage.googleapis.com/satellite-l5yx88bg3/53.png"
+    }
+    return requests_post( FB_API_URL + "/me/personas?access_token=" + PAGE_ACCESS_TOKEN, data)
