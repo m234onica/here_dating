@@ -26,7 +26,6 @@ def webhook_handle():
     messaging = data["entry"][0]["messaging"][0]
 
     user_id = messaging["sender"]["id"]
-    recipient_id = messaging["recipient"]["id"]
 
     user_info = requests.get(
         FB_API_URL + "/" + user_id + "?access_token=" + PAGE_ACCESS_TOKEN).json()
@@ -37,16 +36,32 @@ def webhook_handle():
             message.push_webview(user_id, user_info["first_name"], "/intro")
             message.push_menu(user_id)
 
+    active = Pair.query.filter(Pair.deletedAt == None)
+
     if "message" in messaging.keys():
         if "text" in messaging["message"].keys():
-            message.push_text(user_id, messaging["message"]["text"])
-            message.push_webview(user_id, user_info["first_name"], "/intro")
+            pair = active.filter(
+                (Pair.playerA == user_id) | (Pair.playerB == user_id)).first()
+
+            if pair == None:
+                message.push_text(user_id, "The chatting is expired.")
+                return redirect(url_for('bot.leave_page'))
+            else:
+                if user_id != pair.playerA:
+                    recipient_id = pair.playerA
+
+                else: 
+                    recipient_id = pair.playerB
+
+                message.push_text(recipient_id, messaging["message"]["text"])
+    
     return "ok"
 
 
 @bot.route("/intro", methods=["GET"])
 def intro_page():
     return render_template("intro.html", app_id=APP_ID)
+
 
 @bot.route("/wait", methods=["GET"])
 def wait_page():
