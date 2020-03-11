@@ -45,7 +45,7 @@ def webhook_handle():
 
             if pair == None:
                 message.push_text(user_id, "The chatting is expired.")
-                return redirect(url_for('bot.leave_page'))
+                return "Pairing is the end."
             else:
                 if user_id != pair.playerA:
                     recipient_id = pair.playerA
@@ -66,3 +66,8 @@ def intro_page():
 @bot.route("/wait", methods=["GET"])
 def wait_page():
     return render_template("wait.html", app_id=APP_ID)
+
+
+@bot.route("/leave", methods=["GET"])
+def leave_page():
+    return render_template("leave.html", app_id=APP_ID)
