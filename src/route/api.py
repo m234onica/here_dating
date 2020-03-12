@@ -15,7 +15,7 @@ def verify_distance(placeId):
 
     # 若輸入店號不存在，則回傳錯誤訊息
     if place is None:
-        return make_response({"Success": "False", "message": "Not found"}, 404)
+        return make_response({"status_msg": "Not found", "payload": False}, 404)
 
     """
     # 計算距離
@@ -24,7 +24,7 @@ def verify_distance(placeId):
     # 若不在距離內，則回傳錯誤訊息
     return {"status_msg": "fail"}, 200
     """
-    return make_response({"Success": "True", "placeId": place.id }, 200)
+    return make_response({"status_msg": "Get placeId", "payload": True, "placeId": place.id}, 200)
 
 # 配對用戶
 @api.route("/api/user/pair", methods=["POST"])
