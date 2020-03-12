@@ -1,11 +1,17 @@
 import requests
 from config import PAGE_ACCESS_TOKEN, FB_API_URL, BASE_URL
 
-message_api_url = FB_API_URL + "/me/messages?access_token=" + PAGE_ACCESS_TOKEN
+message_api_url = FB_API_URL + "/me/messages"
 
 
 def requests_post(url, payload):
-    return requests.post(url, json=payload).json
+    params = {"access_token": PAGE_ACCESS_TOKEN}
+    return requests.post(url=url, params=params, json=payload).json
+
+
+def requests_get(url):
+    params = {"access_token": PAGE_ACCESS_TOKEN}
+    return requests.get(url=FB_API_URL + url, params=params).json()
 
 
 def push_text(id, persona, text):
@@ -58,16 +64,16 @@ def push_menu(id):
                 "composer_input_disabled": False,
                 "call_to_actions": [
                     {
-                    "type": "postback",
-                    "title": "Leave",
-                    "payload": "Leave"
-                }
+                        "type": "postback",
+                        "title": "Leave",
+                        "payload": "Leave"
+                    }
                 ]
             }
         ]
     }
     return requests_post(
-        FB_API_URL + "/me/custom_user_settings?access_token=" + PAGE_ACCESS_TOKEN, data)
+        FB_API_URL + "/me/custom_user_settings", data)
 
 
 def persona():
@@ -75,4 +81,4 @@ def persona():
         "name": "鹹魚",
         "profile_picture_url": "https://storage.googleapis.com/satellite-l5yx88bg3/53.png"
     }
-    return requests_post( FB_API_URL + "/me/personas?access_token=" + PAGE_ACCESS_TOKEN, data)
+    return requests_post(FB_API_URL + "/me/personas", data)

@@ -5,7 +5,7 @@ from src.models import Place, Pair
 from src.db import init_db, db_session
 from src.sdk import message
 from src.route.api import leave
-from config import PAGE_VERIFY_TOKEN, APP_ID, FB_API_URL, PAGE_ACCESS_TOKEN
+from config import PAGE_VERIFY_TOKEN, APP_ID
 
 
 bot = Blueprint("bot", __name__)
@@ -28,11 +28,9 @@ def webhook_handle():
     messaging = data["entry"][0]["messaging"][0]
 
     user_id = messaging["sender"]["id"]
+    user_info = message.requests_get("/" + user_id)
 
-    user_info = requests.get(
-        FB_API_URL + "/" + user_id + "?access_token=" + PAGE_ACCESS_TOKEN).json()
-
-    persona = requests.get(FB_API_URL + "/me/personas?access_token=" + PAGE_ACCESS_TOKEN).json()
+    persona = message.requests_get("/me/personas")
     if persona["data"] == []:
         message.persona()
 
@@ -63,7 +61,7 @@ def webhook_handle():
                 id=delete.playerA,
                 text="User leave. That's paired again.",
                 webview_page="/intro",
-                title="Intro")
+                title="Pair")
 
             message.push_webview(
                 id=delete.playerB,
