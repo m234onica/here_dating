@@ -5,16 +5,12 @@ $("input#placeId")
         $(".placeId_error").remove();
         $(".invalid-feedback").remove();
 
-        if (placeId.length != 4) {
-            console.log(placeId.length);
-            
+        if (placeId.length != 4) {            
             $("#placeId").addClass("is-invalid")
                 .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
             $("#intro-submit").attr("disabled", true);
 
         } else {
-            console.log(placeId.length);
-
             $.ajax({
                 type: "GET",
                 url: base_url + "/api/place/" + placeId,
