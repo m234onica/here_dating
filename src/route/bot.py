@@ -23,7 +23,7 @@ def webhook():
 
 @bot.route("/webhook", methods=["POST"])
 def webhook_handle():
-    
+
     data = request.get_json()
     messaging = data["entry"][0]["messaging"][0]
 
@@ -35,43 +35,73 @@ def webhook_handle():
     persona = requests.get(FB_API_URL + "/me/personas?access_token=" + PAGE_ACCESS_TOKEN).json()
     if persona["data"] == []:
         message.persona()
-        
+
     persona_id = persona["data"][0]["id"]
+
+    pair = Pair.query.filter(
+        (Pair.playerA == user_id) | (Pair.playerB == user_id))
 
     if "postback" in messaging.keys():
         get_payload = messaging["postback"]["payload"]
-        if get_payload == "GET_STARTED_PAYLOAD":
+
+        if get_payload == "Start":
             message.push_webview(
-                id=user_id, 
-                text="嗨！" + user_info["first_name"] + ",快開始聊天吧", 
-                webview_page="/intro")
-                
+                id=user_id,
+                text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
+                webview_page="/intro",
+                title="Intro")
+
             message.push_menu(user_id)
 
+        if get_payload == "Leave":
+            if pair.filter(Pair.deletedAt == None):
+                leave(user_id)
+
+            delete = pair.filter(Pair.deletedAt != None).first()
+
+            message.push_webview(
+                id=delete.playerA,
+                text="User leave. That's paired again.",
+                webview_page="/intro",
+                title="Intro")
+
+            message.push_webview(
+                id=delete.playerB,
+                text="User leave. That's paired again.",
+                webview_page="/intro",
+                title="Pair")
+
+            return "Pairing is the end."
 
     if "message" in messaging.keys():
         if "text" in messaging["message"].keys():
 
-            if messaging["message"]["text"] == "Leave":
-                leave(user_id)
+            active_pair = pair.filter(Pair.deletedAt == None).first()
+
+            if pair.first() == None:
+                message.push_webview(
+                    id=user_id,
+                    text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
+                    webview_page="/intro",
+                    title="Intro")
+
+            elif active_pair == None:
+                message.push_webview(
+                    id=user_id,
+                    text="No paired. That's pair !",
+                    webview_page="/intro",
+                    title="Pair")
                 return "Pairing is the end."
 
             else:
-                pair = Pair.query.filter(Pair.deletedAt == None).\
-                        filter((Pair.playerA == user_id) | (Pair.playerB == user_id)).first()
+                if user_id != active_pair.playerA:
+                    recipient_id = active_pair.playerA
 
-            if pair == None:
-                message.push_text(user_id, None, "This chat is the end.")
-                return "Pairing is the end."
-            else:
-                if user_id != pair.playerA:
-                    recipient_id = pair.playerA
-
-                else: 
-                    recipient_id = pair.playerB
+                else:
+                    recipient_id = active_pair.playerB
 
                 message.push_text(recipient_id, persona_id, messaging["message"]["text"])
-    
+
     return "ok"
 
 

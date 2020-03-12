@@ -2,18 +2,6 @@ import requests
 from config import PAGE_ACCESS_TOKEN, FB_API_URL, BASE_URL
 
 message_api_url = FB_API_URL + "/me/messages?access_token=" + PAGE_ACCESS_TOKEN
-quick_message = [
-    {
-        "content_type": "text",
-        "title": "Leave",
-        "payload": "leave",
-    },
-    {
-        "content_type": "text",
-        "title": "Hello",
-        "payload": "Hello",
-    }
-]
 
 
 def requests_post(url, payload):
@@ -27,14 +15,13 @@ def push_text(id, persona, text):
         },
         "persona_id": persona,
         "message": {
-            "text": text,
-            "quick_replies": quick_message
+            "text": text
         }
     }
     return requests_post(message_api_url, data)
 
 
-def push_webview(id, text, webview_page):
+def push_webview(id, text, webview_page, title):
     data = {
         "recipient": {
             "id": id
@@ -50,14 +37,13 @@ def push_webview(id, text, webview_page):
                             "type": "web_url",
                             "url": BASE_URL + webview_page,
                             "messenger_extensions": True,
-                            "title": "Intro",
+                            "title": title,
                             "webview_height_ratio": "full"
                         }
                     ]
 
                 }
-            },
-            "quick_replies": quick_message
+            }
         }
     }
     return requests_post(message_api_url, data)
@@ -66,25 +52,17 @@ def push_webview(id, text, webview_page):
 def push_menu(id):
     data = {
         "psid": id,
-        "persistent_menu":[
+        "persistent_menu": [
             {
-            "locale":"default",
-            "composer_input_disabled": False,
-            "call_to_actions":[
-                {
-                "title":"My Account",
-                "type":"nested",
-                "call_to_actions":[
+                "locale": "default",
+                "composer_input_disabled": False,
+                "call_to_actions": [
                     {
-                    "type":"web_url",
-                    "url": BASE_URL + "/intro",
-                    "messenger_extensions": True,
-                    "title": "離開聊天...",
-                    "webview_height_ratio": "full"
-                    }
-                ]
+                    "type": "postback",
+                    "title": "Leave",
+                    "payload": "Leave"
                 }
-            ]
+                ]
             }
         ]
     }
@@ -94,7 +72,7 @@ def push_menu(id):
 
 def persona():
     data = {
-        "name": "You Know Who",
+        "name": "鹹魚",
         "profile_picture_url": "https://storage.googleapis.com/satellite-l5yx88bg3/53.png"
     }
     return requests_post( FB_API_URL + "/me/personas?access_token=" + PAGE_ACCESS_TOKEN, data)
