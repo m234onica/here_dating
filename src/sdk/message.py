@@ -6,7 +6,7 @@ message_api_url = FB_API_URL + "/me/messages"
 
 def requests_post(url, payload):
     params = {"access_token": PAGE_ACCESS_TOKEN}
-    return requests.post(url=url, params=params, json=payload).json
+    return requests.post(url=url, params=params, json=payload).json()
 
 
 def requests_get(url):
@@ -25,6 +25,26 @@ def push_text(id, persona, text):
         }
     }
     return requests_post(message_api_url, data)
+
+
+def push_attachment(id, persona, url):
+    data = {
+        "recipient": {
+            "id": id
+        },
+        "persona_id": persona,
+        "message": {
+            "attachment": {
+                "type": "image",
+                "payload": {
+                    "is_reusable": True,
+
+                    "url": url,
+                }
+            }
+        }
+    }
+    return requests_post(FB_API_URL + "/me/messages", data)
 
 
 def push_webview(id, text, webview_page, title):
@@ -74,6 +94,7 @@ def push_menu(id):
     }
     return requests_post(
         FB_API_URL + "/me/custom_user_settings", data)
+
 
 
 def persona():

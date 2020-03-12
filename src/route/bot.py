@@ -71,35 +71,40 @@ def webhook_handle():
 
             return "Pairing is the end."
 
-    if "message" in messaging.keys():
-        if "text" in messaging["message"].keys():
+    if pair.first() == None:
+        message.push_webview(
+            id=user_id,
+            text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
+            webview_page="/intro",
+            title="Intro")
+        return "No paired."
 
-            active_pair = pair.filter(Pair.deletedAt == None).first()
+    active_pair = pair.filter(Pair.deletedAt == None).first()
 
-            if pair.first() == None:
-                message.push_webview(
-                    id=user_id,
-                    text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
-                    webview_page="/intro",
-                    title="Intro")
+    if active_pair == None:
+        message.push_webview(
+            id=user_id,
+            text="No paired. That's pair !",
+            webview_page="/intro",
+            title="Pair")
 
-            elif active_pair == None:
-                message.push_webview(
-                    id=user_id,
-                    text="No paired. That's pair !",
-                    webview_page="/intro",
-                    title="Pair")
-                return "Pairing is the end."
+    else:
+        if user_id != active_pair.playerA:
+            recipient_id = active_pair.playerA
 
-            else:
-                if user_id != active_pair.playerA:
-                    recipient_id = active_pair.playerA
+        else:
+            recipient_id = active_pair.playerB
 
-                else:
-                    recipient_id = active_pair.playerB
+        if "message" in messaging.keys():
+            if "text" in messaging["message"].keys():
+                
+                message.push_text(recipient_id, persona_id,
+                                  messaging["message"]["text"])
 
-                message.push_text(recipient_id, persona_id, messaging["message"]["text"])
+            if "attachments" in messaging["message"].keys():
 
+                message.push_attachment(
+                    recipient_id, persona_id, messaging["message"]["attachments"][0]["payload"]["url"])
     return "ok"
 
 
