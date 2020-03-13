@@ -39,12 +39,21 @@ def pair_user():
     # 有userId但沒有開始時間：配對
     if is_player is not None:
         if is_player.startedAt == None:
-            return make_response({"status_msg": "User is exist and pairing.", "payload": "pairing" }, 200)
+            return make_response({
+                "status_msg": "User is exist and pairing.", 
+                "payload": {
+                    "status": "pairing"
+                }}, 200)
 
         # 有userId且有開始時間：聊天
         else:
-            return make_response({"status_msg": "User is chatting.", "payload": "paired" }, 200)
+            return make_response({
+                "status_msg": "User is chatting.", 
+                "payload": {
+                    "status": "paired"
+                }}, 200)
 
+    # userId not in data -> find a waiting userId
     waiting = active.filter(Pair.playerB == None).filter(Pair.placeId == placeId).\
         order_by(Pair.createdAt.asc()).order_by(Pair.id.asc()).first()
 
@@ -53,32 +62,75 @@ def pair_user():
         waiting.startedAt = datetime.now()
         db_session.commit()
 
-        return make_response({"status_msg": "Pairing success.", "payload": "paired" }, 200)
+        return make_response({
+            "status_msg": "Pairing success.", 
+            "payload": {
+                "status": "paired"
+            }}, 200)
     else:
         db_session.add( Pair(placeId=placeId, playerA=userId ) )
         db_session.commit()
 
-        return make_response({"status_msg": "User start to pair.", "payload": "pairing" }, 200)
+        return make_response({
+            "status_msg": "User start to pair.", 
+            "payload": {
+                "status": "pairing"
+            }}, 200)
 
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
     pair = Pair.query.filter((Pair.playerA == userId) | (Pair.playerB == userId)).order_by(Pair.id.desc()).first()
 
+    if userId != pair.playerA:
+            recipient_id = pair.playerA
+    else:
+        recipient_id = pair.playerB
+
+    if pair == None:
+        return make_response({
+            "status_msg": "User is pairing",
+            "payload": {
+                "status": "noPair"
+            }}, 200)
+
     if pair.startedAt == None:
-        return make_response({"status_msg": "User is pairing", "payload": "pairing"}, 200)
+        return make_response({
+            "status_msg": "User is pairing", 
+            "payload": {
+                "status": "pairing"
+            }}, 200)
 
     elif pair.deletedAt == None:
-        return make_response({"status_msg": "User is chating", "payload": "paired"}, 200)
+        return make_response({
+            "status_msg": "User is chating", 
+            "payload": {
+                "status": "paired",
+                "recipient_id": recipient_id
+            }}, 200)
+
+    elif pair.deletedAt - timedelta(minutes=30) < pair.startedAt:
+        return make_response({
+            "status_msg": "User leaved",
+            "payload": {
+                "status": "leaved",
+                "player": [pair.playerA, pair.playerB]
+            }}, 200)
 
     elif pair.deletedAt - timedelta(minutes=30) >= pair.startedAt:
         if pair.lastwordAt == None:
-            return make_response({"status_msg": "Timeout but not send last word.", "payload": "unSend"}, 200)
+            return make_response({
+                "status_msg": "Timeout but not send last word.",
+                "payload": {
+                    "status": "unSend",
+                    "recipient_id": recipient_id
+                }}, 200)
 
-        return make_response({"status_msg": "Timeout and sended last word.", "payload": "send"}, 200)
-
-    elif pair.deletedAt - timedelta(minutes=30) < pair.startedAt:
-        return make_response({"status_msg": "User leaved", "payload": "leaved"}, 200)
+        return make_response({
+            "status_msg": "Timeout and not sended last word.",
+            "payload": {
+                "status": "send"
+            }}, 200)
 
 
 # 用戶離開聊天室

@@ -53,10 +53,10 @@ $("#intro-submit").on("click", function (e) {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(data),
             }).always(function (d) {
-                console.log(d);
-                if (d.payload == "pairing") {
+                var payload = d.payload
+                if (payload.status == "pairing") {
                     window.location.href = base_url + "/wait";
-                } else {
+                } else {                    
                     close_Webview();
                 }
             })
@@ -79,7 +79,8 @@ function get_status() {
                 contentType: "application/json; charset=utf-8",
 
                 success: function (data) {
-                    if (data.payload == "pairing") {
+                    var payload = data.payload                    
+                    if (payload.status == "pairing") {
                         window.location.href = base_url + "/wait";
                     } else {
                         close_Webview();
@@ -97,7 +98,6 @@ function close_Webview() {
     MessengerExtensions.requestCloseBrowser(
         function success() {
             // webview closed
-            console.log("success");
         }, function error(err) {
             // an error occurred
             console.log(err);

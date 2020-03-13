@@ -34,11 +34,9 @@ def webhook_handle():
     if persona["data"] == []:
         message.persona()
 
+    status = get_status(user_id).json
     persona_id = persona["data"][0]["id"]
-
-    pair = Pair.query.filter(
-        (Pair.playerA == user_id) | (Pair.playerB == user_id)).order_by(Pair.id.desc())
-
+    
     if "postback" in messaging.keys():
         get_payload = messaging["postback"]["payload"]
 
@@ -51,70 +49,58 @@ def webhook_handle():
 
             message.push_menu(user_id)
 
-        if get_payload == "Leave" and pair.filter(Pair.deletedAt == None):
-            if pair.filter(Pair.deletedAt == None):
+        if get_payload == "Leave":
+            if status["payload"]["status"] == "paired":
+                recipient_id = status["payload"]["recipient_id"]
                 leave(user_id)
-                return "User leave."
 
-            delete = pair.filter(Pair.deletedAt != None).first()
-
-            message.push_webview(
-                id=delete.playerA,
-                text="User leave. That's paired again.",
-                webview_page="/intro",
-                title="Pair")
-
-            message.push_webview(
-                id=delete.playerB,
-                text="User leave. That's paired again.",
-                webview_page="/intro",
-                title="Pair")
-
-            return "Pairing is the end."
+                message.push_webview(
+                    id=user_id,
+                    text="User leave. That's paired again.",
+                    webview_page="/intro",
+                    title="Pair again")
+                
+                message.push_webview(
+                    id=recipient_id,
+                    text="User leave. That's paired again.",
+                    webview_page="/intro",
+                    title="Pair again")
+            else:
+                message.push_webview(
+                    id=user_id,
+                    text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
+                    webview_page="/intro",
+                    title="Intro")
         return "Postback end."
     
     status = get_status(user_id).json
-    if status["payload"] == "unSend" :
-        message.push_webview(
-            id=user_id,
-            text="Time out. Would you send the last message to your partner?",
-            webview_page="/leave",
-            title="Sned message")
-        return "Send the last message."
 
-    if pair.first() == None:
-        message.push_webview(
-            id=user_id,
-            text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
-            webview_page="/intro",
-            title="Intro")
-        return "No paired."
-    
-    active_pair = pair.filter(Pair.deletedAt == None).first()
+    if "status" in status["payload"].keys():
+        if status["payload"]["status"] == "unSend":
 
-    if active_pair == None:
-        message.push_webview(
-            id=user_id,
-            text="No paired. That's pair !",
-            webview_page="/intro",
-            title="Pair")
+            message.push_multi_webview(id=user_id)
+            return "Send the last message."
 
-    else:
-        if user_id != active_pair.playerA:
-            recipient_id = active_pair.playerA
-
+        if status["payload"]["status"] in ["noPair", "pairing", "leaved", "send"]:
+            message.push_webview(
+                id=user_id,
+                text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
+                webview_page="/intro",
+                title="Intro")
+            return "No paired."
+        
         else:
-            recipient_id = active_pair.playerB
+            recipient_id = status["payload"]["recipient_id"]
 
-        if "message" in messaging.keys():
-            if "text" in messaging["message"].keys():
-                message.push_text(recipient_id, persona_id,
-                                  messaging["message"]["text"])
+            if "message" in messaging.keys():
+                if "text" in messaging["message"].keys():
+                    message.push_text(recipient_id, persona_id,
+                                    messaging["message"]["text"])
 
-            if "attachments" in messaging["message"].keys():
-                attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
-                message.push_attachment(
-                    recipient_id, persona_id, attachment_url)
+                if "attachments" in messaging["message"].keys():
+                    attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
+                    message.push_attachment(
+                        recipient_id, persona_id, attachment_url)
     return "ok"
 
 
@@ -128,6 +114,6 @@ def wait_page():
     return render_template("wait.html", app_id=APP_ID)
 
 
-@bot.route("/leave", methods=["GET"])
+@bot.route("/message", methods=["GET"])
 def leave_page():
-    return render_template("leave.html", app_id=APP_ID)
+    return render_template("message.html", app_id=APP_ID)
