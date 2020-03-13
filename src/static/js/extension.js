@@ -35,6 +35,7 @@ $("input#placeId")
         $("#placeId").removeClass("is-invalid").removeClass("is-valid")
     })
 
+
 $("#intro-submit").on("click", function (e) {
     e.preventDefault()
 
@@ -66,6 +67,37 @@ $("#intro-submit").on("click", function (e) {
         });
 })
 
+
+$("#last-submit").on("click", function (e) {
+    e.preventDefault()
+
+    MessengerExtensions.getContext(
+        app_id,
+        function success(uids) {
+            console.log(uids);
+            
+            var psid = uids.psid;
+            var data = {
+                "lastWord": $("#lastWord").val(),
+                "userId": psid,
+            }
+            $.ajax({
+                type: "POST",
+                url: base_url + "/api/user/send",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(data),
+            }).always(function (d) {
+                
+                close_Webview()
+            })
+        },
+        function error(err, errorMessage) {
+            alert(JSON.stringify(errorMessage));
+        });
+})
+
+
 function get_status() {
     MessengerExtensions.getContext(
         app_id,
@@ -93,6 +125,7 @@ function get_status() {
         }
     )
 }
+
 
 function close_Webview() {
     MessengerExtensions.requestCloseBrowser(
