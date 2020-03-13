@@ -4,7 +4,7 @@ import requests
 from src.models import Place, Pair
 from src.db import init_db, db_session
 from src.sdk import message
-from src.route.api import leave
+from src.route.api import leave, get_status
 from config import PAGE_VERIFY_TOKEN, APP_ID
 
 
@@ -37,7 +37,7 @@ def webhook_handle():
     persona_id = persona["data"][0]["id"]
 
     pair = Pair.query.filter(
-        (Pair.playerA == user_id) | (Pair.playerB == user_id))
+        (Pair.playerA == user_id) | (Pair.playerB == user_id)).order_by(Pair.id.desc())
 
     if "postback" in messaging.keys():
         get_payload = messaging["postback"]["payload"]
@@ -51,9 +51,10 @@ def webhook_handle():
 
             message.push_menu(user_id)
 
-        if get_payload == "Leave":
+        if get_payload == "Leave" and pair.filter(Pair.deletedAt == None):
             if pair.filter(Pair.deletedAt == None):
                 leave(user_id)
+                return "User leave."
 
             delete = pair.filter(Pair.deletedAt != None).first()
 
@@ -70,6 +71,16 @@ def webhook_handle():
                 title="Pair")
 
             return "Pairing is the end."
+        return "Postback end."
+    
+    status = get_status(user_id).json
+    if status["payload"] == "unSend" :
+        message.push_webview(
+            id=user_id,
+            text="Time out. Would you send the last message to your partner?",
+            webview_page="/leave",
+            title="Sned message")
+        return "Send the last message."
 
     if pair.first() == None:
         message.push_webview(
@@ -78,7 +89,7 @@ def webhook_handle():
             webview_page="/intro",
             title="Intro")
         return "No paired."
-
+    
     active_pair = pair.filter(Pair.deletedAt == None).first()
 
     if active_pair == None:
@@ -97,14 +108,13 @@ def webhook_handle():
 
         if "message" in messaging.keys():
             if "text" in messaging["message"].keys():
-                
                 message.push_text(recipient_id, persona_id,
                                   messaging["message"]["text"])
 
             if "attachments" in messaging["message"].keys():
-
+                attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
                 message.push_attachment(
-                    recipient_id, persona_id, messaging["message"]["attachments"][0]["payload"]["url"])
+                    recipient_id, persona_id, attachment_url)
     return "ok"
 
 

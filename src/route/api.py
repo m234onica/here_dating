@@ -63,17 +63,22 @@ def pair_user():
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
-    active = Pair.query.filter(Pair.deletedAt==None)
-    user = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).first()
+    pair = Pair.query.filter((Pair.playerA == userId) | (Pair.playerB == userId)).order_by(Pair.id.desc()).first()
 
-    if user == None:
+    if pair.startedAt == None:
+        return make_response({"status_msg": "User is pairing", "payload": "pairing"}, 200)
+
+    elif pair.deletedAt == None:
+        return make_response({"status_msg": "User is chating", "payload": "paired"}, 200)
+
+    elif pair.deletedAt - timedelta(minutes=30) >= pair.startedAt:
+        if pair.lastwordAt == None:
+            return make_response({"status_msg": "Timeout but not send last word.", "payload": "unSend"}, 200)
+
+        return make_response({"status_msg": "Timeout and sended last word.", "payload": "send"}, 200)
+
+    elif pair.deletedAt - timedelta(minutes=30) < pair.startedAt:
         return make_response({"status_msg": "User leaved", "payload": "leaved"}, 200)
-    
-    elif user.startedAt == None:
-        return make_response({"status_msg": "User is pairing", "payload": "pairing" }, 200)
-
-    else:
-        return make_response({"status_msg": "User is chating", "payload": "paired" }, 200)
 
 
 # 用戶離開聊天室
