@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block leave %}
+<br>
+<form class="form" method="POST" id="last-form" role="form" novalidate autocomplete="off">
+    <div class="form-group">
+        <label>想對對面的鹹魚說什麼嗎？</label>
+        <textarea class="form-control" id="lastWord" name="lastWord" required></textarea>
+    </div>
+
+    <button class="btn btn-primary btn-block btn-lg" id="last-submit" type="submit" name="submit">Submit</button>
+</form>
+{% endblock leave %}
