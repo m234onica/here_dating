@@ -29,6 +29,7 @@ class Pair(Base):
     createdAt = Column(DateTime, nullable=False,server_default=func.now(), comment="建立時間")
     startedAt = Column(DateTime, nullable=True, comment="建立時間")
     deletedAt = Column(DateTime, nullable=True, comment="刪除時間")
+    lastwordAt = Column(DateTime, nullable=True, comment="遺言時間")
     status = Column(Enum(status_Enum), nullable=True, comment="此配對狀態，僅供數據分析使用")
     
 
