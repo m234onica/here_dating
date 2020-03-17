@@ -8,4 +8,38 @@
 
     <button class="btn btn-primary btn-block btn-lg" id="last-submit" type="submit" name="submit">Submit</button>
 </form>
+
+<script type="text/javascript">
+    var status = "{{status}}";
+
+    window.extAsyncInit = function () {
+        MessengerExtensions.getContext(
+            app_id,
+            function success(uids) {
+                var psid = uids.psid;
+                if (status == "playerA_hasSend") {
+                    alert("您已完成留言。");
+                    MessengerExtensions.requestCloseBrowser(
+                        function success() {
+                        }, function error(err) {
+                            console.log(err);
+                        });
+
+                }
+                if (status == "playerB_hasSend") {
+                    alert("您已完成留言。")
+                    MessengerExtensions.requestCloseBrowser(
+                        function success() { },
+                        function error(err) {
+                            console.log(err);
+                        });
+                }
+
+            },
+            function error(err, errorMessage) {
+                alert(JSON.stringify(errorMessage));
+            }
+        )
+    }
+</script>
 {% endblock leave %}

@@ -87,7 +87,7 @@ def push_multi_webview(id):
                     "buttons": [
                         {
                             "type": "web_url",
-                            "url": BASE_URL + "/message",
+                            "url": BASE_URL + "/message/" + id,
                             "messenger_extensions": True,
                             "title": "Send message",
                             "webview_height_ratio": "full"

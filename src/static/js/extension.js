@@ -5,7 +5,7 @@ $("input#placeId")
         $(".placeId_error").remove();
         $(".invalid-feedback").remove();
 
-        if (placeId.length != 4) {            
+        if (placeId.length != 4) {
             $("#placeId").addClass("is-invalid")
                 .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
             $("#intro-submit").attr("disabled", true);
@@ -16,8 +16,8 @@ $("input#placeId")
                 url: base_url + "/api/place/" + placeId,
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
-                success: function (data) {                    
-                    if(data.payload == true) {
+                success: function (data) {
+                    if (data.payload == true) {
                         $(".placeId_error").remove();
                         $("#placeId").removeClass('is-invalid').addClass('is-valid')
                         $("#intro-submit").attr("disabled", false);
@@ -57,7 +57,7 @@ $("#intro-submit").on("click", function (e) {
                 var payload = d.payload
                 if (payload.status == "pairing") {
                     window.location.href = base_url + "/wait";
-                } else {                    
+                } else {
                     close_Webview();
                 }
             })
@@ -74,8 +74,6 @@ $("#last-submit").on("click", function (e) {
     MessengerExtensions.getContext(
         app_id,
         function success(uids) {
-            console.log(uids);
-            
             var psid = uids.psid;
             var data = {
                 "lastWord": $("#lastWord").val(),
@@ -88,8 +86,13 @@ $("#last-submit").on("click", function (e) {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(data),
             }).always(function (d) {
-                
-                close_Webview()
+                var payload = d.payload
+                if (payload.status == "success") {
+                    alert("留言發送成功。")
+                    close_Webview()
+                } else {
+                    alert(JSON.stringify(payload));
+                }
             })
         },
         function error(err, errorMessage) {
@@ -111,7 +114,7 @@ function get_status() {
                 contentType: "application/json; charset=utf-8",
 
                 success: function (data) {
-                    var payload = data.payload                    
+                    var payload = data.payload
                     if (payload.status == "pairing") {
                         window.location.href = base_url + "/wait";
                     } else {
