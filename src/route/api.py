@@ -32,15 +32,16 @@ def pair_user():
     userId = request.json["userId"]
     placeId = request.json["placeId"]
 
-    active = Pair.query.filter(Pair.deletedAt == None) 
+    active = Pair.query.filter(Pair.deletedAt == None)
     # userId is in active data
-    is_player = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).first()
+    is_player = active.filter((Pair.playerA == userId)
+                              | (Pair.playerB == userId)).first()
 
     # 有userId但沒有開始時間：配對
     if is_player is not None:
         if is_player.startedAt == None:
             return make_response({
-                "status_msg": "User is exist and pairing.", 
+                "status_msg": "User is exist and pairing.",
                 "payload": {
                     "status": "pairing"
                 }}, 200)
@@ -48,7 +49,7 @@ def pair_user():
         # 有userId且有開始時間：聊天
         else:
             return make_response({
-                "status_msg": "User is chatting.", 
+                "status_msg": "User is chatting.",
                 "payload": {
                     "status": "paired"
                 }}, 200)
@@ -63,16 +64,16 @@ def pair_user():
         db_session.commit()
 
         return make_response({
-            "status_msg": "Pairing success.", 
+            "status_msg": "Pairing success.",
             "payload": {
                 "status": "paired"
             }}, 200)
     else:
-        db_session.add( Pair(placeId=placeId, playerA=userId ) )
+        db_session.add(Pair(placeId=placeId, playerA=userId))
         db_session.commit()
 
         return make_response({
-            "status_msg": "User start to pair.", 
+            "status_msg": "User start to pair.",
             "payload": {
                 "status": "pairing"
             }}, 200)
@@ -87,19 +88,21 @@ def send_last_word():
     status = payload["payload"]["status"]
 
     if status == "playerA_unSend":
-        pair = Pair.query.filter(Pair.playerA == userId).order_by(Pair.id.desc()).first()
+        pair = Pair.query.filter(Pair.playerA == userId).order_by(
+            Pair.id.desc()).first()
         recipient_id = pair.playerB
-        
+
         pair.playerA_lastedAt = datetime.now()
         db_session.commit()
 
         return message.push_text(recipient_id, None, "對面的鹹魚給你留了話：" + lastWord)
 
     elif status == "playerB_unSend":
-        pair = Pair.query.filter(Pair.playerB == userId).order_by(Pair.id.desc()).first()
+        pair = Pair.query.filter(Pair.playerB == userId).order_by(
+            Pair.id.desc()).first()
         recipient_id = pair.playerA
-        
-        pair.playerB_lastedAt = datetime.now() 
+
+        pair.playerB_lastedAt = datetime.now()
         db_session.commit()
 
         return message.push_text(recipient_id, None, "對面的鹹魚給你留了話：" + lastWord)
@@ -113,7 +116,8 @@ def send_last_word():
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
-    pair = Pair.query.filter((Pair.playerA == userId) | (Pair.playerB == userId)).order_by(Pair.id.desc()).first()
+    pair = Pair.query.filter((Pair.playerA == userId) | (
+        Pair.playerB == userId)).order_by(Pair.id.desc()).first()
 
     if pair == None:
         return make_response({
@@ -129,14 +133,14 @@ def get_status(userId):
 
     if pair.startedAt == None:
         return make_response({
-            "status_msg": "User is pairing", 
+            "status_msg": "User is pairing",
             "payload": {
                 "status": "pairing"
             }}, 200)
 
     elif pair.deletedAt == None:
         return make_response({
-            "status_msg": "User is chating", 
+            "status_msg": "User is chating",
             "payload": {
                 "status": "paired",
                 "recipient_id": recipient_id
@@ -150,7 +154,7 @@ def get_status(userId):
             }}, 200)
 
     elif pair.deletedAt - timedelta(minutes=30) >= pair.startedAt:
-        
+
         if userId == pair.playerA:
             if pair.playerA_lastedAt == None:
                 return make_response({
@@ -158,7 +162,7 @@ def get_status(userId):
                     "payload": {
                         "status": "playerA_unSend"
                     }}, 200)
-                    
+
             else:
                 return make_response({
                     "status_msg": "PlayerA has been sended. Can't send it again.",
