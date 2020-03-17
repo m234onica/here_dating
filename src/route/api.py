@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, jsonify, request, g, redirect, flash, url_for, make_response
-from sqlalchemy.sql.expression import literal
 from datetime import datetime, timedelta
 
 from src.db import init_db, db_session
@@ -92,26 +91,21 @@ def send_last_word():
 
         user.lastwordAt = datetime.now()
         db_session.commit()
-        
+
         return message.push_text(pair["payload"]["recipient_id"], None, "對面的鹹魚給你留了話：" + lastWord)
 
     else:
         return make_response({
-            "status_msg": "Have been sended. Can't send it again", 
+            "status_msg": "Have been sended. Can't send it again",
             "payload": {
                 "status": "send"
-                }
-            }, 200)
+            }
+        }, 200)
 
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
     pair = Pair.query.filter((Pair.playerA == userId) | (Pair.playerB == userId)).order_by(Pair.id.desc()).first()
-
-    if userId != pair.playerA:
-            recipient_id = pair.playerA
-    else:
-        recipient_id = pair.playerB
 
     if pair == None:
         return make_response({
@@ -119,6 +113,11 @@ def get_status(userId):
             "payload": {
                 "status": "noPair"
             }}, 200)
+
+    if userId != pair.playerA:
+        recipient_id = pair.playerA
+    else:
+        recipient_id = pair.playerB
 
     if pair.startedAt == None:
         return make_response({
@@ -140,23 +139,39 @@ def get_status(userId):
             "status_msg": "User leaved",
             "payload": {
                 "status": "leaved",
-                "player": [pair.playerA, pair.playerB]
             }}, 200)
 
     elif pair.deletedAt - timedelta(minutes=30) >= pair.startedAt:
-        if pair.lastwordAt == None:
-            return make_response({
-                "status_msg": "Timeout but not send last word.",
-                "payload": {
-                    "status": "unSend",
-                    "recipient_id": recipient_id
-                }}, 200)
+        
+        if userId == pair.playerA:
+            if pair.playerA_lastedAt == None:
+                return make_response({
+                    "status_msg": "Timeout but not send last word.",
+                    "payload": {
+                        "status": "playerA_unSend"
+                    }}, 200)
+                    
+            else:
+                return make_response({
+                    "status_msg": "PlayerA has been sended. Can't send it again.",
+                    "payload": {
+                        "status": "playerA_hasSend",
+                    }}, 200)
 
-        return make_response({
-            "status_msg": "Timeout and not sended last word.",
-            "payload": {
-                "status": "send"
-            }}, 200)
+        if userId == pair.playerB:
+            if pair.playerB_lastedAt == None:
+                return make_response({
+                    "status_msg": "Timeout but not send last word.",
+                    "payload": {
+                        "status": "playerB_unSend"
+                    }}, 200)
+
+            else:
+                return make_response({
+                    "status_msg": "PlayerB has been sended. Can't send it again.",
+                    "payload": {
+                        "status": "playerB_hasSend",
+                    }}, 200)
 
 
 # 用戶離開聊天室
