@@ -181,9 +181,18 @@ def leave(userId):
         filter(Pair.deletedAt == None).first()
 
     if pair == None:
-        return {"status_msg": "User isn't in chatroom"}, 200
+        return make_response({
+            "status_msg": "User isn't in chatroom",
+            "payload": {
+                "status": "noPair",
+            }}, 200)
 
     pair.deletedAt = datetime.now()
     pair.status = status_Enum(1)
     db_session.commit()
-    return {"status_msg": "User leaved."}, 200
+
+    return make_response({
+        "status_msg": "User leaved.",
+        "payload": {
+            "status": "leaved",
+        }}, 200)
