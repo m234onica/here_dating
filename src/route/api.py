@@ -83,24 +83,32 @@ def send_last_word():
     userId = request.json["userId"]
     lastWord = request.json["lastWord"]
 
-    pair = get_status(userId).json
+    payload = get_status(userId).json
+    status = payload["payload"]["status"]
 
-    if pair["payload"]["status"] == "unSend":
-        user = Pair.query.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
-            filter(Pair.lastwordAt == None).order_by(Pair.id.desc()).first()
-
-        user.lastwordAt = datetime.now()
+    if status == "playerA_unSend":
+        pair = Pair.query.filter(Pair.playerA == userId).order_by(Pair.id.desc()).first()
+        recipient_id = pair.playerB
+        
+        pair.playerA_lastedAt = datetime.now()
         db_session.commit()
 
-        return message.push_text(pair["payload"]["recipient_id"], None, "對面的鹹魚給你留了話：" + lastWord)
+        return message.push_text(recipient_id, None, "對面的鹹魚給你留了話：" + lastWord)
 
-    else:
-        return make_response({
-            "status_msg": "Have been sended. Can't send it again",
-            "payload": {
-                "status": "send"
-            }
-        }, 200)
+    elif status == "playerB_unSend":
+        pair = Pair.query.filter(Pair.playerB == userId).order_by(Pair.id.desc()).first()
+        recipient_id = pair.playerA
+        
+        pair.playerB_lastedAt = datetime.now() 
+        db_session.commit()
+
+        return message.push_text(recipient_id, None, "對面的鹹魚給你留了話：" + lastWord)
+
+    return make_response({
+        "status_msg": "Send palyer's last word.",
+        "payload": {
+            "status": "success"
+        }}, 200)
 
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
