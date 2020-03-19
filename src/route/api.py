@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
 from src.sdk import message
+from config import END_TIME
 
 api = Blueprint("api", __name__)
 init_db()
@@ -146,14 +147,14 @@ def get_status(userId):
                 "recipient_id": recipient_id
             }}, 200)
 
-    elif pair.deletedAt - timedelta(minutes=30) < pair.startedAt:
+    elif pair.deletedAt - timedelta(minutes=END_TIME) < pair.startedAt:
         return make_response({
             "status_msg": "User leaved",
             "payload": {
                 "status": "leaved",
             }}, 200)
 
-    elif pair.deletedAt - timedelta(minutes=30) >= pair.startedAt:
+    elif pair.deletedAt - timedelta(minutes=END_TIME) >= pair.startedAt:
 
         if userId == pair.playerA:
             if pair.playerA_lastedAt == None:
