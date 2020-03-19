@@ -114,9 +114,7 @@ function get_status() {
 
                 success: function (data) {
                     var payload = data.payload
-                    if (payload.status == "pairing") {
-                        window.location.href = base_url + "/wait/" + psid;
-                    } else {
+                    if (payload.status != "pairing") {
                         close_Webview();
                     }
                 },
