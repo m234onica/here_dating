@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, jsonify, request, g, redirect, flash, url_for
 import requests
 
-from src.models import Place, Pair
 from src.db import init_db, db_session
-from src.sdk import message
+from src.models import Place, Pair
 from src.route.api import leave, get_status
-from config import PAGE_VERIFY_TOKEN, APP_ID
+from src.tool import message, func
+from config import PAGE_VERIFY_TOKEN, APP_ID, EXPIRED_TIME
 
 
 bot = Blueprint("bot", __name__)
@@ -27,8 +27,8 @@ def webhook_handle():
     data = request.get_json()
     messaging = data["entry"][0]["messaging"][0]
 
-    user_id = messaging["sender"]["id"]
-    user_info = message.requests_get("/" + user_id)
+    userId = messaging["sender"]["id"]
+    user_info = message.requests_get("/" + userId)
 
     persona = message.requests_get("/me/personas")
     if persona["data"] == []:
@@ -41,22 +41,22 @@ def webhook_handle():
 
         if get_payload == "Start":
             message.push_webview(
-                id=user_id, text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～", persona=persona_id,
+                id=userId, text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～", persona=persona_id,
                 webview_page="/intro", title="Intro")
 
-            message.push_menu(user_id)
+            message.push_menu(userId)
 
         # 離開聊天室
         if get_payload == "Leave":
 
-            status = get_status(user_id).json
+            status = get_status(userId).json
             
             if status["payload"]["status"] == "paired":
-                recipient_id = status["payload"]["recipient_id"]
-                leave(user_id)
+                recipient_id = func.get_recipient_id(userId)
+                leave(userId)
 
                 message.push_webview(
-                    id=user_id, text="User leave. That's paired again.", persona=persona_id,
+                    id=userId, text="User leave. That's paired again.", persona=persona_id,
                     webview_page="/intro", title="Pair again")
 
                 message.push_webview(
@@ -65,27 +65,25 @@ def webhook_handle():
 
                 return "User leaved"
 
-    status = get_status(user_id).json
-
+    status = get_status(userId).json
+    print(status)
     if "status" in status["payload"].keys():
-        if status["payload"]["status"] == "playerA_unSend":
-
-            message.push_multi_webview(id=user_id, persona=persona_id)
+        if status["payload"]["status"] == "unSend":
+            
+            message.push_multi_webview(id=userId, persona=persona_id)
             return "Send the last message."
 
-        elif status["payload"]["status"] == "playerB_unSend":
+        if status["payload"]["status"] == "pairing":
+            message.push_text(userId, persona_id, "配對中，請稍等...")
 
-            message.push_multi_webview(id=user_id, persona=persona_id)
-            return "Send the last message."
-
-        if status["payload"]["status"] in ["noPair", "pairing", "leaved", "playerA_hasSend", "playerB_hasSend"]:
+        if status["payload"]["status"] in ["noPair", "leaved"]:
             message.push_webview(
-                id=user_id, text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
+                id=userId, text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
                 persona=persona_id, webview_page="/intro", title="Intro")
             return "No paired."
 
         else:
-            recipient_id = status["payload"]["recipient_id"]
+            recipient_id = func.get_recipient_id(userId)
 
             if "message" in messaging.keys():
                 if "text" in messaging["message"].keys():
@@ -104,9 +102,9 @@ def intro_page():
     return render_template("intro.html", app_id=APP_ID)
 
 
-@bot.route("/wait", methods=["GET"])
-def wait_page():
-    return render_template("wait.html", app_id=APP_ID)
+@bot.route("/wait/<userId>", methods=["GET"])
+def wait_page(userId):
+    return render_template("wait.html", app_id=APP_ID, expired_time=EXPIRED_TIME)
 
 
 @bot.route("/message/<userId>", methods=["GET"])

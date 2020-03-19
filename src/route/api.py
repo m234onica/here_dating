@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
-from src.sdk import message
+from src.tool import message, func
 from config import END_TIME
 
 api = Blueprint("api", __name__)
@@ -12,7 +12,7 @@ init_db()
 
 @api.route("/api/place/<placeId>", methods=["GET"])
 def verify_distance(placeId):
-    place = Place.query.filter_by(id=placeId).first()
+    place = Place.query.filter(Place.id == placeId).first()
 
     # 若輸入店號不存在，則回傳錯誤訊息
     if place is None:
@@ -27,11 +27,13 @@ def verify_distance(placeId):
     """
     return make_response({"status_msg": "Get placeId", "payload": True, "placeId": place.id}, 200)
 
-# 配對用戶
 @api.route("/api/user/pair", methods=["POST"])
 def pair_user():
     userId = request.json["userId"]
     placeId = request.json["placeId"]
+
+    persona = message.requests_get("/me/personas")
+    persona_id = persona["data"][0]["id"]
 
     active = Pair.query.filter(Pair.deletedAt == None)
     # userId is in active data
@@ -64,6 +66,11 @@ def pair_user():
         waiting.startedAt = datetime.now()
         db_session.commit()
 
+        message.push_text(userId, persona_id, "配對成功，可以開始聊天囉！")
+
+        recipient_id = func.get_recipient_id(userId)
+        message.push_text(recipient_id, persona_id, "配對成功，可以開始聊天囉！")
+        
         return make_response({
             "status_msg": "Pairing success.",
             "payload": {
@@ -88,25 +95,24 @@ def send_last_word():
     payload = get_status(userId).json
     status = payload["payload"]["status"]
 
-    if status == "playerA_unSend":
-        pair = Pair.query.filter(Pair.playerA == userId).order_by(
-            Pair.id.desc()).first()
-        recipient_id = pair.playerB
+    player = func.recognize_player(userId)
+    pair = func.get_pair(player, userId)
 
-        pair.playerA_lastedAt = datetime.now()
+    persona = message.requests_get("/me/personas")
+    persona_id = persona["data"][0]["id"]
+
+    if status == "unSend":
+        if player == "playerA":
+            pair.playerA_lastedAt = datetime.now()
+
+        elif player == "playerB":
+            pair.playerB_lastedAt = datetime.now()
+
         db_session.commit()
 
-        return message.push_text(recipient_id, None, "對面的鹹魚給你留了話：" + lastWord)
-
-    elif status == "playerB_unSend":
-        pair = Pair.query.filter(Pair.playerB == userId).order_by(
-            Pair.id.desc()).first()
-        recipient_id = pair.playerA
-
-        pair.playerB_lastedAt = datetime.now()
-        db_session.commit()
-
-        return message.push_text(recipient_id, None, "對面的鹹魚給你留了話：" + lastWord)
+        recipient_id = func.get_recipient_id(userId)
+        message.push_text(recipient_id, persona_id, "對面的鹹魚給你留了話：" + lastWord)
+        message.push_text(userId, persona_id, "發送留言成功。")
 
     return make_response({
         "status_msg": "Send palyer's last word.",
@@ -117,20 +123,16 @@ def send_last_word():
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
-    pair = Pair.query.filter((Pair.playerA == userId) | (
-        Pair.playerB == userId)).order_by(Pair.id.desc()).first()
+    player = func.recognize_player(userId)
+    pair = func.get_pair(player, userId)
 
     if pair == None:
         return make_response({
-            "status_msg": "User is pairing",
+            "status_msg": "User does not pair.",
             "payload": {
                 "status": "noPair"
             }}, 200)
 
-    if userId != pair.playerA:
-        recipient_id = pair.playerA
-    else:
-        recipient_id = pair.playerB
 
     if pair.startedAt == None:
         return make_response({
@@ -143,8 +145,7 @@ def get_status(userId):
         return make_response({
             "status_msg": "User is chating",
             "payload": {
-                "status": "paired",
-                "recipient_id": recipient_id
+                "status": "paired"
             }}, 200)
 
     elif pair.deletedAt - timedelta(minutes=END_TIME) < pair.startedAt:
@@ -161,14 +162,7 @@ def get_status(userId):
                 return make_response({
                     "status_msg": "Timeout but not send last word.",
                     "payload": {
-                        "status": "playerA_unSend"
-                    }}, 200)
-
-            else:
-                return make_response({
-                    "status_msg": "PlayerA has been sended. Can't send it again.",
-                    "payload": {
-                        "status": "playerA_hasSend",
+                        "status": "unSend",
                     }}, 200)
 
         if userId == pair.playerB:
@@ -176,21 +170,21 @@ def get_status(userId):
                 return make_response({
                     "status_msg": "Timeout but not send last word.",
                     "payload": {
-                        "status": "playerB_unSend"
+                        "status": "unSend",
                     }}, 200)
 
-            else:
-                return make_response({
-                    "status_msg": "PlayerB has been sended. Can't send it again.",
-                    "payload": {
-                        "status": "playerB_hasSend",
-                    }}, 200)
+        return make_response({
+            "status_msg": "User is pairing",
+            "payload": {
+            "status": "noPair"
+        }}, 200)
 
 
 # 用戶離開聊天室
-@api.route("/api/user/leave/<userId>", methods=["GET"])
+@api.route("/api/user/leave/<userId>", methods=["POST"])
 def leave(userId):
-    pair = Pair.query.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
+    active = func.active_pair()
+    pair = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
         filter(Pair.deletedAt == None).first()
 
     if pair == None:
