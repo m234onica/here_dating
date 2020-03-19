@@ -41,7 +41,7 @@ def webhook_handle():
 
         if get_payload == "Start":
             message.push_webview(
-                id=user_id, text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
+                id=user_id, text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～", persona=persona_id,
                 webview_page="/intro", title="Intro")
 
             message.push_menu(user_id)
@@ -50,17 +50,17 @@ def webhook_handle():
         if get_payload == "Leave":
 
             status = get_status(user_id).json
-
+            
             if status["payload"]["status"] == "paired":
                 recipient_id = status["payload"]["recipient_id"]
                 leave(user_id)
 
                 message.push_webview(
-                    id=user_id, text="User leave. That's paired again.",
+                    id=user_id, text="User leave. That's paired again.", persona=persona_id,
                     webview_page="/intro", title="Pair again")
 
                 message.push_webview(
-                    id=recipient_id, text="User leave. That's paired again.",
+                    id=recipient_id, text="User leave. That's paired again.", persona=persona_id,
                     webview_page="/intro", title="Pair again")
 
                 return "User leaved"
@@ -70,18 +70,18 @@ def webhook_handle():
     if "status" in status["payload"].keys():
         if status["payload"]["status"] == "playerA_unSend":
 
-            message.push_multi_webview(id=user_id)
+            message.push_multi_webview(id=user_id, persona=persona_id)
             return "Send the last message."
 
         elif status["payload"]["status"] == "playerB_unSend":
 
-            message.push_multi_webview(id=user_id)
+            message.push_multi_webview(id=user_id, persona=persona_id)
             return "Send the last message."
 
         if status["payload"]["status"] in ["noPair", "pairing", "leaved", "playerA_hasSend", "playerB_hasSend"]:
             message.push_webview(
                 id=user_id, text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
-                webview_page="/intro", title="Intro")
+                persona=persona_id, webview_page="/intro", title="Intro")
             return "No paired."
 
         else:
@@ -89,13 +89,13 @@ def webhook_handle():
 
             if "message" in messaging.keys():
                 if "text" in messaging["message"].keys():
-                    message.push_text(recipient_id, persona_id,
+                    message.push_text(recipient_id, None,
                                       messaging["message"]["text"])
 
                 if "attachments" in messaging["message"].keys():
                     attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
                     message.push_attachment(
-                        recipient_id, persona_id, attachment_url)
+                        recipient_id, None, attachment_url)
     return "ok"
 
 

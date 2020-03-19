@@ -46,11 +46,12 @@ def push_attachment(id, persona, url):
     return requests_post(FB_API_URL + "/me/messages", data)
 
 
-def push_webview(id, text, webview_page, title):
+def push_webview(id, persona, text, webview_page, title):
     data = {
         "recipient": {
             "id": id
         },
+        "persona_id": persona,
         "message": {
             "attachment": {
                 "type": "template",
@@ -73,11 +74,13 @@ def push_webview(id, text, webview_page, title):
     }
     return requests_post(message_api_url, data)
 
-def push_multi_webview(id):
+
+def push_multi_webview(id, persona):
     data = {
         "recipient": {
             "id": id
         },
+        "persona_id": persona,
         "message": {
             "attachment": {
                 "type": "template",
@@ -132,7 +135,7 @@ def push_menu(id):
 
 def persona():
     data = {
-        "name": "鹹魚",
-        "profile_picture_url": "https://storage.googleapis.com/satellite-l5yx88bg3/53.png"
+        "name": "系統訊息",
+        "profile_picture_url": "https://storage.googleapis.com/satellite-l5yx88bg3/robo.png"
     }
     return requests_post(FB_API_URL + "/me/personas", data)
