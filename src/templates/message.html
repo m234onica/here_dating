@@ -11,14 +11,13 @@
 
 <script type="text/javascript">
     var status = "{{status}}";
-
+    
     window.extAsyncInit = function () {
         MessengerExtensions.getContext(
             app_id,
             function success(uids) {
                 var psid = uids.psid;
-                if (status == "playerA_hasSend") {
-                    alert("您已完成留言。");
+                if (status == "noPair") {
                     MessengerExtensions.requestCloseBrowser(
                         function success() {
                         }, function error(err) {
@@ -26,15 +25,6 @@
                         });
 
                 }
-                if (status == "playerB_hasSend") {
-                    alert("您已完成留言。")
-                    MessengerExtensions.requestCloseBrowser(
-                        function success() { },
-                        function error(err) {
-                            console.log(err);
-                        });
-                }
-
             },
             function error(err, errorMessage) {
                 alert(JSON.stringify(errorMessage));

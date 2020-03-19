@@ -54,10 +54,10 @@ $("#intro-submit").on("click", function (e) {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(data),
             }).always(function (d) {
-                var payload = d.payload
+                var payload = d.payload                
                 if (payload.status == "pairing") {
-                    window.location.href = base_url + "/wait";
-                } else {
+                    window.location.href = base_url + "/wait/" + psid;
+                } else {                
                     close_Webview();
                 }
             })
@@ -88,7 +88,6 @@ $("#last-submit").on("click", function (e) {
             }).always(function (d) {
                 var payload = d.payload
                 if (payload.status == "success") {
-                    alert("留言發送成功。")
                     close_Webview()
                 } else {
                     alert(JSON.stringify(payload));
@@ -116,7 +115,7 @@ function get_status() {
                 success: function (data) {
                     var payload = data.payload
                     if (payload.status == "pairing") {
-                        window.location.href = base_url + "/wait";
+                        window.location.href = base_url + "/wait/" + psid;
                     } else {
                         close_Webview();
                     }
