@@ -132,3 +132,8 @@ def message_page(userId):
     status = get_status(userId).json
     status = status["payload"]["status"]
     return render_template("message.html", status=status, app_id=APP_ID)
+
+
+@bot.route("/rule", methods=["GET"])
+def rule_page():
+    return render_template("rule.html", app_id=APP_ID)
