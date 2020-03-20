@@ -28,7 +28,6 @@ def webhook_handle():
     messaging = data["entry"][0]["messaging"][0]
 
     userId = messaging["sender"]["id"]
-    user_info = message.requests_get("/" + userId)
 
     persona = message.requests_get("/me/personas")
     if persona["data"] == []:
@@ -47,6 +46,15 @@ def webhook_handle():
                 id=userId, text=text.introduction[1], persona=persona_id,
                 webview_page="/intro", title=text.start_chating)
 
+            return "User started"
+
+        if get_payload == "Start_pair":
+            message.push_webview(
+                id=userId, text=text.introduction[1], persona=persona_id,
+                webview_page="/intro", title=text.start_chating)
+
+            return "User started"
+
         # 離開聊天室
         if get_payload == "Leave":
 
@@ -55,13 +63,11 @@ def webhook_handle():
             if status["payload"]["status"] in ["paired", "pairing"]:
                 leave(userId)
         return "User leaved"
-    
 
     status = get_status(userId).json
     user_info = message.requests_get("/" + userId)
     print(user_info["first_name"], status)
 
-    
     if status["payload"]["status"] == "unSend":
 
         message.push_multi_webview(
@@ -96,16 +102,18 @@ def webhook_handle():
 
     else:
         recipient_id = func.get_recipient_id(userId)
+        timeout = func.timeout_chat(userId)
 
         if "message" in messaging.keys():
             if "text" in messaging["message"].keys():
                 message.push_text(recipient_id, None,
-                                    messaging["message"]["text"])
+                                  messaging["message"]["text"])
 
             if "attachments" in messaging["message"].keys():
                 attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
                 message.push_attachment(
                     recipient_id, None, attachment_url)
+        return "Send message"
     return "ok"
 
 
