@@ -101,8 +101,7 @@ def send_last_word():
     player = func.recognize_player(userId)
     pair = func.get_pair(player, userId)
 
-    persona = message.requests_get("/me/personas")
-    persona_id = persona["data"][0]["id"]
+    persona_id = func.get_persona_id()
 
     if status == "unSend":
         if player == "playerA":
@@ -114,7 +113,8 @@ def send_last_word():
         db_session.commit()
 
         recipient_id = func.get_recipient_id(userId)
-        message.push_text(recipient_id, persona_id, text.partner_last_message + lastWord)
+        message.push_text(recipient_id, persona_id,
+                          text.partner_last_message + lastWord)
         message.push_text(userId, persona_id,
                           text.user_last_message + lastWord)
 
@@ -137,18 +137,24 @@ def get_status(userId):
                 "status": "noPair"
             }}, 200)
 
-    if pair.startedAt == None:
-        return make_response({
-            "status_msg": "User is pairing",
-            "payload": {
-                "status": "pairing"
-            }}, 200)
-
     elif pair.deletedAt == None:
+        if pair.startedAt == None:
+            return make_response({
+                "status_msg": "User is pairing",
+                "payload": {
+                    "status": "pairing"
+                }}, 200)
+
         return make_response({
             "status_msg": "User is chating",
             "payload": {
                 "status": "paired"
+            }}, 200)
+    elif pair.startedAt == None:
+        return make_response({
+            "status_msg": "User stop waiting",
+            "payload": {
+                "status": "wait_expired"
             }}, 200)
 
     elif pair.deletedAt - timedelta(minutes=END_TIME) < pair.startedAt:
