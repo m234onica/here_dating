@@ -114,9 +114,15 @@ def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_t
 
 def get_started():
     data = {
-	"get_started": {
+        "get_started": {
             "payload": "Start"
-	},
+        },
+        "greeting": [
+            {
+                "locale": "default",
+                "text": "我是問候語\n我是問候語我是問候語我是問候語\n我是問候語\n"
+            }
+        ],
         "persistent_menu": [
             {
                 "locale": "default",
@@ -128,9 +134,11 @@ def get_started():
                         "payload": "Start_pair"
                     },
                     {
-                        "type": "postback",
+                        "type": "web_url",
                         "title": text.menu_rule,
-                        "payload": "Rule"
+                        "url": BASE_URL + "/rule",
+                        "messenger_extensions": True,
+                        "webview_height_ratio": "full"
                     }
                 ]
             }
