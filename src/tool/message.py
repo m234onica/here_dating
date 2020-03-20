@@ -1,4 +1,5 @@
 import requests
+from src.tool import text
 from config import PAGE_ACCESS_TOKEN, FB_API_URL, BASE_URL
 
 message_api_url = FB_API_URL + "/me/messages"
@@ -75,7 +76,7 @@ def push_webview(id, persona, text, webview_page, title):
     return requests_post(message_api_url, data)
 
 
-def push_multi_webview(id, persona):
+def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_title):
     data = {
         "recipient": {
             "id": id
@@ -86,20 +87,20 @@ def push_multi_webview(id, persona):
                 "type": "template",
                 "payload": {
                     "template_type": "button",
-                    "text": "Time out. Would you send the last message to your partner?",
+                    "text": text,
                     "buttons": [
                         {
                             "type": "web_url",
-                            "url": BASE_URL + "/message/" + id,
+                            "url": first_url,
                             "messenger_extensions": True,
-                            "title": "Send message",
+                            "title": first_title,
                             "webview_height_ratio": "full"
                         }, 
                         {
                             "type": "web_url",
-                            "url": BASE_URL + "/intro",
+                            "url": sec_url,
                             "messenger_extensions": True,
-                            "title": "Pair again",
+                            "title": sec_title,
                             "webview_height_ratio": "full"
                         }
                     ]
@@ -121,7 +122,7 @@ def push_menu(id):
                 "call_to_actions": [
                     {
                         "type": "postback",
-                        "title": "Leave",
+                        "title": text.menu_leave,
                         "payload": "Leave"
                     }
                 ]
@@ -130,7 +131,6 @@ def push_menu(id):
     }
     return requests_post(
         FB_API_URL + "/me/custom_user_settings", data)
-
 
 
 def persona():

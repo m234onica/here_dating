@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
-from src.tool import message, func
+from src.tool import message, func, text
 from config import END_TIME
 
 api = Blueprint("api", __name__)
@@ -34,7 +34,7 @@ def pair_user():
 
     persona = message.requests_get("/me/personas")
     persona_id = persona["data"][0]["id"]
-
+    
     active = Pair.query.filter(Pair.deletedAt == None)
     # userId is in active data
     is_player = active.filter((Pair.playerA == userId)
@@ -66,11 +66,11 @@ def pair_user():
         waiting.startedAt = datetime.now()
         db_session.commit()
 
-        message.push_text(userId, persona_id, "配對成功，可以開始聊天囉！")
-
         recipient_id = func.get_recipient_id(userId)
-        message.push_text(recipient_id, persona_id, "配對成功，可以開始聊天囉！")
-        
+        for words in text.waiting_success:
+            message.push_text(userId, persona_id, words)
+            message.push_text(recipient_id, persona_id, words)
+
         return make_response({
             "status_msg": "Pairing success.",
             "payload": {
@@ -111,8 +111,9 @@ def send_last_word():
         db_session.commit()
 
         recipient_id = func.get_recipient_id(userId)
-        message.push_text(recipient_id, persona_id, "對面的鹹魚給你留了話：" + lastWord)
-        message.push_text(userId, persona_id, "發送留言成功。")
+        message.push_text(recipient_id, persona_id, text.partner_last_message + lastWord)
+        message.push_text(userId, persona_id,
+                          text.user_last_message + lastWord)
 
     return make_response({
         "status_msg": "Send palyer's last word.",
@@ -198,8 +199,10 @@ def leave(userId):
     pair.status = status_Enum(1)
     db_session.commit()
 
-    return make_response({
-        "status_msg": "User leaved.",
-        "payload": {
-            "status": "leaved",
-        }}, 200)
+    for id in players_id:
+        message.push_webview(
+            id=id, text=text.leave_message, persona=persona_id,
+            webview_page="/intro", title=text.pair_again_button)
+        message.delete_menu(id)
+
+    return "User leave"

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block wait %}
-waiting...
+<p id="waiting_text">已進入等待室，系統正在為您找人聊天中，請稍候．．．．．．</p>
+<button class="btn btn-primary btn-block btn-lg" type="submit" id="leave_waiting" disabled>我要離開</button>
 <script>
     setInterval("get_status()", 1000);
 </script>

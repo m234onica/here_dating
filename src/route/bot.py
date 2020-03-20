@@ -4,8 +4,8 @@ import requests
 from src.db import init_db, db_session
 from src.models import Place, Pair
 from src.route.api import leave, get_status
-from src.tool import message, func
-from config import PAGE_VERIFY_TOKEN, APP_ID, EXPIRED_TIME
+from src.tool import message, func, text
+from config import PAGE_VERIFY_TOKEN, APP_ID, EXPIRED_TIME, BASE_URL
 
 
 bot = Blueprint("bot", __name__)
@@ -40,60 +40,72 @@ def webhook_handle():
         get_payload = messaging["postback"]["payload"]
 
         if get_payload == "Start":
-            message.push_webview(
-                id=userId, text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～", persona=persona_id,
-                webview_page="/intro", title="Intro")
+            message.push_text(
+                id=userId, text=text.introduction[0], persona=persona_id)
 
-            message.push_menu(userId)
+            message.push_webview(
+                id=userId, text=text.introduction[1], persona=persona_id,
+                webview_page="/intro", title=text.start_chating)
 
         # 離開聊天室
         if get_payload == "Leave":
 
             status = get_status(userId).json
-            
-            if status["payload"]["status"] == "paired":
-                recipient_id = func.get_recipient_id(userId)
+
+            if status["payload"]["status"] in ["paired", "pairing"]:
                 leave(userId)
-
-                message.push_webview(
-                    id=userId, text="User leave. That's paired again.", persona=persona_id,
-                    webview_page="/intro", title="Pair again")
-
-                message.push_webview(
-                    id=recipient_id, text="User leave. That's paired again.", persona=persona_id,
-                    webview_page="/intro", title="Pair again")
-
-                return "User leaved"
+        return "User leaved"
+    
 
     status = get_status(userId).json
-    print(status)
-    if "status" in status["payload"].keys():
-        if status["payload"]["status"] == "unSend":
-            
-            message.push_multi_webview(id=userId, persona=persona_id)
-            return "Send the last message."
+    user_info = message.requests_get("/" + userId)
+    print(user_info["first_name"], status)
 
-        if status["payload"]["status"] == "pairing":
-            message.push_text(userId, persona_id, "配對中，請稍等...")
+    
+    if status["payload"]["status"] == "unSend":
 
-        if status["payload"]["status"] in ["noPair", "leaved"]:
-            message.push_webview(
-                id=userId, text="嗨，" + user_info["first_name"] + "！快來加入聊天吧～",
-                persona=persona_id, webview_page="/intro", title="Intro")
-            return "No paired."
+        message.push_multi_webview(
+            id=userId, persona=persona_id,
+            text=text.timeout_text[1], first_url=BASE_URL + "/message/" + userId,
+            first_title=text.send_partner_last_message_button,
+            sec_url=BASE_URL + "/intro", sec_title=text.pair_again_button)
 
-        else:
-            recipient_id = func.get_recipient_id(userId)
+        return "Send the last message."
 
-            if "message" in messaging.keys():
-                if "text" in messaging["message"].keys():
-                    message.push_text(recipient_id, None,
-                                      messaging["message"]["text"])
+    if status["payload"]["status"] == "pairing":
+        message.push_text(userId, persona_id, text.waiting_pair)
+        return "Pairing"
 
-                if "attachments" in messaging["message"].keys():
-                    attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
-                    message.push_attachment(
-                        recipient_id, None, attachment_url)
+    if status["payload"]["status"] == "wait_expired":
+        message.push_webview(
+            id=userId, text=text.wait_expired,
+            persona=persona_id, webview_page="/intro", title=text.pair_again_button)
+        return "Stop wait"
+
+    if status["payload"]["status"] == "leaved":
+        message.push_webview(
+            id=userId, text=text.leave_message,
+            persona=persona_id, webview_page="/intro", title=text.pair_again_button)
+        return "Leaved"
+
+    if status["payload"]["status"] == "noPair":
+        message.push_webview(
+            id=userId, text=text.pair_again_text,
+            persona=persona_id, webview_page="/intro", title=text.pair_again_button)
+        return "No paired."
+
+    else:
+        recipient_id = func.get_recipient_id(userId)
+
+        if "message" in messaging.keys():
+            if "text" in messaging["message"].keys():
+                message.push_text(recipient_id, None,
+                                    messaging["message"]["text"])
+
+            if "attachments" in messaging["message"].keys():
+                attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
+                message.push_attachment(
+                    recipient_id, None, attachment_url)
     return "ok"
 
 
