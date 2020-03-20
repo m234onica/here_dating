@@ -27,14 +27,14 @@ def verify_distance(placeId):
     """
     return make_response({"status_msg": "Get placeId", "payload": True, "placeId": place.id}, 200)
 
+
 @api.route("/api/user/pair", methods=["POST"])
 def pair_user():
     userId = request.json["userId"]
     placeId = request.json["placeId"]
 
-    persona = message.requests_get("/me/personas")
-    persona_id = persona["data"][0]["id"]
-    
+    persona_id = func.get_persona_id()
+
     active = Pair.query.filter(Pair.deletedAt == None)
     # userId is in active data
     is_player = active.filter((Pair.playerA == userId)
@@ -71,6 +71,8 @@ def pair_user():
             message.push_text(userId, persona_id, words)
             message.push_text(recipient_id, persona_id, words)
 
+        message.push_chat_menu(userId)
+        message.push_chat_menu(recipient_id)
         return make_response({
             "status_msg": "Pairing success.",
             "payload": {
@@ -80,6 +82,7 @@ def pair_user():
         db_session.add(Pair(placeId=placeId, playerA=userId))
         db_session.commit()
 
+        message.push_waiting_menu(userId)
         return make_response({
             "status_msg": "User start to pair.",
             "payload": {
@@ -134,7 +137,6 @@ def get_status(userId):
                 "status": "noPair"
             }}, 200)
 
-
     if pair.startedAt == None:
         return make_response({
             "status_msg": "User is pairing",
@@ -177,8 +179,8 @@ def get_status(userId):
         return make_response({
             "status_msg": "User is pairing",
             "payload": {
-            "status": "noPair"
-        }}, 200)
+                "status": "noPair"
+            }}, 200)
 
 
 # 用戶離開聊天室
@@ -187,6 +189,10 @@ def leave(userId):
     active = func.active_pair()
     pair = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
         filter(Pair.deletedAt == None).first()
+
+    persona_id = func.get_persona_id()
+    recipient_id = func.get_recipient_id(userId)
+    players_id = [userId, recipient_id]
 
     if pair == None:
         return make_response({

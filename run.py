@@ -1,6 +1,7 @@
 import time
 from flask import g, current_app
 from src import create_app
+from src.tool import message
 from config import EXPIRED_TIME, END_TIME
 from src.db import db_session
 
@@ -20,4 +21,5 @@ def before_req():
     g.version = time.time()
 
 if __name__ == "__main__":
+    start = message.get_started()
     app.run()

@@ -7,12 +7,12 @@ message_api_url = FB_API_URL + "/me/messages"
 
 def requests_post(url, payload):
     params = {"access_token": PAGE_ACCESS_TOKEN}
-    return requests.post(url=url, params=params, json=payload).json()
+    return requests.request("POST", url=url, params=params, json=payload).json()
 
 
 def requests_get(url):
     params = {"access_token": PAGE_ACCESS_TOKEN}
-    return requests.get(url=FB_API_URL + url, params=params).json()
+    return requests.request("GET", url=FB_API_URL + url, params=params).json()
 
 
 def push_text(id, persona, text):
@@ -95,7 +95,7 @@ def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_t
                             "messenger_extensions": True,
                             "title": first_title,
                             "webview_height_ratio": "full"
-                        }, 
+                        },
                         {
                             "type": "web_url",
                             "url": sec_url,
@@ -112,7 +112,35 @@ def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_t
     return requests_post(message_api_url, data)
 
 
-def push_menu(id):
+def get_started():
+    data = {
+	"get_started": {
+            "payload": "Start"
+	},
+        "persistent_menu": [
+            {
+                "locale": "default",
+                "composer_input_disabled": False,
+                "call_to_actions": [
+                    {
+                        "type": "postback",
+                        "title": text.menu_start,
+                        "payload": "Start_pair"
+                    },
+                    {
+                        "type": "postback",
+                        "title": text.menu_rule,
+                        "payload": "Rule"
+                    }
+                ]
+            }
+        ]
+    }
+    return requests_post(
+        FB_API_URL + "/me/messenger_profile", data)
+
+
+def push_chat_menu(id):
     data = {
         "psid": id,
         "persistent_menu": [
@@ -131,6 +159,39 @@ def push_menu(id):
     }
     return requests_post(
         FB_API_URL + "/me/custom_user_settings", data)
+
+
+def push_waiting_menu(id):
+    data = {
+        "psid": id,
+        "persistent_menu": [
+            {
+                "locale": "default",
+                "composer_input_disabled": False,
+                "call_to_actions": [
+                    {
+                        "type": "postback",
+                        "title": "離開等待",
+                        "payload": "Leave"
+                    }
+                ]
+            }
+        ]
+    }
+    return requests_post(
+        FB_API_URL + "/me/custom_user_settings", data)
+
+
+def delete_menu(id):
+    url = FB_API_URL + '/me/custom_user_settings'
+    params = {
+        "psid": id,
+        "params": '["persistent_menu"]',
+        "access_token": PAGE_ACCESS_TOKEN
+
+    }
+
+    return requests.request("DELETE", url, params=params)
 
 
 def persona():
