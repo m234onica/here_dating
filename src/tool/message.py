@@ -15,6 +15,16 @@ def requests_get(url):
     return requests.request("GET", url=FB_API_URL + url, params=params).json()
 
 
+def sender_action(id, action):
+    data = {
+            "recipient": {
+                "id": id
+            },
+            "sender_action": action
+    }
+    return requests_post(message_api_url, data)
+
+
 def push_text(id, persona, text):
     data = {
         "recipient": {
@@ -44,7 +54,7 @@ def push_attachment(id, persona, url):
             }
         }
     }
-    return requests_post(FB_API_URL + "/me/messages", data)
+    return requests_post(message_api_url, data)
 
 
 def push_webview(id, persona, text, webview_page, title):

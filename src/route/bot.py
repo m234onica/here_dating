@@ -28,12 +28,13 @@ def webhook_handle():
     messaging = data["entry"][0]["messaging"][0]
 
     userId = messaging["sender"]["id"]
-
     persona = message.requests_get("/me/personas")
     if persona["data"] == []:
         message.persona()
 
     persona_id = persona["data"][0]["id"]
+
+    message.sender_action(userId, "mark_seen")
 
     if "postback" in messaging.keys():
         get_payload = messaging["postback"]["payload"]
@@ -82,7 +83,7 @@ def webhook_handle():
         message.push_text(userId, persona_id, text.waiting_pair)
         return "Pairing"
 
-    if status["payload"]["status"] == "wait_expired":
+    if status["payload"]["status"] == "pairing_fail":
         message.push_webview(
             id=userId, text=text.wait_expired,
             persona=persona_id, webview_page="/intro", title=text.pair_again_button)
@@ -106,11 +107,13 @@ def webhook_handle():
 
         if "message" in messaging.keys():
             if "text" in messaging["message"].keys():
+                message.sender_action(recipient_id, "typing_on")
                 message.push_text(recipient_id, None,
                                   messaging["message"]["text"])
 
             if "attachments" in messaging["message"].keys():
                 attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
+                message.sender_action(recipient_id, "typing-on")
                 message.push_attachment(
                     recipient_id, None, attachment_url)
         return "Send message"
