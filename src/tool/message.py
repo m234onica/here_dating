@@ -189,7 +189,7 @@ def push_pairing_menu(id):
                 "call_to_actions": [
                     {
                         "type": "postback",
-                        "title": text.waiting_cancel_button,
+                        "title": text.menu_waiting_cancel,
                         "payload": "Leave"
                     },
                     {
