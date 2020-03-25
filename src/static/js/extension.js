@@ -38,7 +38,7 @@ $("input#placeId")
 
 $("#intro-submit").on("click", function (e) {
     e.preventDefault()
-
+    
     MessengerExtensions.getContext(
         app_id,
         function success(uids) {
@@ -54,16 +54,16 @@ $("#intro-submit").on("click", function (e) {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(data),
             }).always(function (d) {
-                var payload = d.payload                
+                var payload = d.payload
                 if (payload.status == "pairing") {
                     window.location.href = base_url + "/wait/" + psid;
-                } else {                
+                } else {
                     close_Webview();
                 }
             })
         },
         function error(err, errorMessage) {
-            alert(JSON.stringify(errorMessage));
+            console.log(JSON.stringify(errorMessage));
         });
 })
 
@@ -100,30 +100,26 @@ $("#last-submit").on("click", function (e) {
 })
 
 
-function get_status() {
-    MessengerExtensions.getContext(
-        app_id,
-        function success(uids) {
-            var psid = uids.psid;
+function get_status(userId) {
+    $.ajax({
+        type: "GET",
+        url: base_url + "/api/user/status/" + userId,
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
 
-            $.ajax({
-                type: "GET",
-                url: base_url + "/api/user/status/" + psid,
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-
-                success: function (data) {
-                    var payload = data.payload
-                    if (payload.status != "pairing") {
-                        close_Webview();
-                    }
-                },
-                error: function (err) {
-                    window.location.href = base_url + "/leave";
-                }
-            })
+        success: function (data) {
+            var payload = data.payload
+            console.log(payload);
+            
+            if (payload.status != "pairing") {
+                close_Webview();
+            }
+        },
+        error: function (err) {
+            console.log(err);
         }
-    )
+    })
+
 }
 
 
