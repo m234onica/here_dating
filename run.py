@@ -15,10 +15,14 @@ def url():
 
 @app.before_request
 def before_req():
-    db_session.remove()
-    
     g.url = BASE_URL
     g.version = time.time()
+
+
+@app.teardown_request
+def shutdown_session(exception=None):
+    db_session.remove()
+
 
 if __name__ == "__main__":
     start = message.get_started()
