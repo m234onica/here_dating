@@ -118,7 +118,7 @@ def get_status(userId):
             return func.user_response(msg="User is pairing", status="pairing", code=200)
 
         return func.user_response(msg="User is chating", status="paired", code=200)
-
+        
     if pair.startedAt == None:
         return func.user_response(msg="User stop waiting", status="pairing_fail", code=200)
 
@@ -147,8 +147,7 @@ def leave(userId):
 
     persona_id = func.get_persona_id()
     recipient_id = func.get_recipient_id(userId)
-    players_id = [userId, recipient_id]
-    
+
     if pair == None:
         return func.user_response(msg="User isn't in chatroom", status="noPair", code=200)
 
@@ -156,10 +155,15 @@ def leave(userId):
     pair.status = status_Enum(1)
     db_session.commit()
 
-    for id in players_id:
-        message.push_webview(
-            id=id, text=text.leave_message, persona=persona_id,
-            webview_page="/intro", title=text.pair_again_button)
-        message.delete_menu(id)
+    message.push_webview(
+        id=userId, text=text.leave_message, persona=persona_id,
+        webview_page="/intro", title=text.pair_again_button)
+
+    message.push_webview(
+        id=recipient_id, text=text.partner_leave_message, persona=persona_id,
+        webview_page="/intro", title=text.pair_again_button)
+
+    message.delete_menu(userId)
+    message.delete_menu(recipient_id)
 
     return "User leave"
