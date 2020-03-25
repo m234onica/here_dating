@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from src.models import Pair, status_Enum
 from src.db import db_session
 from src.tool import message, text
-from config import END_TIME
+from config import END_TIME, BASE_URL
 
 
 def active_pair():
@@ -81,8 +81,8 @@ def timeout_chat(userId):
                               text=text.timeout_text[0])
             message.push_multi_webview(
                 id=userId, persona=persona_id,
-                text=text.timeout_text[1], first_url=BASE_URL +
-                "/message/" + userId,
+                text=text.timeout_text[1],
+                first_url=BASE_URL + "/message/" + userId,
                 first_title=text.send_partner_last_message_button,
                 sec_url=BASE_URL + "/intro", sec_title=text.pair_again_button)
 
@@ -90,9 +90,14 @@ def timeout_chat(userId):
 
             return "timeout"
 
-    else:
-        return make_response({
-            "status_msg": "User is chating",
-            "payload": {
-                "status": "paired"
-            }}, 200)
+    return user_response(msg="User is chating",status="paired", code=200)
+
+
+def user_response(msg, status, code):
+    response = make_response({
+        "status_msg": msg,
+        "payload": {
+            "status": status
+        }
+    }, code)
+    return response
