@@ -35,7 +35,7 @@ def pair_user():
 
     persona_id = func.get_persona_id()
 
-    active = Pair.query.filter(Pair.deletedAt == None)
+    active = func.active_pair()
     # userId is in active data
     is_player = active.filter((Pair.playerA == userId)
                               | (Pair.playerB == userId)).first()
@@ -60,18 +60,20 @@ def pair_user():
 
         recipient_id = func.get_recipient_id(userId)
         for words in text.waiting_success:
-            message.push_text(userId, persona_id, words)
-            message.push_text(recipient_id, persona_id, words)
+            message.push_quick_reply(userId, persona_id, words)
+            message.push_quick_reply(recipient_id, persona_id, words)
 
-        message.push_chat_menu(userId)
-        message.push_chat_menu(recipient_id)
+        message.push_paired_menu(userId)
+        message.push_paired_menu(recipient_id)
         return func.user_response(msg="Pairing success.", status="paired", code=200)
+
     else:
         db_session.add(Pair(placeId=placeId, playerA=userId))
         db_session.commit()
 
-        message.push_waiting_menu(userId)
+        message.push_pairing_menu(userId)
         return func.user_response(msg="User start to pair.", status="pairing", code=200)
+    return "success"
 
 
 @api.route("/api/user/send", methods=["POST"])
@@ -118,7 +120,7 @@ def get_status(userId):
             return func.user_response(msg="User is pairing", status="pairing", code=200)
 
         return func.user_response(msg="User is chating", status="paired", code=200)
-        
+
     if pair.startedAt == None:
         return func.user_response(msg="User stop waiting", status="pairing_fail", code=200)
 

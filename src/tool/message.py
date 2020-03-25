@@ -17,10 +17,10 @@ def requests_get(url):
 
 def sender_action(id, action):
     data = {
-            "recipient": {
-                "id": id
-            },
-            "sender_action": action
+        "recipient": {
+            "id": id
+        },
+        "sender_action": action
     }
     return requests_post(message_api_url, data)
 
@@ -33,6 +33,27 @@ def push_text(id, persona, text):
         "persona_id": persona,
         "message": {
             "text": text
+        }
+    }
+    return requests_post(message_api_url, data)
+
+
+def push_quick_reply(id, persona, text):
+    data = {
+        "recipient": {
+            "id": id
+        },
+        "messaging_type": "RESPONSE",
+        "persona_id": persona,
+        "message": {
+            "text": text,
+            "quick_replies": [
+                {
+                    "content_type": "text",
+                    "title": "Hi",
+                    "payload": "Hi",
+                }
+            ]
         }
     }
     return requests_post(message_api_url, data)
@@ -158,7 +179,37 @@ def get_started():
         FB_API_URL + "/me/messenger_profile", data)
 
 
-def push_chat_menu(id):
+def push_pairing_menu(id):
+    data = {
+        "psid": id,
+        "persistent_menu": [
+            {
+                "locale": "default",
+                "composer_input_disabled": False,
+                "call_to_actions": [
+                    {
+                        "type": "postback",
+                        "title": text.waiting_cancel_button,
+                        "payload": "Leave"
+                    },
+                    {
+                        "type": "web_url",
+                        "title": text.menu_rule,
+                        "url": BASE_URL + "/rule",
+                        "messenger_extensions": True,
+                        "webview_height_ratio": "full"
+                    }
+                ]
+            }
+        ]
+    }
+    response = requests_post(
+        FB_API_URL + "/me/custom_user_settings", data)
+    print("pairing_menu:", response)
+    return response
+
+
+def push_paired_menu(id):
     data = {
         "psid": id,
         "persistent_menu": [
@@ -170,34 +221,22 @@ def push_chat_menu(id):
                         "type": "postback",
                         "title": text.menu_leave,
                         "payload": "Leave"
-                    }
-                ]
-            }
-        ]
-    }
-    return requests_post(
-        FB_API_URL + "/me/custom_user_settings", data)
-
-
-def push_waiting_menu(id):
-    data = {
-        "psid": id,
-        "persistent_menu": [
-            {
-                "locale": "default",
-                "composer_input_disabled": False,
-                "call_to_actions": [
+                    },
                     {
-                        "type": "postback",
-                        "title": "離開等待",
-                        "payload": "Leave"
+                        "type": "web_url",
+                        "title": text.menu_rule,
+                        "url": BASE_URL + "/rule",
+                        "messenger_extensions": True,
+                        "webview_height_ratio": "full"
                     }
                 ]
             }
         ]
     }
-    return requests_post(
+    response = requests_post(
         FB_API_URL + "/me/custom_user_settings", data)
+    print("paired_menu: ", response)
+    return response
 
 
 def delete_menu(id):
@@ -208,8 +247,9 @@ def delete_menu(id):
         "access_token": PAGE_ACCESS_TOKEN
 
     }
-
-    return requests.request("DELETE", url, params=params)
+    response = requests.request("DELETE", url, params=params)
+    print("delete_menu: ", response.json())
+    return response
 
 
 def persona():
