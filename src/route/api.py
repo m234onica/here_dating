@@ -43,11 +43,11 @@ def pair_user():
     # 有userId但沒有開始時間：配對
     if is_player is not None:
         if is_player.startedAt == None:
-            return make_response(msg="User is exist and pairing.", status="pairing", code=200)
+            return func.user_response(msg="User is exist and pairing.", status="pairing", code=200)
 
         # 有userId且有開始時間：聊天
         else:
-            return make_response(msg="User is chatting.", status="paired", code=200)
+            return func.user_response(msg="User is chatting.", status="paired", code=200)
 
     # userId not in data -> find a waiting userId
     waiting = active.filter(Pair.playerB == None).filter(Pair.placeId == placeId).\
@@ -166,6 +166,7 @@ def leave(userId):
         webview_page="/intro", title=text.pair_again_button)
 
     message.delete_menu(userId)
-    message.delete_menu(recipient_id)
+    if recipient_id != None:
+        message.delete_menu(recipient_id)
 
     return "User leave"

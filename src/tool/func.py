@@ -16,14 +16,14 @@ def recognize_player(userId):
     pair = Pair.query.filter((Pair.playerA == userId) | (
         Pair.playerB == userId)).order_by(Pair.id.desc()).first()
 
+    if pair == None:
+        return None
+
     if userId == pair.playerA:
         return "playerA"
 
-    elif userId == pair.playerB:
+    if userId == pair.playerB:
         return "playerB"
-
-    else:
-        return None
 
 
 def get_pair(player, userId):
@@ -88,7 +88,7 @@ def timeout_chat(userId):
 
             message.delete_menu(userId)
 
-            return "timeout"
+            return user_response(msg="Timeout to breaked pair", status="timeout", code=200)
 
     return user_response(msg="User is chating",status="paired", code=200)
 
