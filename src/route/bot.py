@@ -26,23 +26,23 @@ def webhook_handle():
 
     data = request.get_json()
     messaging = data["entry"][0]["messaging"][0]
-
     userId = messaging["sender"]["id"]
+
     persona = message.requests_get("/me/personas")
     if persona["data"] == []:
         message.persona()
 
     persona_id = persona["data"][0]["id"]
-
     message.sender_action(userId, "mark_seen")
 
+    # 接收type=postback的回應
     if "postback" in messaging.keys():
         get_payload = messaging["postback"]["payload"]
 
         if get_payload == "Start":
             message.push_text(
                 id=userId, text=text.introduction[0], persona=persona_id)
-
+            
             message.push_webview(
                 id=userId, text=text.introduction[1], persona=persona_id,
                 webview_page="/intro", title=text.start_chating)
@@ -58,9 +58,8 @@ def webhook_handle():
 
         # 離開聊天室
         if get_payload == "Leave":
-
             status = get_status(userId).json
-
+            
             if status["payload"]["status"] in ["paired", "pairing"]:
                 leave(userId)
         return "User leaved"
@@ -105,9 +104,9 @@ def webhook_handle():
 
     else:
         recipient_id = func.get_recipient_id(userId)
-        timeout = func.timeout_chat(userId)
+        timeout = func.timeout_chat(userId).json
 
-        if "message" in messaging.keys():
+        if timeout["payload"]["status"] == "paired" and "message" in messaging.keys():
             if "text" in messaging["message"].keys():
                 message.sender_action(recipient_id, "typing_on")
                 message.push_text(recipient_id, None,
