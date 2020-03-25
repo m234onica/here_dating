@@ -11,4 +11,40 @@
     <button class="btn btn-primary btn-block btn-lg" id="intro-submit" type="submit" name="submit"
         disabled>開始找人聊天</button>
 </form>
+
+<script type="text/javascript">
+
+    window.extAsyncInit = function () {
+        MessengerExtensions.getContext(
+            app_id,
+            function success(uids) {
+                var psid = uids.psid;
+                $.ajax({
+                    type: "GET",
+                    url: base_url + "/api/user/status/" + psid,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+
+                    success: function (data) {
+                        var payload = data.payload
+                        console.log(payload)
+                        if (payload.status == "paired") {
+                            close_Webview();
+                        }
+                        if (payload.status == "pairing") {
+                            window.location.href = base_url + "/wait/" + psid;
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                })
+
+            },
+            function error(err, errorMessage) {
+                alert(JSON.stringify(errorMessage));
+            }
+        )
+    }
+</script>
 {% endblock intro %}
