@@ -70,6 +70,8 @@ def webhook_handle():
     print(user_info["first_name"], status)
 
     if status["payload"]["status"] == "unSend":
+        message.push_text(id=userId, persona=persona_id,
+                          text=text.timeout_text[0])
 
         message.push_multi_webview(
             id=userId, persona=persona_id,
