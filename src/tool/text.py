@@ -6,6 +6,11 @@ menu_waiting_cancel = "取消等待"
 introduction = ["您好，歡迎進入 HereDating！這是一個可以與同一個地點或活動的陌生人匿名聊天的小遊戲 ，每場聊天限時十分鐘。",
                 "目前 HereDating 僅提供特定地點使用，請點選下方按鈕開啟頁面，輸入地標編號來與大家匿名聊天吧！"]
 
+qrcode_introduction = ["您目前的地標編號為「#好奇心", "」，是否加入呢？"]
+
+qrcode_check_button = "確定"
+qrcode_intro_button = "其他編號"
+
 start_chating = "開始使用"
 
 waiting_pair = "配對中，請稍等..."

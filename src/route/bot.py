@@ -3,7 +3,7 @@ import requests
 
 from src.db import init_db, db_session
 from src.models import Place, Pair
-from src.route.api import leave, get_status
+from src.route.api import leave, get_status, pair_user
 from src.tool import message, func, text
 from config import PAGE_VERIFY_TOKEN, APP_ID, EXPIRED_TIME, BASE_URL
 
@@ -37,32 +37,55 @@ def webhook_handle():
 
     # 接收type=postback的回應
     if "postback" in messaging.keys():
-        get_payload = messaging["postback"]["payload"]
-
-        if get_payload == "Start":
+        postback = messaging["postback"]
+        payload = postback["payload"]
+        if payload == "Start":
             message.push_text(
                 id=userId, text=text.introduction[0], persona=persona_id)
-            
+
+            if "referral" in postback.keys():
+                ref = postback["referral"]["ref"]
+                ref_param = ref.split(",")
+                placeId = ref_param[1]
+
+                if ref_param[0] == "qrcode":
+                    message.push_multi_button(
+                        id=userId,
+                        persona=persona_id,
+                        text=text.qrcode_introduction[0] +
+                        placeId + text.qrcode_introduction[1],
+                        first_title=text.qrcode_check_button,
+                        payload="Pair," + placeId, 
+                        url=BASE_URL + "/intro",
+                        sec_title=text.qrcode_intro_button)
+                    return "qrcode"
+            else:
+                message.push_webview(
+                    id=userId, text=text.introduction[1], persona=persona_id,
+                    webview_page="/intro", title=text.start_chating)
+
+                return "User started"
+
+        if payload == "Start_pair":
             message.push_webview(
                 id=userId, text=text.introduction[1], persona=persona_id,
                 webview_page="/intro", title=text.start_chating)
 
             return "User started"
-
-        if get_payload == "Start_pair":
-            message.push_webview(
-                id=userId, text=text.introduction[1], persona=persona_id,
-                webview_page="/intro", title=text.start_chating)
-
-            return "User started"
-
         # 離開聊天室
-        if get_payload == "Leave":
+        if payload == "Leave":
             status = get_status(userId).json
-            
+
             if status["payload"]["status"] in ["paired", "pairing"]:
                 leave(userId)
-        return "User leaved"
+            return "User leaved"
+
+        payload_param = payload.split(",")
+        placeId = payload_param[1]
+        if payload_param[0] == "Pair":
+            status = get_status(userId).json
+            pair_user(placeId, userId)
+            return "User pairing"
 
     status = get_status(userId).json
     user_info = message.requests_get("/" + userId)
