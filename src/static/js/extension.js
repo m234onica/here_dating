@@ -38,14 +38,14 @@ $("input#placeId")
 
 $("#intro-submit").on("click", function (e) {
     e.preventDefault()
-    
+
     MessengerExtensions.getContext(
         app_id,
         function success(uids) {
-            var psid = uids.psid;
+            var userId = uids.psid;
             var data = {
                 "placeId": $("#placeId").val(),
-                "userId": psid,
+                "userId": userId,
             }
             $.ajax({
                 type: "POST",
@@ -56,10 +56,32 @@ $("#intro-submit").on("click", function (e) {
             }).always(function (d) {
                 var payload = d.payload
                 if (payload.status == "pairing") {
-                    window.location.href = base_url + "/wait/" + psid;
+                    window.location.href = base_url + "/wait/" + userId;
                 } else {
                     close_Webview();
                 }
+            })
+        },
+        function error(err, errorMessage) {
+            console.log(JSON.stringify(errorMessage));
+        });
+})
+
+$("#leave_waiting").on("click", function (e) {
+    e.preventDefault()
+
+    MessengerExtensions.getContext(
+        app_id,
+        function leave(uids) {
+            var userId = uids.psid;
+            $.ajax({
+                type: "POST",
+                url: base_url + "/api/user/leave/" + userId,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: null,
+            }).always(function (d) {
+                close_Webview();
             })
         },
         function error(err, errorMessage) {
@@ -74,10 +96,10 @@ $("#last-submit").on("click", function (e) {
     MessengerExtensions.getContext(
         app_id,
         function success(uids) {
-            var psid = uids.psid;
+            var userId = uids.psid;
             var data = {
                 "lastWord": $("#lastWord").val(),
-                "userId": psid,
+                "userId": userId,
             }
             $.ajax({
                 type: "POST",
@@ -106,11 +128,9 @@ function get_status(userId) {
         url: base_url + "/api/user/status/" + userId,
         dataType: "json",
         contentType: "application/json; charset=utf-8",
-
         success: function (data) {
             var payload = data.payload
-            console.log(payload);
-            
+
             if (payload.status != "pairing") {
                 close_Webview();
             }
