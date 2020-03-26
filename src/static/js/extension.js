@@ -38,6 +38,7 @@ $("input#placeId")
 
 $("#intro-submit").on("click", function (e) {
     e.preventDefault()
+    $("#intro-submit").attr("disabled", "disabled").html("搜尋中...");
 
     MessengerExtensions.getContext(
         app_id,
@@ -54,7 +55,7 @@ $("#intro-submit").on("click", function (e) {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(data),
             }).always(function (d) {
-                var payload = d.payload
+                var payload = d.payload;
                 if (payload.status == "pairing") {
                     window.location.href = base_url + "/wait/" + userId;
                 } else {
