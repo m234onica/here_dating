@@ -154,6 +154,9 @@ def get_started():
                 "text": "我是問候語\n我是問候語我是問候語我是問候語\n我是問候語\n"
             }
         ],
+        "whitelisted_domains": [
+            BASE_URL
+        ],
         "persistent_menu": [
             {
                 "locale": "default",
