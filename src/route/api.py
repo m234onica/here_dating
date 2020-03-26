@@ -28,10 +28,8 @@ def verify_distance(placeId):
     return make_response({"status_msg": "Get placeId", "payload": True, "placeId": place.id}, 200)
 
 
-@api.route("/api/user/pair", methods=["POST"])
-def pair_user():
-    userId = request.json["userId"]
-    placeId = request.json["placeId"]
+@api.route("/api/pair/<placeId>/<userId>", methods=["POST"])
+def pair_user(placeId, userId):
 
     persona_id = func.get_persona_id()
 
@@ -43,6 +41,7 @@ def pair_user():
     # 有userId但沒有開始時間：配對
     if is_player is not None:
         if is_player.startedAt == None:
+            message.push_text(userId, persona_id, text.waiting_pair)
             return func.user_response(msg="User is exist and pairing.", status="pairing", code=200)
 
         # 有userId且有開始時間：聊天
@@ -72,6 +71,8 @@ def pair_user():
         db_session.commit()
 
         message.push_pairing_menu(userId)
+        message.push_text(userId, persona_id, text.waiting_pair)
+
         return func.user_response(msg="User start to pair.", status="pairing", code=200)
     return "success"
 

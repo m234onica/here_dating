@@ -36,24 +36,22 @@ $("input#placeId")
     })
 
 
-$("#intro-submit").on("click", function (e) {
+$("#intro-submit").on("click", function (e) {    
+    $(this).attr("disabled", "disabled");
+    $(this).html("搜尋中...");
     e.preventDefault()
-    $("#intro-submit").attr("disabled", "disabled").html("搜尋中...");
 
     MessengerExtensions.getContext(
         app_id,
         function success(uids) {
             var userId = uids.psid;
-            var data = {
-                "placeId": $("#placeId").val(),
-                "userId": userId,
-            }
+            var placeId = $("#placeId").val();
             $.ajax({
                 type: "POST",
-                url: base_url + "/api/user/pair",
+                url: base_url + "/api/pair/" + placeId + "/" + userId,
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(data),
+                data: null,
             }).always(function (d) {
                 var payload = d.payload;
                 if (payload.status == "pairing") {
@@ -69,11 +67,13 @@ $("#intro-submit").on("click", function (e) {
 })
 
 $("#leave_waiting").on("click", function (e) {
+    $(this).attr("disabled", "disabled");
+    $(this).html("中斷中...");
     e.preventDefault()
 
     MessengerExtensions.getContext(
         app_id,
-        function leave(uids) {
+        function success(uids) {
             var userId = uids.psid;
             $.ajax({
                 type: "POST",
