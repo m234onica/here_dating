@@ -15,7 +15,8 @@ CREATE TABLE pair(
     createdAt           DATETIME        	NOT NULL    DEFAULT     CURRENT_TIMESTAMP,
     startedAt           DATETIME,                                                   -- 開始聊天的時間
     deletedAt           DATETIME,                                                   -- 結束聊天的時間
-    lastworddAt         DATETIME,                                                   -- 結束聊天的時間
+    playerA_lastedAt    DATETIME,                                                   -- plyaerA留遺言的時間
+    playerB_lastedAt    DATETIME,                                                   -- plyaerB留遺言的時間
     status              ENUM("wait_expired", "leave", "end"),                       -- 僅供數據分析使用
     PRIMARY KEY( id )
 );
