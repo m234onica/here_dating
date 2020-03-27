@@ -39,6 +39,7 @@ def webhook_handle():
     if "postback" in messaging.keys():
         postback = messaging["postback"]
         payload = postback["payload"]
+
         if payload == "Start":
             message.push_text(
                 id=userId, text=text.introduction[0], persona=persona_id)
@@ -74,24 +75,27 @@ def webhook_handle():
             return "User started"
         # 離開聊天室
         if payload == "Leave":
-            status = get_status(userId).json
+            payload = get_status(userId).json
+            status = payload["payload"]["status"]
 
-            if status["payload"]["status"] in ["paired", "pairing"]:
+            if status in ["paired", "pairing"]:
                 leave(userId)
             return "User leaved"
 
         payload_param = payload.split(",")
         placeId = payload_param[1]
+
         if payload_param[0] == "Pair":
-            status = get_status(userId).json
             pair_user(placeId, userId)
             return "User pairing"
 
-    status = get_status(userId).json
+    payload = get_status(userId).json
+    status = payload["payload"]["status"]
+
     user_info = message.requests_get("/" + userId)
     print(user_info["first_name"], status)
 
-    if status["payload"]["status"] == "unSend":
+    if status == "unSend":
         message.push_text(id=userId, persona=persona_id,
                           text=text.timeout_text[0])
 
@@ -103,23 +107,38 @@ def webhook_handle():
 
         return "Send the last message."
 
-    if status["payload"]["status"] == "pairing":
+    if status == "pairing":
         message.push_text(userId, persona_id, text.waiting_pair)
         return "Pairing"
 
-    if status["payload"]["status"] == "pairing_fail":
+    if "referral" in messaging.keys() and status not in ["paired", "pairing"]:
+        ref = messaging["referral"]["ref"].split(",")
+        placeId = ref[1]
+        message.push_multi_button(
+            id=userId,
+            persona=persona_id,
+            text=text.qrcode_introduction[0] + text.place_id_title +
+            placeId + text.qrcode_introduction[1],
+            first_title=text.qrcode_check_button,
+            payload="Pair," + placeId,
+            url=BASE_URL + "/pair",
+            sec_title=text.qrcode_intro_button)
+        return "qrcode"
+
+
+    if status == "pairing_fail":
         message.push_webview(
             id=userId, text=text.wait_expired,
             persona=persona_id, webview_page="/pair", title=text.pair_again_button)
         return "Stop wait"
 
-    if status["payload"]["status"] == "leaved":
+    if status == "leaved":
         message.push_webview(
             id=userId, text=text.leave_message,
             persona=persona_id, webview_page="/pair", title=text.pair_again_button)
         return "Leaved"
 
-    if status["payload"]["status"] == "noPair":
+    if status == "noPair":
         message.push_webview(
             id=userId, text=text.pair_again_text,
             persona=persona_id, webview_page="/pair", title=text.pair_again_button)
@@ -130,6 +149,8 @@ def webhook_handle():
         timeout = func.timeout_chat(userId).json
 
         if timeout["payload"]["status"] == "paired" and "message" in messaging.keys():
+            # if "reply_to" in messaging["message"].keys():
+
             if "text" in messaging["message"].keys():
                 message.sender_action(recipient_id, "typing_on")
                 message.push_text(recipient_id, None,
@@ -141,6 +162,7 @@ def webhook_handle():
                 message.push_attachment(
                     recipient_id, None, attachment_url)
         return "Send message"
+
     return "ok"
 
 
@@ -156,8 +178,8 @@ def wait_page(userId):
 
 @bot.route("/message/<userId>", methods=["GET"])
 def message_page(userId):
-    status = get_status(userId).json
-    status = status["payload"]["status"]
+    payload = get_status(userId).json
+    status = payload["payload"]["status"]
     return render_template("message.html", status=status, app_id=APP_ID)
 
 
