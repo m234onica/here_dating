@@ -22,12 +22,14 @@ def delete(minutes):
     # 等待到期的資料
     if minutes == EXPIRED_TIME:
         status = 0
+        words = text.wait_expired
         expired_data = active_data.filter(Pair.playerB == None).\
             filter(Pair.createdAt <= expired_time).all()
 
     # 聊天到期的資料
     if minutes == END_TIME:
         status = 2
+        words = text.timeout_text
         expired_data = active_data.filter(Pair.playerB != None).\
             filter(Pair.startedAt <= expired_time).all()
 
@@ -41,7 +43,16 @@ def delete(minutes):
             expire.status = status_Enum(status)
             db_session.commit()
 
-            message.push_text(id=expire.playerA, persona=persona_id, text=text.wait_expired)
+            message.delete_menu(expire.playerA)
+            message.push_webview(
+                id=expire.playerA, text=words,
+                persona=persona_id, webview_page="/pair", title=text.pair_again_button)
+            if expire.playerB is not None:
+                message.delete_menu(expire.playerB)
+                message.push_webview(
+                    id=expire.playerB, text=words,
+                    persona=persona_id, webview_page="/pair", title=text.pair_again_button)
+
             print("delete data:", expire)
 
         print("delete success")
