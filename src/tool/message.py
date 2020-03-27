@@ -6,7 +6,8 @@ from config import PAGE_ACCESS_TOKEN, FB_API_URL, BASE_URL
 def requests_post(url, payload):
     params = {"access_token": PAGE_ACCESS_TOKEN}
     post_url = "/".join([FB_API_URL, "me", url])
-    return requests.request("POST", url=post_url, params=params, json=payload).json()
+    response = requests.request("POST", url=post_url, params=params, json=payload).json()
+    return response
 
 
 def requests_get(url):
@@ -283,7 +284,7 @@ def push_paired_menu(id):
 
 
 def delete_menu(id):
-    url = FB_API_URL + '/custom_user_settings'
+    url = FB_API_URL + '/me/custom_user_settings'
     params = {
         "psid": id,
         "params": '["persistent_menu"]',
