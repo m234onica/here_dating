@@ -58,7 +58,7 @@ def get_recipient_id(userId):
 
 def get_persona_id():
 
-    persona = message.requests_get("/me/personas")
+    persona = message.requests_get("personas")
     persona_id = persona["data"][0]["id"]
 
     return persona_id

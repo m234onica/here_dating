@@ -2,17 +2,24 @@ import requests
 from src.tool import text
 from config import PAGE_ACCESS_TOKEN, FB_API_URL, BASE_URL
 
-message_api_url = FB_API_URL + "/me/messages"
-
 
 def requests_post(url, payload):
     params = {"access_token": PAGE_ACCESS_TOKEN}
-    return requests.request("POST", url=url, params=params, json=payload).json()
+    post_url = "/".join([FB_API_URL, "me", url])
+    return requests.request("POST", url=post_url, params=params, json=payload).json()
 
 
 def requests_get(url):
     params = {"access_token": PAGE_ACCESS_TOKEN}
-    return requests.request("GET", url=FB_API_URL + url, params=params).json()
+
+    post_url = "/".join([FB_API_URL, "me", url])
+    response = requests.request("GET", url=post_url, params=params).json()
+
+    #Debug才會用到的api
+    if "error" in response.keys():
+        post_url = "/".join([FB_API_URL, url])
+        response = requests.request("GET", url=post_url, params=params).json()
+    return response
 
 
 def sender_action(id, action):
@@ -22,7 +29,7 @@ def sender_action(id, action):
         },
         "sender_action": action
     }
-    return requests_post(message_api_url, data)
+    return requests_post("messages", data)
 
 
 def push_text(id, persona, text):
@@ -35,7 +42,7 @@ def push_text(id, persona, text):
             "text": text
         }
     }
-    return requests_post(message_api_url, data)
+    return requests_post("messages", data)
 
 
 def push_quick_reply(id, persona, text):
@@ -56,7 +63,7 @@ def push_quick_reply(id, persona, text):
             ]
         }
     }
-    return requests_post(message_api_url, data)
+    return requests_post("messages", data)
 
 
 def push_attachment(id, persona, url):
@@ -75,7 +82,7 @@ def push_attachment(id, persona, url):
             }
         }
     }
-    return requests_post(message_api_url, data)
+    return requests_post("messages", data)
 
 
 def push_webview(id, persona, text, webview_page, title):
@@ -104,7 +111,7 @@ def push_webview(id, persona, text, webview_page, title):
             }
         }
     }
-    return requests_post(message_api_url, data)
+    return requests_post("messages", data)
 
 
 def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_title):
@@ -140,7 +147,7 @@ def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_t
             }
         }
     }
-    return requests_post(message_api_url, data)
+    return requests_post("messages", data)
 
 
 def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
@@ -175,7 +182,7 @@ def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
             }
         }
     }
-    return requests_post(message_api_url, data)
+    return requests_post("messages", data)
 
 
 def get_started():
@@ -214,9 +221,7 @@ def get_started():
             }
         ]
     }
-    response = requests.request(
-        "POST", FB_API_URL + "/me/messenger_profile", params=params, json=data)
-    return response
+    return requests_post("messenger_profile", data)
 
 
 def push_pairing_menu(id):
@@ -243,8 +248,7 @@ def push_pairing_menu(id):
             }
         ]
     }
-    response = requests_post(
-        FB_API_URL + "/me/custom_user_settings", data)
+    response = requests_post("custom_user_settings", data)
     print("pairing_menu:", response)
     return response
 
@@ -273,14 +277,13 @@ def push_paired_menu(id):
             }
         ]
     }
-    response = requests_post(
-        FB_API_URL + "/me/custom_user_settings", data)
+    response = requests_post("custom_user_settings", data)
     print("paired_menu: ", response)
     return response
 
 
 def delete_menu(id):
-    url = FB_API_URL + '/me/custom_user_settings'
+    url = FB_API_URL + '/custom_user_settings'
     params = {
         "psid": id,
         "params": '["persistent_menu"]',
@@ -297,4 +300,4 @@ def persona():
         "name": "系統訊息",
         "profile_picture_url": "https://storage.googleapis.com/satellite-l5yx88bg3/robo.png"
     }
-    return requests_post(FB_API_URL + "/me/personas", data)
+    return requests_post("personas", data)

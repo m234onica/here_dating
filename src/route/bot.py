@@ -28,7 +28,7 @@ def webhook_handle():
     messaging = data["entry"][0]["messaging"][0]
     userId = messaging["sender"]["id"]
 
-    persona = message.requests_get("/me/personas")
+    persona = message.requests_get("personas")
     if persona["data"] == []:
         message.persona()
 
@@ -92,8 +92,8 @@ def webhook_handle():
     payload = get_status(userId).json
     status = payload["payload"]["status"]
 
-    user_info = message.requests_get("/" + userId)
-    print(user_info["first_name"], status)
+    user_info = message.requests_get(userId)
+    print(user_info["first_name"], payload)
 
     if status == "unSend":
         message.push_text(id=userId, persona=persona_id,
