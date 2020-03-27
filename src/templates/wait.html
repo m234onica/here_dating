@@ -3,10 +3,9 @@
 {% block wait %}
 <p id="waiting_text">已進入等待室，系統正在為您找人聊天中，請稍候．．．．．．</p>
 <button class="btn btn-primary btn-block btn-lg" type="submit" id="leave_waiting">我要離開</button>
-<script>
-</script>
-<script type="text/javascript">
 
+<script type="text/javascript">
+    var app_id = "{{app_id}}";
     window.extAsyncInit = function () {
         MessengerExtensions.getContext(
             app_id,
