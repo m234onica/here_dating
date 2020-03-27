@@ -1,8 +1,7 @@
 import time
-from flask import g, current_app
+from flask import g
 from src import create_app
 from src.tool import message
-from config import EXPIRED_TIME, END_TIME
 from src.db import db_session
 
 app = create_app()
