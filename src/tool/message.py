@@ -179,7 +179,11 @@ def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
 
 
 def get_started():
+    params = {"access_token": PAGE_ACCESS_TOKEN}
     data = {
+        "whitelisted_domains": [
+            BASE_URL
+        ],
         "get_started": {
             "payload": "Start"
         },
@@ -188,9 +192,6 @@ def get_started():
                 "locale": "default",
                 "text": "我是問候語\n我是問候語我是問候語我是問候語\n我是問候語\n"
             }
-        ],
-        "whitelisted_domains": [
-            BASE_URL
         ],
         "persistent_menu": [
             {
@@ -213,8 +214,9 @@ def get_started():
             }
         ]
     }
-    return requests_post(
-        FB_API_URL + "/me/messenger_profile", data)
+    response = requests.request(
+        "POST", FB_API_URL + "/me/messenger_profile", params=params, json=data)
+    return response
 
 
 def push_pairing_menu(id):
