@@ -56,20 +56,20 @@ def webhook_handle():
                         placeId + text.qrcode_introduction[1],
                         first_title=text.qrcode_check_button,
                         payload="Pair," + placeId, 
-                        url=BASE_URL + "/intro",
+                        url=BASE_URL + "/pair",
                         sec_title=text.qrcode_intro_button)
                     return "qrcode"
             else:
                 message.push_webview(
                     id=userId, text=text.introduction[1], persona=persona_id,
-                    webview_page="/intro", title=text.start_chating)
+                    webview_page="/pair", title=text.start_chating)
 
                 return "User started"
 
         if payload == "Start_pair":
             message.push_webview(
                 id=userId, text=text.introduction[1], persona=persona_id,
-                webview_page="/intro", title=text.start_chating)
+                webview_page="/pair", title=text.start_chating)
 
             return "User started"
         # 離開聊天室
@@ -99,7 +99,7 @@ def webhook_handle():
             id=userId, persona=persona_id,
             text=text.timeout_text[1], first_url=BASE_URL + "/message/" + userId,
             first_title=text.send_partner_last_message_button,
-            sec_url=BASE_URL + "/intro", sec_title=text.pair_again_button)
+            sec_url=BASE_URL + "/pair", sec_title=text.pair_again_button)
 
         return "Send the last message."
 
@@ -110,19 +110,19 @@ def webhook_handle():
     if status["payload"]["status"] == "pairing_fail":
         message.push_webview(
             id=userId, text=text.wait_expired,
-            persona=persona_id, webview_page="/intro", title=text.pair_again_button)
+            persona=persona_id, webview_page="/pair", title=text.pair_again_button)
         return "Stop wait"
 
     if status["payload"]["status"] == "leaved":
         message.push_webview(
             id=userId, text=text.leave_message,
-            persona=persona_id, webview_page="/intro", title=text.pair_again_button)
+            persona=persona_id, webview_page="/pair", title=text.pair_again_button)
         return "Leaved"
 
     if status["payload"]["status"] == "noPair":
         message.push_webview(
             id=userId, text=text.pair_again_text,
-            persona=persona_id, webview_page="/intro", title=text.pair_again_button)
+            persona=persona_id, webview_page="/pair", title=text.pair_again_button)
         return "No paired."
 
     else:
@@ -144,9 +144,9 @@ def webhook_handle():
     return "ok"
 
 
-@bot.route("/intro", methods=["GET"])
+@bot.route("/pair", methods=["GET"])
 def intro_page():
-    return render_template("intro.html", app_id=APP_ID)
+    return render_template("pair.html", app_id=APP_ID, place_id_title=text.place_id_title)
 
 
 @bot.route("/wait/<userId>", methods=["GET"])

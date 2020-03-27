@@ -143,6 +143,41 @@ def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_t
     return requests_post(message_api_url, data)
 
 
+def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
+    data = {
+        "recipient": {
+            "id": id
+        },
+        "persona_id": persona,
+        "message": {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "button",
+                    "text": text,
+                    "buttons": [
+                        {
+                            "type": "postback",
+                            "title": first_title,
+                            "payload": payload
+
+                        },
+                        {
+                            "type": "web_url",
+                            "url": url,
+                            "messenger_extensions": True,
+                            "title": sec_title,
+                            "webview_height_ratio": "full"
+                        }
+                    ]
+
+                }
+            }
+        }
+    }
+    return requests_post(message_api_url, data)
+
+
 def get_started():
     data = {
         "get_started": {

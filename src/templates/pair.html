@@ -5,15 +5,20 @@
 <form class="form" method="POST" id="intro-form" role="form" novalidate autocomplete="off">
     <div class="form-group">
         <label id="place_label">請輸入地標編號</label>
-        <input class="form-control" id="placeId" type="text" name="placeId" maxlength="4" required>
-    </div>
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">{{place_id_title}}</div>
+            </div>
+            <input class="form-control" id="placeId" type="text" name="placeId" maxlength="4" required>
+        </div>
 
-    <button class="btn btn-primary btn-block btn-lg" id="intro-submit" type="submit" name="submit"
-        disabled>開始找人聊天</button>
+        <button class="btn btn-primary btn-block btn-lg" id="intro-submit" type="submit" name="submit"
+            disabled>開始找人聊天</button>
 </form>
 
 <script type="text/javascript">
-
+    var app_id = "{{app_id}}";
+    var base_url = "{{base_url}}";
     window.extAsyncInit = function () {
         MessengerExtensions.getContext(
             app_id,
