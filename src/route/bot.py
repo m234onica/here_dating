@@ -44,15 +44,15 @@ def webhook_handle():
                 id=userId, text=text.introduction[0], persona=persona_id)
 
             if "referral" in postback.keys():
-                ref = postback["referral"]["ref"]
-                ref_param = ref.split(",")
-                placeId = ref_param[1]
-
-                if ref_param[0] == "qrcode":
+                ref = postback["referral"]["ref"].split(",")
+                entrance = ref[0]
+                placeId = ref[1]
+                
+                if entrance == "qrcode":
                     message.push_multi_button(
                         id=userId,
                         persona=persona_id,
-                        text=text.qrcode_introduction[0] +
+                        text=text.qrcode_introduction[0] + text.place_id_title +
                         placeId + text.qrcode_introduction[1],
                         first_title=text.qrcode_check_button,
                         payload="Pair," + placeId, 
