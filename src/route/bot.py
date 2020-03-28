@@ -48,7 +48,7 @@ def webhook_handle():
                 ref = postback["referral"]["ref"].split(",")
                 entrance = ref[0]
                 placeId = ref[1]
-                
+
                 if entrance == "qrcode":
                     message.push_multi_button(
                         id=userId,
@@ -56,7 +56,7 @@ def webhook_handle():
                         text=text.qrcode_introduction[0] + text.place_id_title +
                         placeId + text.qrcode_introduction[1],
                         first_title=text.qrcode_check_button,
-                        payload="Pair," + placeId, 
+                        payload="Pair," + placeId,
                         url=BASE_URL + "/pair",
                         sec_title=text.qrcode_intro_button)
                     return "qrcode"
@@ -92,16 +92,14 @@ def webhook_handle():
     payload = get_status(userId).json
     status = payload["payload"]["status"]
 
-    user_info = message.requests_get(userId)
-    print(user_info["first_name"], payload)
-
     if status == "unSend":
         message.push_text(id=userId, persona=persona_id,
                           text=text.timeout_text[0])
 
         message.push_multi_webview(
             id=userId, persona=persona_id,
-            text=text.timeout_text[1], first_url=BASE_URL + "/message/" + userId,
+            text=text.timeout_text[1], first_url=BASE_URL +
+            "/message/" + userId,
             first_title=text.send_partner_last_message_button,
             sec_url=BASE_URL + "/pair", sec_title=text.pair_again_button)
 
@@ -124,7 +122,6 @@ def webhook_handle():
             url=BASE_URL + "/pair",
             sec_title=text.qrcode_intro_button)
         return "qrcode"
-
 
     if status == "pairing_fail":
         message.push_webview(

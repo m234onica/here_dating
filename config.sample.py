@@ -14,8 +14,8 @@ SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{username}:{passwword}@{host}/{db_nam
 BASE_URL = ""
 
 # delete timing
-EXPIRED_TIME = 5
-END_TIME = 10
+EXPIRED_TIME = 1
+END_TIME = 3
 
 # Facebook messenger
 APP_ID = ""

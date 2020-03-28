@@ -1,6 +1,5 @@
 .env
 .vscode
-.gcloudignore
 
 config.py
 main.py
