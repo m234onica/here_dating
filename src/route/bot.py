@@ -168,7 +168,7 @@ def intro_page():
 
 @bot.route("/wait/<userId>", methods=["GET"])
 def wait_page(userId):
-    return render_template("wait.html", app_id=APP_ID, expired_time=EXPIRED_TIME, cancel_words=text.cancel_pairing_button)
+    return render_template("wait.html", cancel_words=text.cancel_pairing_button, userId=userId)
 
 
 @bot.route("/message/<userId>", methods=["GET"])
