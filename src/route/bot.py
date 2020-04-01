@@ -175,7 +175,7 @@ def wait_page(userId):
 def message_page(userId):
     payload = get_status(userId).json
     status = payload["payload"]["status"]
-    return render_template("message.html", status=status, app_id=APP_ID)
+    return render_template("message.html", status=status)
 
 
 @bot.route("/rule", methods=["GET"])

@@ -1,4 +1,4 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 {% block title %}Message Page{% endblock title %}
 {% block leave %}
 <br>
@@ -13,25 +13,20 @@
 
 <script type="text/javascript">
     var status = "{{status}}";
-    
-    window.extAsyncInit = function () {
-        MessengerExtensions.getContext(
-            app_id,
-            function success(uids) {
-                var psid = uids.psid;
-                if (status == "noPair") {
-                    MessengerExtensions.requestCloseBrowser(
-                        function success() {
-                        }, function error(err) {
-                            console.log(err);
-                        });
+    if (status == "noPair") {
+        console.log(status)
+        $("#last-form").replaceWith("<p>已傳送留言囉！</p>");
+        window.setTimeout(close_Webview, 3000);
+    }
 
-                }
-            },
-            function error(err, errorMessage) {
-                alert(JSON.stringify(errorMessage));
-            }
-        )
+    function close_Webview() {
+        MessengerExtensions.requestCloseBrowser(
+            function success() {
+                // webview closed
+            }, function error(err) {
+                // an error occurred
+                console.log(err);
+            });
     }
 </script>
 {% endblock leave %}
