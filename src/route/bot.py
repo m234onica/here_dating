@@ -23,7 +23,6 @@ def webhook():
 
 @bot.route("/webhook", methods=["POST"])
 def webhook_handle():
-
     data = request.get_json()
     messaging = data["entry"][0]["messaging"][0]
     userId = messaging["sender"]["id"]
@@ -98,10 +97,9 @@ def webhook_handle():
 
         message.push_multi_webview(
             id=userId, persona=persona_id,
-            text=text.timeout_text[1], first_url=BASE_URL +
-            "/message/" + userId,
+            text=text.timeout_text[1], first_url="/message/" + userId,
             first_title=text.send_partner_last_message_button,
-            sec_url=BASE_URL + "/pair", sec_title=text.pair_again_button)
+            sec_url="/pair", sec_title=text.pair_again_button)
 
         return "Send the last message."
 

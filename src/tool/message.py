@@ -130,14 +130,14 @@ def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_t
                     "buttons": [
                         {
                             "type": "web_url",
-                            "url": first_url,
+                            "url": BASE_URL + first_url,
                             "messenger_extensions": True,
                             "title": first_title,
                             "webview_height_ratio": "full"
                         },
                         {
                             "type": "web_url",
-                            "url": sec_url,
+                            "url": BASE_URL + sec_url,
                             "messenger_extensions": True,
                             "title": sec_title,
                             "webview_height_ratio": "full"
