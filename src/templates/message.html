@@ -13,7 +13,7 @@
 
 <script type="text/javascript">
     var status = "{{status}}";
-    if (status == "noPair") {
+    if (status != "unsend") {
         console.log(status)
         $("#last-form").replaceWith("<p>已傳送留言囉！</p>");
         window.setTimeout(close_Webview, 3000);
