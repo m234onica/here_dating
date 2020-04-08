@@ -11,24 +11,23 @@ $("input#placeId")
             $("#intro-submit").attr("disabled", true);
 
         } else {
-            $.ajax({
-                type: "GET",
-                url: base_url + "/api/place/" + placeId,
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                success: function (data) {
-                    if (data.payload == true) {
-                        $(".placeId_error").remove();
-                        $("#placeId").removeClass('is-invalid').addClass('is-valid')
-                        $("#intro-submit").attr("disabled", false);
+            $.get(
+                base_url + "/api/place/" + placeId,
+                function (data, status) {
+
+                    if (status == "success") {
+                        if (data.payload == true) {
+                            $(".placeId_error").remove();
+                            $("#placeId").removeClass('is-invalid').addClass('is-valid')
+                            $("#intro-submit").attr("disabled", false);
+                        }
+                    } else {
+                        $("#placeId").addClass("is-invalid")
+                            .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
+                        $("#intro-submit").attr("disabled", true);
                     }
-                },
-                error: function (data) {
-                    $("#placeId").addClass("is-invalid")
-                        .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
-                    $("#intro-submit").attr("disabled", true);
                 }
-            })
+            )
         }
     }).on("keyup", function () {
         $(".placeId_error").remove();
@@ -36,7 +35,7 @@ $("input#placeId")
     })
 
 
-$("#intro-submit").on("click", function (e) {    
+$("#intro-submit").on("click", function (e) {
     $(this).attr("disabled", "disabled");
     $(this).html("搜尋中...");
     e.preventDefault()
@@ -46,20 +45,20 @@ $("#intro-submit").on("click", function (e) {
         function success(uids) {
             var userId = uids.psid;
             var placeId = $("#placeId").val();
-            $.ajax({
-                type: "POST",
-                url: base_url + "/api/pair/" + placeId + "/" + userId,
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                data: null,
-            }).always(function (d) {
-                var payload = d.payload;
-                if (payload.status == "pairing") {
-                    window.location.href = base_url + "/wait/" + userId;
-                } else {
-                    close_Webview();
-                }
-            })
+            $.post(
+                base_url + "/api/pair/" + placeId + "/" + userId,
+                function (data, status) {
+                    if (status == "success") {
+                        var payload = data.payload;
+                        if (payload.status == "pairing") {
+                            window.location.href = base_url + "/wait/" + userId;
+                        } else {
+                            close_Webview();
+                        }
+                    } else {
+                        console.log(status);
+                    }
+                })
         },
         function error(err, errorMessage) {
             console.log(JSON.stringify(errorMessage));
@@ -75,15 +74,15 @@ $("#leave_waiting").on("click", function (e) {
         app_id,
         function success(uids) {
             var userId = uids.psid;
-            $.ajax({
-                type: "POST",
-                url: base_url + "/api/user/leave/" + userId,
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                data: null,
-            }).always(function (d) {
-                close_Webview();
-            })
+            $.post(
+                base_url + "/api/user/leave/" + userId,
+                function (data, status) {
+                    if (status == "success") {
+                        close_Webview();
+                    } else {
+                        console.log(JSON.stringify(data));
+                    }
+                })
         },
         function error(err, errorMessage) {
             console.log(JSON.stringify(errorMessage));
@@ -124,22 +123,19 @@ $("#last-submit").on("click", function (e) {
 
 
 function get_status(userId) {
-    $.ajax({
-        type: "GET",
-        url: base_url + "/api/user/status/" + userId,
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-        success: function (data) {
-            var payload = data.payload
-
-            if (payload.status != "pairing") {
-                close_Webview();
+    $.get(
+        base_url + "/api/user/status/" + userId,
+        function (data, status) {
+            if (status == "success") {
+                var payload = data.payload
+                if (payload.status != "pairing") {
+                    close_Webview();
+                }
+            } else {
+                console.log(err);
             }
-        },
-        error: function (err) {
-            console.log(err);
         }
-    })
+    )
 
 }
 
