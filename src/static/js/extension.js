@@ -70,23 +70,15 @@ $("#leave_waiting").on("click", function (e) {
     $(this).html("中斷中...");
     e.preventDefault()
 
-    MessengerExtensions.getContext(
-        app_id,
-        function success(uids) {
-            var userId = uids.psid;
-            $.post(
-                base_url + "/api/user/leave/" + userId,
-                function (data, status) {
-                    if (status == "success") {
-                        close_Webview();
-                    } else {
-                        console.log(JSON.stringify(data));
-                    }
-                })
-        },
-        function error(err, errorMessage) {
-            console.log(JSON.stringify(errorMessage));
-        });
+    $.post(
+        base_url + "/api/user/leave/" + userId,
+        function (data, status) {
+            if (status == "success") {
+                close_Webview();
+            } else {
+                console.log(JSON.stringify(data));
+            }
+        })
 })
 
 
