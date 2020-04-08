@@ -162,12 +162,11 @@ def leave(userId):
         id=userId, text=text.leave_message, persona=persona_id,
         webview_page="/pair", title=text.pair_again_button)
 
-    message.push_webview(
-        id=recipient_id, text=text.partner_leave_message, persona=persona_id,
-        webview_page="/pair", title=text.pair_again_button)
-
     message.delete_menu(userId)
-    if recipient_id != None:
-        message.delete_menu(recipient_id)
 
+    if recipient_id != None:
+        message.push_webview(
+            id=recipient_id, text=text.partner_leave_message, persona=persona_id,
+            webview_page="/pair", title=text.pair_again_button)
+        message.delete_menu(recipient_id)
     return "User leave"
