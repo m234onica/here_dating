@@ -188,10 +188,14 @@ def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
 
 def get_started():
     params = {"access_token": PAGE_ACCESS_TOKEN}
-    data = {
+    
+    whitelisted_domains = {
         "whitelisted_domains": [
             BASE_URL
-        ],
+        ]
+    }
+
+    data = {
         "get_started": {
             "payload": "Start"
         },
@@ -207,9 +211,11 @@ def get_started():
                 "composer_input_disabled": False,
                 "call_to_actions": [
                     {
-                        "type": "postback",
+                        "type": "web_url",
                         "title": text.menu_start,
-                        "payload": "Start_pair"
+                        "url": BASE_URL + "/pair",
+                        "messenger_extensions": True,
+                        "webview_height_ratio": "full"
                     },
                     {
                         "type": "web_url",
@@ -222,7 +228,10 @@ def get_started():
             }
         ]
     }
-    return requests_post("messenger_profile", data)
+    get_start_responese = requests_post("messenger_profile", data)
+    whitelisted_domains_response = requests_post("messenger_profile", whitelisted_domains)
+    response = [get_start_responese, whitelisted_domains_response]
+    return response
 
 
 def push_pairing_menu(id):
@@ -299,6 +308,6 @@ def delete_menu(id):
 def persona():
     data = {
         "name": "系統訊息",
-        "profile_picture_url": "https://storage.googleapis.com/satellite-l5yx88bg3/robo.png"
+        "profile_picture_url": "https://storage.googleapis.com/here_dating/user_pic.png"
     }
     return requests_post("personas", data)
