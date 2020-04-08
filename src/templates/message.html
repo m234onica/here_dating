@@ -13,8 +13,8 @@
 
 <script type="text/javascript">
     var status = "{{status}}";
-    if (status != "unsend") {
-        console.log(status)
+    console.log(status)
+    if (status != "unSend") {
         $("#last-form").replaceWith("<p>已傳送留言囉！</p>");
         window.setTimeout(close_Webview, 3000);
     }
