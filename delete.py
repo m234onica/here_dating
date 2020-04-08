@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import base64
 import time
 
 from src.db import db_session
@@ -72,6 +73,21 @@ def delete(minutes):
     db_session.commit()
     print("delete success")
     return {"status_msg": "delete success."}, 200
+
+
+# def main(event, context):
+
+#     print("""This Function was triggered by messageId {} published at {} """.format(
+#         context.event_id, context.timestamp))
+
+#     if 'data' in event:
+#         minutes = base64.b64decode(event['data']).decode('utf-8')
+#         minutes = minutes.split(",")
+#         for minute in minutes:
+#             delete(int(minute))
+#             db_session.remove()
+#             print("expired minutes: ", minute)
+#     return "success"
 
 
 if __name__ == '__main__':
