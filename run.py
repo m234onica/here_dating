@@ -6,15 +6,21 @@ from src.db import db_session
 
 app = create_app()
 BASE_URL = app.config.get("BASE_URL")
+APP_ID = app.config.get("APP_ID")
 
 @app.context_processor
 def url():
-    return {"base_url": g.url, "version": g.version}
+    return {
+        "base_url": g.url, 
+        "version": g.version,
+        "app_id": g.app_id
+        }
 
 
 @app.before_request
 def before_req():
     g.url = BASE_URL
+    g.app_id = APP_ID
     g.version = time.time()
 
 

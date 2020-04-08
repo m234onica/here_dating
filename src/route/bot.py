@@ -56,7 +56,7 @@ def webhook_handle():
                         placeId + text.qrcode_introduction[1],
                         first_title=text.qrcode_check_button,
                         payload="Pair," + placeId,
-                        url=BASE_URL + "/pair",
+                        url="/pair",
                         sec_title=text.qrcode_intro_button)
                     return "qrcode"
             else:
@@ -117,7 +117,7 @@ def webhook_handle():
             placeId + text.qrcode_introduction[1],
             first_title=text.qrcode_check_button,
             payload="Pair," + placeId,
-            url=BASE_URL + "/pair",
+            url="/pair",
             sec_title=text.qrcode_intro_button)
         return "qrcode"
 
@@ -163,7 +163,7 @@ def webhook_handle():
 
 @bot.route("/pair", methods=["GET"])
 def intro_page():
-    return render_template("pair.html", app_id=APP_ID, place_id_title=text.place_id_title)
+    return render_template("pair.html", place_id_title=text.place_id_title)
 
 
 @bot.route("/wait/<userId>", methods=["GET"])
@@ -180,4 +180,4 @@ def message_page(userId):
 
 @bot.route("/rule", methods=["GET"])
 def rule_page():
-    return render_template("rule.html", app_id=APP_ID)
+    return render_template("rule.html")

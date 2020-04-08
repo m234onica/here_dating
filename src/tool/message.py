@@ -174,7 +174,7 @@ def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
                             "type": "web_url",
                             "url": url,
                             "messenger_extensions": True,
-                            "title": sec_title,
+                            "title": BASE_URL + sec_title,
                             "webview_height_ratio": "full"
                         }
                     ]
