@@ -1,0 +1,88 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Intro Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <!-- bootstrap 4.3.1 -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://storage.googleapis.com/here_dating/static/css/style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <script type="text/javascript" src="https://storage.googleapis.com/here_dating/static/js/config.js"></script>
+
+    <script type="text/javascript">
+        var base_url = config.BASE_URL;
+        var app_id = config.APP_ID;
+
+        $(document).ready(function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, "script", "Messenger"));
+    </script>
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-6 col-sm-12">
+                <br>
+<form class="form" method="POST" id="intro-form" role="form" novalidate autocomplete="off">
+    <div class="form-group">
+        <label id="place_label">請輸入地標編號</label>
+        <div class="input-group mb-2">
+            <input class="form-control" id="placeId" type="text" name="placeId" maxlength="4" required>
+        </div>
+
+        <button class="btn btn-primary btn-block btn-lg" id="intro-submit" type="submit" name="submit"
+            disabled>開始找人聊天</button>
+</form>
+<script>
+
+    window.extAsyncInit = function () {
+        MessengerExtensions.getContext(
+            app_id,
+            function success(uids) {
+                var psid = uids.psid;
+                $.get(
+                    base_url + "/api/user/status/" + psid,
+                    function (data, status) {
+                        if (status == "success") {
+                            var payload = data.payload
+                            console.log(payload.status)
+                            if (payload.status == "paired") {
+                                close_Webview();
+                            }
+                            if (payload.status == "pairing") {
+                                window.location.href = base_url + "/wait/" + psid;
+                            }
+                        } else {
+                            console.log(err)
+                        }
+                    })
+
+            },
+            function error(err, errorMessage) {
+                alert(JSON.stringify(errorMessage));
+            }
+        )
+    }
+</script>
+                                                            </div>
+        </div>
+    </div>
+    
+<script type="text/javascript" src="https://storage.googleapis.com/here_dating/static/js/extension.js"></script>
+    
+
+</body>
+
+</html>

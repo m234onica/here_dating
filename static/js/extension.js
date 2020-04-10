@@ -1,3 +1,7 @@
+var base_url = config.BASE_URL;
+var app_id = config.APP_ID;
+console.log(base_url);
+
 $("input#placeId")
     .on("keyup", function () {
         var placeId = $("#placeId").val().trim();
@@ -14,7 +18,7 @@ $("input#placeId")
             $.get(
                 base_url + "/api/place/" + placeId,
                 function (data, status) {
-
+                    
                     if (status == "success") {
                         if (data.payload == true) {
                             $(".placeId_error").remove();
@@ -115,19 +119,26 @@ $("#last-submit").on("click", function (e) {
 
 
 function get_status(userId) {
-    $.get(
-        base_url + "/api/user/status/" + userId,
-        function (data, status) {
-            if (status == "success") {
-                var payload = data.payload
-                if (payload.status != "pairing") {
-                    close_Webview();
-                }
-            } else {
-                console.log(err);
-            }
+    var result = null;
+    
+    $.ajax({
+        type: "GET",
+        url: "https://b8c95cf4.ngrok.io/api/user/status/" + userId,
+        async: false,
+        crossDomain: true,
+        success: function (data) {
+            var payload = data.payload
+            result = payload.status;            
+
+            // if (payload.status != "pairing") {
+            //     // close_Webview();
+            // }
+        },
+        error: function (data) {
+            console.log(err);
         }
-    )
+    })
+    return result;
 
 }
 
