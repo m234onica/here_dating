@@ -54,12 +54,7 @@ $("#intro-submit").on("click", function (e) {
                 base_url + "/api/pair/" + placeId + "/" + userId,
                 function (data, status) {
                     if (status == "success") {
-                        var payload = data.payload;
-                        if (payload.status == "pairing") {
-                            window.location.href = "https://storage.googleapis.com/here_dating/static/wait.html?userId=" + userId;
-                        } else {
-                            close_Webview();
-                        }
+                        close_Webview();
                     } else {
                         console.log(status);
                     }
@@ -69,23 +64,6 @@ $("#intro-submit").on("click", function (e) {
             console.log(JSON.stringify(errorMessage));
         });
 })
-
-$("#leave_waiting").on("click", function (e) {
-    $(this).attr("disabled", "disabled");
-    $(this).html("中斷中...");
-    e.preventDefault()
-
-    $.post(
-        base_url + "/api/user/leave/" + userId,
-        function (data, status) {
-            if (status == "success") {
-                close_Webview();
-            } else {
-                console.log(JSON.stringify(data));
-            }
-        })
-})
-
 
 $("#last-submit").on("click", function (e) {
     e.preventDefault()
@@ -129,10 +107,6 @@ function get_status(userId) {
         success: function (data) {
             var payload = data.payload
             result = payload.status;            
-
-            // if (payload.status != "pairing") {
-            //     // close_Webview();
-            // }
         },
         error: function (data) {
             console.log(err);

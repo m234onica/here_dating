@@ -24,12 +24,9 @@
                     function (data, status) {
                         if (status == "success") {
                             var payload = data.payload
-                            console.log(payload.status)
-                            if (payload.status == "paired") {
+                            if (payload.status == "paired" || payload.status == "pairing") {
+                                console.log(payload.status)
                                 close_Webview();
-                            }
-                            if (payload.status == "pairing") {
-                                window.location.href = "https://storage.googleapis.com/here_dating/build/wait.html?userId=" + psid;
                             }
                         } else {
                             console.log(err)
@@ -38,7 +35,7 @@
 
             },
             function error(err, errorMessage) {
-                alert(JSON.stringify(errorMessage));
+                console.log(JSON.stringify(errorMessage));
             }
         )
     }
