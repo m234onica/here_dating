@@ -10,17 +10,6 @@ app = create_app()
 BASE_URL = app.config.get("BASE_URL")
 APP_ID = app.config.get("APP_ID")
 
-@app.context_processor
-def url():
-    return {
-        "version": g.version,
-        }
-
-
-@app.before_request
-def before_req():
-    g.version = time.time()
-
 
 @app.teardown_request
 def shutdown_session(exception=None):
