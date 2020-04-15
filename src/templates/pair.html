@@ -18,9 +18,9 @@
         MessengerExtensions.getContext(
             app_id,
             function success(uids) {
-                var psid = uids.psid;
+                var userId = uids.psid;
                 $.get(
-                    base_url + "/api/user/status/" + psid,
+                    base_url + "/api/user/status/" + userId,
                     function (data, status) {
                         if (status == "success") {
                             var payload = data.payload
