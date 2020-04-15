@@ -16,7 +16,7 @@ def send_expired_message(userId):
     message.delete_menu(userId)
     message.push_webview(
         id=userId, text=text.wait_expired,
-        persona=persona_id, webview_page="/pair", title=text.pair_again_button)
+        persona=persona_id, webview_page="/pair.html", title=text.pair_again_button)
     return "sended success"
 
 
@@ -31,9 +31,9 @@ def send_end_message(userId):
         id=userId,
         persona=persona_id,
         text=text.timeout_text[1],
-        first_url="/" + pairId + "/message/" + userId,
+        first_url="/message/" + userId,
         first_title=text.send_partner_last_message_button,
-        sec_url="/pair",
+        sec_url="/pair.html",
         sec_title=text.pair_again_button)
     return "sended success"
 
