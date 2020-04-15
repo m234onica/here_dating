@@ -16,7 +16,7 @@ def verify_distance(placeId):
 
     # 若輸入店號不存在，則回傳錯誤訊息
     if place is None:
-        return make_response({"status_msg": "Not found", "payload": False}, 404)
+        return make_response({"status_msg": "Not found", "payload": False}, 200)
 
     """
     # 計算距離
