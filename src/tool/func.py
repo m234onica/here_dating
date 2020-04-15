@@ -86,7 +86,9 @@ def timeout_chat(userId):
                 first_title=text.send_partner_last_message_button,
                 sec_url="/pair.html", sec_title=text.pair_again_button)
 
+            recipient_id = get_recipient_id(userId)
             message.delete_menu(userId)
+            message.delete_menu(recipient_id)
 
             return user_response(msg="Timeout to breaked pair", status="timeout", code=200)
 
