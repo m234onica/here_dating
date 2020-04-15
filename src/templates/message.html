@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Message Page{% endblock title %}
+{% block leave %}
+<br>
+<form class="form" method="POST" id="last-form" role="form" novalidate autocomplete="off">
+    <div class="form-group">
+        <label>想對對面的鹹魚說什麼嗎？</label>
+        <textarea class="form-control" id="lastWord" name="lastWord" required></textarea>
+    </div>
+
+    <button class="btn btn-primary btn-block btn-lg" id="last-submit" type="submit" name="submit">Submit</button>
+</form>
+
+<script type="text/javascript">
+    var base_url = config.BASE_URL; 
+    var userId = "{{userId}}";
+    var status = get_status(userId);
+
+    if (status != "unSend") {
+            $("#last-form").replaceWith("<p>已傳送留言囉！</p>");
+            window.setTimeout(close_Webview, 3000);
+        }
+
+
+
+</script>
+{% endblock leave %}
