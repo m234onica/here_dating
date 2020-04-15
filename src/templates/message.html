@@ -12,14 +12,16 @@
 </form>
 
 <script type="text/javascript">
-    var base_url = config.BASE_URL; 
-    var userId = "{{userId}}";
+    var base_url = config.BASE_URL;
+    var serchParams = new URLSearchParams(window.location.search);
+    var userId = serchParams.get("userId");
     var status = get_status(userId);
+    console.log(status);
 
     if (status != "unSend") {
-            $("#last-form").replaceWith("<p>已傳送留言囉！</p>");
-            window.setTimeout(close_Webview, 3000);
-        }
+        $("#last-form").replaceWith("<p>已傳送留言囉！</p>");
+        window.setTimeout(close_Webview, 3000);
+    };
 
 
 

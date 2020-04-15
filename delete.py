@@ -31,7 +31,7 @@ def send_end_message(userId):
         id=userId,
         persona=persona_id,
         text=text.timeout_text[1],
-        first_url="/message/" + userId,
+        first_url="/message.html?userId=" + userId,
         first_title=text.send_partner_last_message_button,
         sec_url="/pair.html",
         sec_title=text.pair_again_button)
