@@ -1,6 +1,6 @@
 import requests
 from src.tool import text
-from config import PAGE_ACCESS_TOKEN, FB_API_URL, BASE_URL
+from config import PAGE_ACCESS_TOKEN, FB_API_URL, STATIC_URL, BASE_URL
 
 
 def requests_post(url, payload):
@@ -101,7 +101,7 @@ def push_webview(id, persona, text, webview_page, title):
                     "buttons": [
                         {
                             "type": "web_url",
-                            "url": BASE_URL + webview_page,
+                            "url": STATIC_URL + webview_page,
                             "messenger_extensions": True,
                             "title": title,
                             "webview_height_ratio": "full"
@@ -130,14 +130,14 @@ def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_t
                     "buttons": [
                         {
                             "type": "web_url",
-                            "url": BASE_URL + first_url,
+                            "url": STATIC_URL + first_url,
                             "messenger_extensions": True,
                             "title": first_title,
                             "webview_height_ratio": "full"
                         },
                         {
                             "type": "web_url",
-                            "url": BASE_URL + sec_url,
+                            "url": STATIC_URL + sec_url,
                             "messenger_extensions": True,
                             "title": sec_title,
                             "webview_height_ratio": "full"
@@ -174,7 +174,7 @@ def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
                             "type": "web_url",
                             "url": url,
                             "messenger_extensions": True,
-                            "title": BASE_URL + sec_title,
+                            "title": STATIC_URL + sec_title,
                             "webview_height_ratio": "full"
                         }
                     ]
@@ -191,6 +191,7 @@ def get_started():
     
     whitelisted_domains = {
         "whitelisted_domains": [
+            STATIC_URL,
             BASE_URL
         ]
     }
@@ -213,14 +214,14 @@ def get_started():
                     {
                         "type": "web_url",
                         "title": text.menu_start,
-                        "url": BASE_URL + "/pair",
+                        "url": STATIC_URL + "/pair.html",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     },
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": BASE_URL + "/rule",
+                        "url": STATIC_URL + "/rule.html",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
@@ -250,7 +251,7 @@ def push_pairing_menu(id):
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": BASE_URL + "/rule",
+                        "url": STATIC_URL + "/rule.html",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
@@ -279,7 +280,7 @@ def push_paired_menu(id):
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": BASE_URL + "/rule",
+                        "url": STATIC_URL + "/rule.html",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
@@ -308,6 +309,6 @@ def delete_menu(id):
 def persona():
     data = {
         "name": "系統訊息",
-        "profile_picture_url": "https://storage.googleapis.com/here_dating/user_pic.png"
+        "profile_picture_url": "https://storage.googleapis.com/here_dating/image/user_pic.png"
     }
     return requests_post("personas", data)
