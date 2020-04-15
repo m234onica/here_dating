@@ -25,11 +25,11 @@ $("input#placeId")
                             $(".placeId_error").remove();
                             $("#placeId").removeClass('is-invalid').addClass('is-valid')
                             $("#intro-submit").attr("disabled", false);
+                        } else {
+                            $("#placeId").addClass("is-invalid")
+                                .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
+                            $("#intro-submit").attr("disabled", true);
                         }
-                    } else {
-                        $("#placeId").addClass("is-invalid")
-                            .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
-                        $("#intro-submit").attr("disabled", true);
                     }
                 }
             )
@@ -121,7 +121,7 @@ $("#last-submit").on("click", function (e) {
 
 function get_status(userId) {
     var result = null;
-    
+
     $.ajax({
         type: "GET",
         url: base_url + "/api/user/status/" + userId,
