@@ -1,7 +1,15 @@
 
 var gulp = require("gulp"),
     rev = require("gulp-rev"),
+    clean = require("gulp-clean"),
     revCollector = require("gulp-rev-collector");
+
+var webserver = require("gulp-webserver");
+
+gulp.task("clean", function() {
+    return gulp.src("./static")
+        .pipe(clean())
+})
 
 gulp.task('compile', function () {
     "use strict";
@@ -44,6 +52,6 @@ gulp.task("replace", function () {
 })
 
 
-gulp.task('default', gulp.series("compile", "revsion", "replace", function (done) {
+gulp.task('default', gulp.series("clean", "compile", "revsion", "replace", function (done) {
     done();
 }));
