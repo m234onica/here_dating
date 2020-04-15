@@ -84,7 +84,7 @@ def timeout_chat(userId):
                 text=text.timeout_text[1],
                 first_url="/message/" + userId,
                 first_title=text.send_partner_last_message_button,
-                sec_url="/pair", sec_title=text.pair_again_button)
+                sec_url="/pair.html", sec_title=text.pair_again_button)
 
             message.delete_menu(userId)
 
