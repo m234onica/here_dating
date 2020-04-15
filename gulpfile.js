@@ -1,8 +1,7 @@
 
 var gulp = require("gulp"),
     rev = require("gulp-rev"),
-    concat = require("gulp-concat"),
-    uglify = require("gulp-uglify");
+    revCollector = require("gulp-rev-collector");
 
 gulp.task('compile', function () {
     "use strict";
@@ -19,19 +18,32 @@ gulp.task('compile', function () {
         .pipe(gulp.dest('./static'));
 })
 
-gulp.task("css", function () {
-    return gulp.src("./src/static/css/*.css")
-        .pipe(gulp.dest("./static/css/"))
+
+
+gulp.task("revsion", function () {
+    return gulp.src(
+        [
+            "./src/static/**/*.css",
+            "./src/static/**/*.js",
+        ],
+    )
+        .pipe(rev())
+        .pipe(gulp.dest('static/'))
+        .pipe(rev.manifest())
+        .pipe(gulp.dest('static/rev/'))
+
 })
 
 
-gulp.task("scripts", function () {
-    return gulp.src("./src/static/js/*.js")
-                .pipe(gulp.dest("./static/js/"))
-
+gulp.task("replace", function () {
+    return gulp.src(["static/rev/*.json", "static/*.html"])
+        .pipe(revCollector({
+            replaceReved: true
+        }))
+        .pipe(gulp.dest("static"));
 })
 
 
-
-
-gulp.task('default', gulp.series('compile', "scripts", "css"));
+gulp.task('default', gulp.series("compile", "revsion", "replace", function (done) {
+    done();
+}));
