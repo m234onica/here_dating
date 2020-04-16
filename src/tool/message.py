@@ -279,7 +279,7 @@ def push_paired_menu(id):
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": BASE_URL + "/rule",
+                        "url": Config.BASE_URL + "/rule",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
