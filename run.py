@@ -7,9 +7,6 @@ from src.tool import message
 from src.db import db_session
 
 app = create_app()
-BASE_URL = app.config.get("BASE_URL")
-APP_ID = app.config.get("APP_ID")
-
 
 @app.teardown_request
 def shutdown_session(exception=None):
