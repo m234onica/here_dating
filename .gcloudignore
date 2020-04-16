@@ -13,8 +13,15 @@
 .git
 .env
 .vscode
+
+src/static/*
+src/templates/*
+
+static/*
+
 here.sql
 README.md
 delete.py
 config.sample.py
+cors-json-file.json
 run.py
