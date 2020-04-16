@@ -214,14 +214,14 @@ def get_started():
                     {
                         "type": "web_url",
                         "title": text.menu_start,
-                        "url": Config.STATIC_URL + "/pair",
+                        "url": Config.STATIC_URL + "/pair.html",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     },
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": Config.STATIC_URL + "/rule",
+                        "url": Config.STATIC_URL + "/rule.html",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
@@ -251,7 +251,7 @@ def push_pairing_menu(id):
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": Config.STATIC_URL + "/rule",
+                        "url": Config.STATIC_URL + "/rule.html",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
