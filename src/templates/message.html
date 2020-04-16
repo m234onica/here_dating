@@ -8,19 +8,19 @@
     console.log(status);
 
     if (status != "unSend") {
-        $("#last-form").replaceWith("<p>已傳送留言囉！</p>");
+        $("#message-form").replaceWith("<p>已傳送留言囉！</p>");
         window.setTimeout(close_Webview, 3000);
     };
 </script>
-{% block leave %}
+{% block message %}
 <br>
-<form class="form" method="POST" id="last-form" role="form" novalidate autocomplete="off">
+<form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off">
     <div class="form-group">
         <label>想對對面的鹹魚說什麼嗎？</label>
         <textarea class="form-control" id="lastWord" name="lastWord" required></textarea>
     </div>
 
-    <button class="btn btn-primary btn-block btn-lg" id="last-submit" type="submit" name="submit">Submit</button>
+    <button class="btn btn-primary btn-block btn-lg" id="message-submit" type="submit" name="submit">Submit</button>
 </form>
 
-{% endblock leave %}
+{% endblock message %}

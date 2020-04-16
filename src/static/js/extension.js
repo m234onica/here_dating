@@ -65,7 +65,7 @@ $("#pair-submit").on("click", function (e) {
         });
 })
 
-$("#last-submit").on("click", function (e) {
+$("#message-submit").on("click", function (e) {
     e.preventDefault()
 
     MessengerExtensions.getContext(
