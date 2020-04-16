@@ -40,7 +40,7 @@ $("input#placeId")
     })
 
 
-$("#intro-submit").on("click", function (e) {
+$("#pair-submit").on("click", function (e) {
     $(this).attr("disabled", "disabled");
     $(this).html("搜尋中...");
     e.preventDefault()
