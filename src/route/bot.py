@@ -5,7 +5,7 @@ from src.db import init_db, db_session
 from src.models import Place, Pair
 from src.route.api import leave, get_status, pair_user
 from src.tool import message, func, text
-from config import PAGE_VERIFY_TOKEN, APP_ID, EXPIRED_TIME, BASE_URL
+from config import Config
 
 
 bot = Blueprint("bot", __name__)
@@ -15,7 +15,7 @@ init_db()
 @bot.route("/webhook", methods=["GET"])
 def webhook():
     if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-        if not request.args.get("hub.verify_token") == PAGE_VERIFY_TOKEN:
+        if not request.args.get("hub.verify_token") == Config.PAGE_VERIFY_TOKEN:
             return "Verification token mismatch", 403
         return request.args["hub.challenge"], 200
     return "Verification success", 200

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from src.models import Pair, status_Enum
 from src.db import db_session
 from src.tool import message, text
-from config import END_TIME, BASE_URL
+from config import Config
 
 
 def active_pair():
@@ -70,7 +70,7 @@ def timeout_chat(userId):
     now_time = datetime.now()
 
     if pair.startedAt != None and pair.deletedAt == None:
-        if now_time - timedelta(minutes=END_TIME) >= pair.startedAt:
+        if now_time - timedelta(minutes=Config.END_TIME) >= pair.startedAt:
             pair.deletedAt = now_time
             pair.status = status_Enum(2)
 

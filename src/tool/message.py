@@ -1,24 +1,24 @@
 import requests
 from src.tool import text
-from config import PAGE_ACCESS_TOKEN, FB_API_URL, STATIC_URL, BASE_URL
+from config import Config
 
 
 def requests_post(url, payload):
-    params = {"access_token": PAGE_ACCESS_TOKEN}
-    post_url = "/".join([FB_API_URL, "me", url])
+    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
+    post_url = "/".join([Config.FB_API_URL, "me", url])
     response = requests.request("POST", url=post_url, params=params, json=payload).json()
     return response
 
 
 def requests_get(url):
-    params = {"access_token": PAGE_ACCESS_TOKEN}
+    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
 
-    post_url = "/".join([FB_API_URL, "me", url])
+    post_url = "/".join([Config.FB_API_URL, "me", url])
     response = requests.request("GET", url=post_url, params=params).json()
 
     #Debug才會用到的api
     if "error" in response.keys():
-        post_url = "/".join([FB_API_URL, url])
+        post_url = "/".join([Config.FB_API_URL, url])
         response = requests.request("GET", url=post_url, params=params).json()
     return response
 
@@ -101,7 +101,7 @@ def push_webview(id, persona, text, webview_page, title):
                     "buttons": [
                         {
                             "type": "web_url",
-                            "url": STATIC_URL + webview_page,
+                            "url": Config.STATIC_URL + webview_page,
                             "messenger_extensions": True,
                             "title": title,
                             "webview_height_ratio": "full"
@@ -130,14 +130,14 @@ def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_t
                     "buttons": [
                         {
                             "type": "web_url",
-                            "url": STATIC_URL + first_url,
+                            "url": Config.STATIC_URL + first_url,
                             "messenger_extensions": True,
                             "title": first_title,
                             "webview_height_ratio": "full"
                         },
                         {
                             "type": "web_url",
-                            "url": STATIC_URL + sec_url,
+                            "url": Config.STATIC_URL + sec_url,
                             "messenger_extensions": True,
                             "title": sec_title,
                             "webview_height_ratio": "full"
@@ -174,7 +174,7 @@ def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
                             "type": "web_url",
                             "url": url,
                             "messenger_extensions": True,
-                            "title": STATIC_URL + sec_title,
+                            "title": Config.STATIC_URL + sec_title,
                             "webview_height_ratio": "full"
                         }
                     ]
@@ -187,12 +187,12 @@ def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
 
 
 def get_started():
-    params = {"access_token": PAGE_ACCESS_TOKEN}
+    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     
     whitelisted_domains = {
         "whitelisted_domains": [
-            STATIC_URL,
-            BASE_URL
+            Config.STATIC_URL,
+            Config.BASE_URL
         ]
     }
 
@@ -214,14 +214,14 @@ def get_started():
                     {
                         "type": "web_url",
                         "title": text.menu_start,
-                        "url": STATIC_URL + "/pair.html",
+                        "url": Config.STATIC_URL + "/pair",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     },
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": STATIC_URL + "/rule.html",
+                        "url": Config.STATIC_URL + "/rule",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
@@ -251,7 +251,7 @@ def push_pairing_menu(id):
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": STATIC_URL + "/rule.html",
+                        "url": Config.STATIC_URL + "/rule",
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
@@ -294,11 +294,11 @@ def push_paired_menu(id):
 
 
 def delete_menu(id):
-    url = FB_API_URL + '/me/custom_user_settings'
+    url = Config.FB_API_URL + '/me/custom_user_settings'
     params = {
         "psid": id,
         "params": '["persistent_menu"]',
-        "access_token": PAGE_ACCESS_TOKEN
+        "access_token": Config.PAGE_ACCESS_TOKEN
 
     }
     response = requests.request("DELETE", url, params=params)
