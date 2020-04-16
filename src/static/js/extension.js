@@ -12,7 +12,7 @@ $("input#placeId")
         if (placeId.length != 4) {
             $("#placeId").addClass("is-invalid")
                 .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
-            $("#intro-submit").attr("disabled", true);
+            $("#pair-submit").attr("disabled", true);
 
         } else {
             $.get(
@@ -24,11 +24,11 @@ $("input#placeId")
                         if (data.payload == true) {
                             $(".placeId_error").remove();
                             $("#placeId").removeClass('is-invalid').addClass('is-valid')
-                            $("#intro-submit").attr("disabled", false);
+                            $("#pair-submit").attr("disabled", false);
                         } else {
                             $("#placeId").addClass("is-invalid")
                                 .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
-                            $("#intro-submit").attr("disabled", true);
+                            $("#pair-submit").attr("disabled", true);
                         }
                     }
                 }
