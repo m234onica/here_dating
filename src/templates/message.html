@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Message Page{% endblock title %}
+
+{% block message_script %}
 <script type="text/javascript">
     var base_url = config.BASE_URL;
     var serchParams = new URLSearchParams(window.location.search);
@@ -12,6 +14,8 @@
         window.setTimeout(close_Webview, 3000);
     };
 </script>
+{% endblock message_script %}
+
 {% block message %}
 <br>
 <form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off">
