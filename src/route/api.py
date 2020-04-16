@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
 from src.tool import message, func, text
-from config import END_TIME
+from config import Config
 
 api = Blueprint("api", __name__)
 init_db()
@@ -125,10 +125,10 @@ def get_status(userId):
     if pair.startedAt == None:
         return func.user_response(msg="User stop waiting", status="pairing_fail", code=200)
 
-    if pair.deletedAt - timedelta(minutes=END_TIME) < pair.startedAt:
+    if pair.deletedAt - timedelta(minutes=Config.END_TIME) < pair.startedAt:
         return func.user_response(msg="User leaved", status="leaved", code=200)
 
-    if pair.deletedAt - timedelta(minutes=END_TIME) >= pair.startedAt:
+    if pair.deletedAt - timedelta(minutes=Config.END_TIME) >= pair.startedAt:
 
         if userId == pair.playerA:
             if pair.playerA_lastedAt == None:

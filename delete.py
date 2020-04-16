@@ -5,7 +5,7 @@ import time
 from src.db import db_session
 from src.models import Pair, status_Enum
 from src.tool import message, func, text
-from config import EXPIRED_TIME, END_TIME
+from config import Config
 
 starttime = time.time()
 
@@ -43,12 +43,12 @@ def delete(minutes):
     active_data = func.active_pair()
     expired_time = datetime.now() - timedelta(minutes=minutes)
 
-    if minutes == EXPIRED_TIME:
+    if minutes == Config.EXPIRED_TIME:
         status = 0
         expired_data = active_data.filter(Pair.startedAt == None).\
             filter(Pair.createdAt <= expired_time).all()
 
-    if minutes == END_TIME:
+    if minutes == Config.END_TIME:
         status = 2
         expired_data = active_data.filter(Pair.playerB != None).\
             filter(Pair.startedAt <= expired_time).all()
@@ -92,7 +92,7 @@ def delete(minutes):
 
 if __name__ == '__main__':
     while True:
-        delete(EXPIRED_TIME)
-        delete(END_TIME)
+        delete(Config.EXPIRED_TIME)
+        delete(Config.END_TIME)
         db_session.remove()
         time.sleep(60.0 - ((time.time() - starttime) % 60))
