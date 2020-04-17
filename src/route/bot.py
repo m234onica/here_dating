@@ -40,8 +40,7 @@ def webhook_handle():
         payload = postback["payload"]
 
         if payload == "Start":
-            message.push_text(
-                id=userId, text=text.introduction[0], persona=persona_id)
+            reply.introduction(userId)
 
             if "referral" in postback.keys():
                 ref = postback["referral"]["ref"].split(",")
@@ -49,16 +48,7 @@ def webhook_handle():
                 placeId = ref[1]
 
                 if entrance == "qrcode":
-                    message.push_button(
-                        id=userId,
-                        persona=persona_id,
-                        text=text.qrcode_introduction[0] + text.place_id_title +
-                        placeId + text.qrcode_introduction[1],
-                        types=["postback", "web_url"],
-                        title=[text.qrcode_check_button,
-                               text.qrcode_intro_button],
-                        payload=["Pair," + placeId, "/pair"],
-                    )
+                    reply.qrcode_start_pair(userId, placeId)
                     return "qrcode"
             else:
                 message.push_button(
@@ -104,7 +94,6 @@ def webhook_handle():
 
     if status == "unSend":
         reply.timeout(userId)
-
         return "Send the last message."
 
     if status == "pairing":
@@ -114,15 +103,7 @@ def webhook_handle():
     if "referral" in messaging.keys() and status not in ["paired", "pairing"]:
         ref = messaging["referral"]["ref"].split(",")
         placeId = ref[1]
-        message.push_button(
-            id=userId,
-            persona=persona_id,
-            text=text.qrcode_introduction[0] + text.place_id_title +
-            placeId + text.qrcode_introduction[1],
-            types=["postback", "web_url"],
-            title=[text.qrcode_check_button, text.qrcode_intro_button],
-            payload=["Pair," + placeId, "/pair"]
-        )
+        reply.qrcode_start_pair(userId, placeId)
         return "qrcode"
 
     if status == "pairing_fail":
