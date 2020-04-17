@@ -55,15 +55,11 @@ def pair_user(placeId, userId):
         waiting.startedAt = datetime.now()
         db_session.commit()
 
-        persona_id = func.get_persona_id()
         recipient_id = func.get_recipient_id(userId)
 
-        for words in text.waiting_success:
-            message.push_quick_reply(userId, persona_id, words)
-            message.push_quick_reply(recipient_id, persona_id, words)
+        reply.paired(userId)
+        reply.paired(recipient_id)
 
-        message.push_paired_menu(userId)
-        message.push_paired_menu(recipient_id)
         return func.user_response(msg="Pairing success.", status="paired", code=200)
 
     else:

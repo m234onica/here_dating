@@ -40,6 +40,16 @@ def pairing(userId):
         id=userId, text=text.waiting_pair, persona=persona_id)
 
 
+def paired(userId):
+    persona_id = func.get_persona_id()
+
+    message.push_text(id=userId, persona=persona_id, text=text.waiting_success[0])
+    message.push_quick_reply(id=userId, persona=persona_id, text=text.waiting_success[1])
+    
+    message.push_paired_menu(userId)
+    return "paired success"
+
+
 def pair_again(userId, words):
     persona_id = func.get_persona_id()
     return message.push_button(
