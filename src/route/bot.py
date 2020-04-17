@@ -51,27 +51,11 @@ def webhook_handle():
                     reply.qrcode_start_pair(userId, placeId)
                     return "qrcode"
             else:
-                message.push_button(
-                    id=userId,
-                    text=text.introduction[1],
-                    persona=persona_id,
-                    types=["web_url"],
-                    payload=["/pair"],
-                    title=[text.start_chating]
-                )
-
+                reply.general_start_pair(userId):
                 return "User started"
 
         if payload == "Start_pair":
-            message.push_button(
-                id=userId,
-                text=text.introduction[1],
-                persona=persona_id,
-                types=["web_url"],
-                payload=["/pair"],
-                title=[text.start_chating]
-            )
-
+            reply.general_start_pair(userId)
             return "User started"
         # 離開聊天室
         if payload == "Leave":

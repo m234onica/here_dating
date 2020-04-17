@@ -7,6 +7,18 @@ def introduction(userId):
         id=userId, text=text.introduction[0], persona=persona_id)
 
 
+def general_start_pair(userId):
+    persona_id = func.get_persona_id()
+    return message.push_button(
+        id=userId,
+        text=text.introduction[1],
+        persona=persona_id,
+        types=["web_url"],
+        payload=["/pair"],
+        title=[text.start_chating]
+    )
+
+
 def qrcode_start_pair(userId, placeId):
     persona_id = func.get_persona_id()
     return message.push_button(
