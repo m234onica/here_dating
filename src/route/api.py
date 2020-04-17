@@ -31,8 +31,6 @@ def verify_distance(placeId):
 @api.route("/api/pair/<placeId>/<userId>", methods=["POST"])
 def pair_user(placeId, userId):
 
-    persona_id = func.get_persona_id()
-
     active = func.active_pair()
     # userId is in active data
     is_player = active.filter((Pair.playerA == userId)
@@ -57,7 +55,9 @@ def pair_user(placeId, userId):
         waiting.startedAt = datetime.now()
         db_session.commit()
 
+        persona_id = func.get_persona_id()
         recipient_id = func.get_recipient_id(userId)
+
         for words in text.waiting_success:
             message.push_quick_reply(userId, persona_id, words)
             message.push_quick_reply(recipient_id, persona_id, words)
@@ -142,7 +142,6 @@ def leave(userId):
     pair = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
         filter(Pair.deletedAt == None).first()
 
-    persona_id = func.get_persona_id()
     recipient_id = func.get_recipient_id(userId)
 
     if pair == None:
