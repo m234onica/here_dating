@@ -34,7 +34,7 @@ def delete(minutes):
         expired_data = active_data.filter(Pair.startedAt == None).\
             filter(Pair.createdAt <= expired_time).all()
 
-    if minutes == Config.END_TIME:
+    else:
         status = 2
         expired_data = active_data.filter(Pair.playerB != None).\
             filter(Pair.startedAt <= expired_time).all()
