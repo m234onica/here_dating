@@ -81,7 +81,7 @@ def webhook_handle():
         return "Send the last message."
 
     if status == "pairing":
-        message.push_text(userId, persona_id, text.waiting_pair)
+        reply.pairing(userId)
         return "Pairing"
 
     if "referral" in messaging.keys() and status not in ["paired", "pairing"]:

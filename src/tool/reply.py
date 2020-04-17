@@ -1,6 +1,7 @@
 from src.tool import message
 from src.tool import func, text
 
+
 def introduction(userId):
     persona_id = func.get_persona_id()
     return message.push_text(
@@ -31,6 +32,12 @@ def qrcode_start_pair(userId, placeId):
                text.qrcode_intro_button],
         payload=["Pair," + placeId, "/pair"],
     )
+
+
+def pairing(userId):
+    persona_id = func.get_persona_id()
+    return message.push_text(
+        userId=userId, text=text.waiting_pair, persona_id=persona_id)
 
 
 def pair_again(userId, words):

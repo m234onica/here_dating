@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
-from src.tool import message, func, text
+from src.tool import message, func, text, reply
 from config import Config
 
 api = Blueprint("api", __name__)
@@ -41,7 +41,7 @@ def pair_user(placeId, userId):
     # 有userId但沒有開始時間：配對
     if is_player is not None:
         if is_player.startedAt == None:
-            message.push_text(userId, persona_id, text.waiting_pair)
+            reply.pairing(userId)
             return func.user_response(msg="User is exist and pairing.", status="pairing", code=200)
 
         # 有userId且有開始時間：聊天
@@ -70,8 +70,8 @@ def pair_user(placeId, userId):
         db_session.add(Pair(placeId=placeId, playerA=userId))
         db_session.commit()
 
+        reply.pairing(userId)
         message.push_pairing_menu(userId)
-        message.push_text(userId, persona_id, text.waiting_pair)
 
         return func.user_response(msg="User start to pair.", status="pairing", code=200)
     return "success"
