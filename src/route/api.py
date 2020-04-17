@@ -147,10 +147,13 @@ def leave(userId):
     pair.status = status_Enum(1)
     db_session.commit()
 
-    reply.pair_again(userId, text.leave_message)
+    placeId = func.get_placeId(userId)
+    reply.quick_pair(userId, placeId,
+                     text.leave_message[0] + placeId + text.leave_message[1])
     message.delete_menu(userId)
 
     if recipient_id != None:
-        reply.pair_again(recipient_id, text.partner_leave_message)
+        reply.quick_pair(recipient_id, placeId,
+                         text.leave_message[0] + placeId + text.leave_message[1])
         message.delete_menu(recipient_id)
     return "User leave"

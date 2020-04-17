@@ -86,6 +86,15 @@ def timeout_chat(userId):
     return user_response(msg="User is chating",status="paired", code=200)
 
 
+def get_placeId(userId):
+    pair = get_pair(recognize_player(userId), userId)
+    if pair != None:
+        placeId = pair.placeId
+        return placeId
+    else:
+        return None
+
+
 def user_response(msg, status, code):
     response = make_response({
         "status_msg": msg,
