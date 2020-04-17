@@ -62,6 +62,19 @@ def pair_again(userId, words):
     )
 
 
+def quick_pair(userId, placeId):
+    persona_id = func.get_persona_id()
+    return message.push_button(
+        id=userId,
+        persona=persona_id,
+        text=text.quick_pairing_message[0] +
+        placeId + text.quick_pairing_message[1],
+        types=["postback", "web_url"],
+        payload=["Pair," + placeId, "/pair"],
+        title=[text.qrcode_check_button, text.qrcode_intro_button]
+    )
+
+
 def timeout(userId):
     persona_id = func.get_persona_id()
 
