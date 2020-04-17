@@ -154,6 +154,6 @@ def leave(userId):
 
     if recipient_id != None:
         reply.quick_pair(recipient_id, placeId,
-                         text.leave_message[0] + placeId + text.leave_message[1])
+                         text.partner_leave_message[0] + placeId + text.partner_leave_message[1])
         message.delete_menu(recipient_id)
     return "User leave"
