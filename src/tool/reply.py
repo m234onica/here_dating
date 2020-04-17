@@ -66,3 +66,14 @@ def timeout(userId):
                text.pair_again_button]
     )
     return "reply of timeout"
+
+
+def last_message(userId, lastWord):
+    persona_id = func.get_persona_id()
+    recipient_id = func.get_recipient_id(userId)
+
+    message.push_text(userId, persona_id,
+                      text.user_last_message + lastWord)
+    message.push_text(recipient_id, persona_id,
+                      text.partner_last_message + lastWord)
+    return "sended last message"

@@ -88,8 +88,6 @@ def send_last_word():
     player = func.recognize_player(userId)
     pair = func.get_pair(player, userId)
 
-    persona_id = func.get_persona_id()
-
     if status == "unSend":
         if player == "playerA":
             pair.playerA_lastedAt = datetime.now()
@@ -99,11 +97,7 @@ def send_last_word():
 
         db_session.commit()
 
-        recipient_id = func.get_recipient_id(userId)
-        message.push_text(recipient_id, persona_id,
-                          text.partner_last_message + lastWord)
-        message.push_text(userId, persona_id,
-                          text.user_last_message + lastWord)
+        reply.last_message(userId, lastWord)
 
     return func.user_response(msg="Send palyer's last word.", status="success", code=200)
 
