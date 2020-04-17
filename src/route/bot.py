@@ -26,11 +26,6 @@ def webhook_handle():
     messaging = data["entry"][0]["messaging"][0]
     userId = messaging["sender"]["id"]
 
-    persona = message.requests_get("personas")
-    if persona["data"] == []:
-        message.persona()
-
-    persona_id = persona["data"][0]["id"]
     message.sender_action(userId, "mark_seen")
 
     # 接收type=postback的回應
