@@ -4,8 +4,10 @@ from flask import g
 
 from src import create_app
 from src.db import db_session
+from src.tool import message
 
 app = create_app()
+start = message.get_started()
 
 BASE_URL = app.config.get("BASE_URL")
 APP_ID = app.config.get("APP_ID")
