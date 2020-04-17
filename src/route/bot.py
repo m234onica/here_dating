@@ -51,7 +51,7 @@ def webhook_handle():
                     reply.qrcode_start_pair(userId, placeId)
                     return "qrcode"
             else:
-                reply.general_start_pair(userId):
+                reply.general_start_pair(userId)
                 return "User started"
 
         if payload == "Start_pair":
