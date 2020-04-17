@@ -42,9 +42,9 @@ def webhook_handle():
             reply.introduction(userId)
 
             if "referral" in postback.keys():
-                ref = postback["referral"]["ref"].split(",")
-                entrance = ref[0]
-                placeId = ref[1]
+                referral = postback["referral"]["ref"].split(",")
+                entrance = referral[0]
+                placeId = referral[1]
 
                 if entrance == "qrcode":
                     return reply.qrcode_start_pair(userId, placeId)
@@ -79,8 +79,8 @@ def webhook_handle():
         return reply.pairing(userId)
 
     if "referral" in messaging.keys() and status not in ["paired", "pairing"]:
-        ref = messaging["referral"]["ref"].split(",")
-        placeId = ref[1]
+        referral = messaging["referral"]["ref"].split(",")
+        placeId = referral[1]
         return reply.qrcode_start_pair(userId, placeId)
 
     if status == "pairing_fail":
