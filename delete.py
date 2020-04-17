@@ -4,7 +4,7 @@ import time
 
 from src.db import db_session
 from src.models import Pair, status_Enum
-from src.tool import message, func, text
+from src.tool import message, func, text, reply
 from config import Config
 
 starttime = time.time()
@@ -25,20 +25,9 @@ def send_expired_message(userId):
 
 
 def send_end_message(userId):
-    persona_id = func.get_persona_id()
-    pairId = func.get_pairId(userId)
+    reply.timeout(userId)
     message.delete_menu(userId)
-    message.push_text(id=userId, persona=persona_id,
-                      text=text.timeout_text[0])
 
-    message.push_button(
-        id=userId,
-        persona=persona_id,
-        text=text.timeout_text[1],
-        types=["web_url", "web_url"],
-        payload=["/" + pairId + "/message/" + userId, "/pair"],
-        title=[text.send_partner_last_message_button, text.pair_again_button]
-    )
     return "sended success"
 
 
