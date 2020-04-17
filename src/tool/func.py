@@ -79,7 +79,7 @@ def timeout_chat(userId):
             persona_id = get_persona_id()
             message.push_text(id=userId, persona=persona_id,
                               text=text.timeout_text[0])
-            message.push_multi_button(
+            message.push_button(
                 id=userId, persona=persona_id,
                 text=text.timeout_text[1],
                 types=["web_url", "web_url"],

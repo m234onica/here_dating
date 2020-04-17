@@ -14,9 +14,13 @@ def send_expired_message(userId):
     persona_id = func.get_persona_id()
 
     message.delete_menu(userId)
-    message.push_webview(
-        id=userId, text=text.wait_expired,
-        persona=persona_id, webview_page="/pair", title=text.pair_again_button)
+    message.push_button(
+        id=userId, 
+        persona=persona_id, 
+        text=text.wait_expired, 
+        types=["web_url"], 
+        payload=["/pair"], 
+        title=[text.pair_again_button])
     return "sended success"
 
 
@@ -27,7 +31,7 @@ def send_end_message(userId):
     message.push_text(id=userId, persona=persona_id,
                       text=text.timeout_text[0])
 
-    message.push_multi_button(
+    message.push_button(
         id=userId,
         persona=persona_id,
         text=text.timeout_text[1],

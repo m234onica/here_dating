@@ -49,28 +49,38 @@ def webhook_handle():
                 placeId = ref[1]
 
                 if entrance == "qrcode":
-                    message.push_multi_button(
+                    message.push_button(
                         id=userId,
                         persona=persona_id,
                         text=text.qrcode_introduction[0] + text.place_id_title +
                         placeId + text.qrcode_introduction[1],
                         types=["postback", "web_url"],
                         title=[text.qrcode_check_button,
-                                     text.qrcode_intro_button],
+                               text.qrcode_intro_button],
                         payload=["Pair," + placeId, "/pair"],
-                        )
+                    )
                     return "qrcode"
             else:
-                message.push_webview(
-                    id=userId, text=text.introduction[1], persona=persona_id,
-                    webview_page="/pair", title=text.start_chating)
+                message.push_button(
+                    id=userId,
+                    text=text.introduction[1],
+                    persona=persona_id,
+                    types=["web_url"],
+                    payload=["/pair"],
+                    title=[text.start_chating]
+                )
 
                 return "User started"
 
         if payload == "Start_pair":
-            message.push_webview(
-                id=userId, text=text.introduction[1], persona=persona_id,
-                webview_page="/pair", title=text.start_chating)
+            message.push_button(
+                id=userId,
+                text=text.introduction[1],
+                persona=persona_id,
+                types=["web_url"],
+                payload=["/pair"],
+                title=[text.start_chating]
+            )
 
             return "User started"
         # 離開聊天室
@@ -111,7 +121,7 @@ def webhook_handle():
     if "referral" in messaging.keys() and status not in ["paired", "pairing"]:
         ref = messaging["referral"]["ref"].split(",")
         placeId = ref[1]
-        message.push_multi_button(
+        message.push_button(
             id=userId,
             persona=persona_id,
             text=text.qrcode_introduction[0] + text.place_id_title +
@@ -119,25 +129,38 @@ def webhook_handle():
             types=["postback", "web_url"],
             title=[text.qrcode_check_button, text.qrcode_intro_button],
             payload=["Pair," + placeId, "/pair"]
-            )
+        )
         return "qrcode"
 
     if status == "pairing_fail":
-        message.push_webview(
-            id=userId, text=text.wait_expired,
-            persona=persona_id, webview_page="/pair", title=text.pair_again_button)
+        message.push_button(
+            id=userId,
+            persona=persona_id,
+            text=text.wait_expired,
+            types=["web_url"],
+            payload=["/pair"],
+            title=[text.pair_again_button]
+        )
         return "Stop wait"
 
     if status == "leaved":
-        message.push_webview(
-            id=userId, text=text.leave_message,
-            persona=persona_id, webview_page="/pair", title=text.pair_again_button)
+        message.push_button(
+            id=userId,
+            text=text.leave_message,
+            persona=persona_id,
+            types=["web_url"],
+            payload=["/pair"],
+            title=[text.pair_again_button])
         return "Leaved"
 
     if status == "noPair":
-        message.push_webview(
-            id=userId, text=text.pair_again_text,
-            persona=persona_id, webview_page="/pair", title=text.pair_again_button)
+        message.push_button(
+            id=userId,
+            text=text.pair_again_text,
+            persona=persona_id,
+            types=["web_url"],
+            payload=["/pair"],
+            title=[text.pair_again_button])
         return "No paired."
 
     else:

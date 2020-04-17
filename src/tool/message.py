@@ -86,34 +86,7 @@ def push_attachment(id, persona, url):
     return requests_post("messages", data)
 
 
-def push_webview(id, persona, text, webview_page, title):
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "persona_id": persona,
-        "message": {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "button",
-                    "text": text,
-                    "buttons": [
-                        button_type(
-                            types="web_url",
-                            title=title,
-                            payload=webview_page,
-                        )
-                    ]
-
-                }
-            }
-        }
-    }
-    return requests_post("messages", data)
-
-
-def push_multi_button(id, persona, text, types, title, payload):
+def push_button(id, persona, text, types, title, payload):
     buttons = []
     for i in range(len(types)):
         buttons.append(
@@ -162,7 +135,7 @@ def button_type(types, title, payload):
 
 def get_started():
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
-    
+
     whitelisted_domains = {
         "whitelisted_domains": [
             Config.BASE_URL
