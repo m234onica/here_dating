@@ -1,4 +1,3 @@
-import time
 from flask import g
 from flask_cors import CORS
 
