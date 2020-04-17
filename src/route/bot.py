@@ -83,7 +83,7 @@ def webhook_handle():
                                     text.quick_pairing_message[0] + placeId + text.quick_pairing_message[1])
 
         else:
-            return reply.pair_again(userId, text.introduction[1], persona=persona_id)
+            return reply.pair_again(userId, text.introduction[1])
     else:
         recipient_id = func.get_recipient_id(userId)
         timeout = func.timeout_chat(userId).json

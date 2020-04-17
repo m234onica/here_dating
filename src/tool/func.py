@@ -90,7 +90,6 @@ def get_placeId(userId):
     pair = get_pair(recognize_player(userId), userId)
     if pair != None:
         placeId = pair.placeId
-        print(placeId)
         return placeId
     else:
         return None
