@@ -54,10 +54,11 @@ def webhook_handle():
                         persona=persona_id,
                         text=text.qrcode_introduction[0] + text.place_id_title +
                         placeId + text.qrcode_introduction[1],
-                        first_title=text.qrcode_check_button,
-                        payload="Pair," + placeId,
-                        url="/pair",
-                        sec_title=text.qrcode_intro_button)
+                        types=["postback", "web_url"],
+                        title=[text.qrcode_check_button,
+                                     text.qrcode_intro_button],
+                        payload=["Pair," + placeId, "/pair"],
+                        )
                     return "qrcode"
             else:
                 message.push_webview(
@@ -115,10 +116,10 @@ def webhook_handle():
             persona=persona_id,
             text=text.qrcode_introduction[0] + text.place_id_title +
             placeId + text.qrcode_introduction[1],
-            first_title=text.qrcode_check_button,
-            payload="Pair," + placeId,
-            url="/pair",
-            sec_title=text.qrcode_intro_button)
+            types=["postback", "web_url"],
+            title=[text.qrcode_check_button, text.qrcode_intro_button],
+            payload=["Pair," + placeId, "/pair"]
+            )
         return "qrcode"
 
     if status == "pairing_fail":

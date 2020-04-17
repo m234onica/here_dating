@@ -27,14 +27,14 @@ def send_end_message(userId):
     message.push_text(id=userId, persona=persona_id,
                       text=text.timeout_text[0])
 
-    message.push_multi_webview(
+    message.push_multi_button(
         id=userId,
         persona=persona_id,
         text=text.timeout_text[1],
-        first_url="/" + pairId + "/message/" + userId,
-        first_title=text.send_partner_last_message_button,
-        sec_url="/pair",
-        sec_title=text.pair_again_button)
+        types=["web_url", "web_url"],
+        payload=["/" + pairId + "/message/" + userId, "/pair"],
+        title=[text.send_partner_last_message_button, text.pair_again_button]
+    )
     return "sended success"
 
 
