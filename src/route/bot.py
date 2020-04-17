@@ -68,9 +68,6 @@ def webhook_handle():
     payload = get_status(userId).json
     status = payload["payload"]["status"]
 
-    if status == "unSend":
-        return reply.timeout(userId)
-
     if status == "pairing":
         return reply.pairing(userId)
 
@@ -79,15 +76,12 @@ def webhook_handle():
         placeId = referral[1]
         return reply.qrcode_start_pair(userId, placeId)
 
-    if status == "pairing_fail":
-        return reply.pair_again(userId, text.wait_expired)
+    if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
+        if placeId != None:
+            return reply.quick_pair(userId, placeId)
 
-    if status == "leaved":
-        return reply.pair_again(userId, text.leave_message)
-
-    if status == "noPair":
-        return reply.pair_again(userId, text.pair_again_text)
-
+        else:
+            return reply.pair_again(userId, text.introduction[1], persona=persona_id)
     else:
         recipient_id = func.get_recipient_id(userId)
         timeout = func.timeout_chat(userId).json
