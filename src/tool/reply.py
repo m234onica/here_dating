@@ -37,7 +37,7 @@ def qrcode_start_pair(userId, placeId):
 def pairing(userId):
     persona_id = func.get_persona_id()
     return message.push_text(
-        id=userId, text=text.waiting_pair, persona_id=persona_id)
+        id=userId, text=text.waiting_pair, persona=persona_id)
 
 
 def pair_again(userId, words):
