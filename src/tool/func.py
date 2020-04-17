@@ -69,6 +69,7 @@ def get_persona_id():
 def timeout_chat(userId):
     player = recognize_player(userId)
     pair = get_pair(player, userId)
+    recipient_id = get_recipient_id(userId)
     now_time = datetime.now()
 
     if pair.startedAt != None and pair.deletedAt == None:
@@ -80,6 +81,9 @@ def timeout_chat(userId):
 
             reply.timeout(userId)
             message.delete_menu(userId)
+
+            reply.timeout(recipient_id)
+            message.delete_menu(recipient_id)
 
             return user_response(msg="Timeout to breaked pair", status="timeout", code=200)
 
