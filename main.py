@@ -3,9 +3,12 @@ from flask_cors import CORS
 
 from src import create_app
 from src.db import db_session
+from src.tool import message
 
 app = create_app()
 CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+start = message.get_started()
 
 @app.teardown_request
 def shutdown_session(exception=None):
