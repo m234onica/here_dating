@@ -4,7 +4,7 @@ import requests
 from src.db import init_db, db_session
 from src.models import Place, Pair
 from src.route.api import leave, get_status, pair_user
-from src.tool import message, func, text
+from src.tool import message, func, text, reply
 from config import Config
 
 
@@ -135,34 +135,15 @@ def webhook_handle():
         return "qrcode"
 
     if status == "pairing_fail":
-        message.push_button(
-            id=userId,
-            persona=persona_id,
-            text=text.wait_expired,
-            types=["web_url"],
-            payload=["/pair"],
-            title=[text.pair_again_button]
-        )
+        reply.pair_again(userId, text.wait_expired)
         return "Stop wait"
 
     if status == "leaved":
-        message.push_button(
-            id=userId,
-            text=text.leave_message,
-            persona=persona_id,
-            types=["web_url"],
-            payload=["/pair"],
-            title=[text.pair_again_button])
+        reply.pair_again(userId, text.leave_message)
         return "Leaved"
 
     if status == "noPair":
-        message.push_button(
-            id=userId,
-            text=text.pair_again_text,
-            persona=persona_id,
-            types=["web_url"],
-            payload=["/pair"],
-            title=[text.pair_again_button])
+        reply.pair_again(userId, text.pair_again_text)
         return "No paired."
 
     else:
