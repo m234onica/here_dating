@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, g, redirect, flash, url_for
-import requests
+from flask import Blueprint, render_template, request
 
 from src.db import init_db, db_session
 from src.models import Place, Pair
@@ -48,15 +47,13 @@ def webhook_handle():
                 placeId = ref[1]
 
                 if entrance == "qrcode":
-                    reply.qrcode_start_pair(userId, placeId)
-                    return "qrcode"
+                    return reply.qrcode_start_pair(userId, placeId)
             else:
-                reply.general_start_pair(userId)
-                return "User started"
+                return reply.general_start_pair(userId)
 
         if payload == "Start_pair":
-            reply.general_start_pair(userId)
-            return "User started"
+            return reply.general_start_pair(userId)
+
         # 離開聊天室
         if payload == "Leave":
             payload = get_status(userId).json
@@ -70,37 +67,30 @@ def webhook_handle():
         placeId = payload_param[1]
 
         if payload_param[0] == "Pair":
-            pair_user(placeId, userId)
-            return "User pairing"
+            return pair_user(placeId, userId)
 
     payload = get_status(userId).json
     status = payload["payload"]["status"]
 
     if status == "unSend":
-        reply.timeout(userId)
-        return "Send the last message."
+        return reply.timeout(userId)
 
     if status == "pairing":
-        reply.pairing(userId)
-        return "Pairing"
+        return reply.pairing(userId)
 
     if "referral" in messaging.keys() and status not in ["paired", "pairing"]:
         ref = messaging["referral"]["ref"].split(",")
         placeId = ref[1]
-        reply.qrcode_start_pair(userId, placeId)
-        return "qrcode"
+        return reply.qrcode_start_pair(userId, placeId)
 
     if status == "pairing_fail":
-        reply.pair_again(userId, text.wait_expired)
-        return "Stop wait"
+        return reply.pair_again(userId, text.wait_expired)
 
     if status == "leaved":
-        reply.pair_again(userId, text.leave_message)
-        return "Leaved"
+        return reply.pair_again(userId, text.leave_message)
 
     if status == "noPair":
-        reply.pair_again(userId, text.pair_again_text)
-        return "No paired."
+        return reply.pair_again(userId, text.pair_again_text)
 
     else:
         recipient_id = func.get_recipient_id(userId)
