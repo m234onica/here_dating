@@ -13,8 +13,12 @@
 .git
 .env
 .vscode
+node_modules
+static
+
 here.sql
 README.md
 delete.py
 config.sample.py
+package-lock.json
 run.py
