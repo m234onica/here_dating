@@ -11,16 +11,9 @@ starttime = time.time()
 
 
 def send_expired_message(userId):
-    persona_id = func.get_persona_id()
-
+    reply.pair_again(userId, text.pair_again_button)
     message.delete_menu(userId)
-    message.push_button(
-        id=userId, 
-        persona=persona_id, 
-        text=text.wait_expired, 
-        types=["web_url"], 
-        payload=["/pair"], 
-        title=[text.pair_again_button])
+    
     return "sended success"
 
 
