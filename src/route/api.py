@@ -158,15 +158,25 @@ def leave(userId):
     pair.status = status_Enum(1)
     db_session.commit()
 
-    message.push_webview(
-        id=userId, text=text.leave_message, persona=persona_id,
-        webview_page="/pair", title=text.pair_again_button)
+    message.push_button(
+        id=userId,
+        text=text.leave_message,
+        persona=persona_id,
+        types=["web_url"],
+        payload=["/pair"],
+        title=[text.pair_again_button]
+    )
 
     message.delete_menu(userId)
 
     if recipient_id != None:
-        message.push_webview(
-            id=recipient_id, text=text.partner_leave_message, persona=persona_id,
-            webview_page="/pair", title=text.pair_again_button)
+        message.push_button(
+            id=recipient_id,
+            text=text.partner_leave_message,
+            persona=persona_id,
+            types=["web_url"],
+            payload=["/pair"],
+            title=[text.pair_again_button]
+        )
         message.delete_menu(recipient_id)
     return "User leave"

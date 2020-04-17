@@ -86,7 +86,13 @@ def push_attachment(id, persona, url):
     return requests_post("messages", data)
 
 
-def push_webview(id, persona, text, webview_page, title):
+def push_button(id, persona, text, types, title, payload):
+    buttons = []
+    for i in range(len(types)):
+        buttons.append(
+            button_type(types=types[i], title=title[i], payload=payload[i])
+        )
+
     data = {
         "recipient": {
             "id": id
@@ -98,16 +104,7 @@ def push_webview(id, persona, text, webview_page, title):
                 "payload": {
                     "template_type": "button",
                     "text": text,
-                    "buttons": [
-                        {
-                            "type": "web_url",
-                            "url": Config.BASE_URL + webview_page,
-                            "messenger_extensions": True,
-                            "title": title,
-                            "webview_height_ratio": "full"
-                        }
-                    ]
-
+                    "buttons": buttons
                 }
             }
         }
@@ -115,80 +112,30 @@ def push_webview(id, persona, text, webview_page, title):
     return requests_post("messages", data)
 
 
-def push_multi_webview(id, persona, text, first_url, first_title, sec_url, sec_title):
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "persona_id": persona,
-        "message": {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "button",
-                    "text": text,
-                    "buttons": [
-                        {
-                            "type": "web_url",
-                            "url": Config.BASE_URL + first_url,
-                            "messenger_extensions": True,
-                            "title": first_title,
-                            "webview_height_ratio": "full"
-                        },
-                        {
-                            "type": "web_url",
-                            "url": Config.BASE_URL + sec_url,
-                            "messenger_extensions": True,
-                            "title": sec_title,
-                            "webview_height_ratio": "full"
-                        }
-                    ]
+def button_type(types, title, payload):
+    if types == None:
+        return None
 
-                }
-            }
+    if types == "web_url":
+        return {
+            "type": types,
+            "title": title,
+            "url": Config.BASE_URL + payload,
+            "messenger_extensions": True,
+            "webview_height_ratio": "full"
         }
-    }
-    return requests_post("messages", data)
 
-
-def push_multi_button(id, persona, text, first_title, payload, url, sec_title):
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "persona_id": persona,
-        "message": {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "button",
-                    "text": text,
-                    "buttons": [
-                        {
-                            "type": "postback",
-                            "title": first_title,
-                            "payload": payload
-
-                        },
-                        {
-                            "type": "web_url",
-                            "url": Config.BASE_URL + url,
-                            "messenger_extensions": True,
-                            "title": sec_title,
-                            "webview_height_ratio": "full"
-                        }
-                    ]
-
-                }
-            }
+    if types == "postback":
+        return {
+            "type": types,
+            "title": title,
+            "payload": payload
         }
-    }
-    return requests_post("messages", data)
 
 
 def get_started():
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
-    
+
     whitelisted_domains = {
         "whitelisted_domains": [
             Config.BASE_URL
