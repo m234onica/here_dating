@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
-from src.tool import message, func, text
+from src.tool import message, func, text, reply
 from config import Config
 
 api = Blueprint("api", __name__)
@@ -31,8 +31,6 @@ def verify_distance(placeId):
 @api.route("/api/pair/<placeId>/<userId>", methods=["POST"])
 def pair_user(placeId, userId):
 
-    persona_id = func.get_persona_id()
-
     active = func.active_pair()
     # userId is in active data
     is_player = active.filter((Pair.playerA == userId)
@@ -41,7 +39,7 @@ def pair_user(placeId, userId):
     # 有userId但沒有開始時間：配對
     if is_player is not None:
         if is_player.startedAt == None:
-            message.push_text(userId, persona_id, text.waiting_pair)
+            reply.pairing(userId)
             return func.user_response(msg="User is exist and pairing.", status="pairing", code=200)
 
         # 有userId且有開始時間：聊天
@@ -58,20 +56,18 @@ def pair_user(placeId, userId):
         db_session.commit()
 
         recipient_id = func.get_recipient_id(userId)
-        for words in text.waiting_success:
-            message.push_quick_reply(userId, persona_id, words)
-            message.push_quick_reply(recipient_id, persona_id, words)
 
-        message.push_paired_menu(userId)
-        message.push_paired_menu(recipient_id)
+        reply.paired(userId)
+        reply.paired(recipient_id)
+
         return func.user_response(msg="Pairing success.", status="paired", code=200)
 
     else:
         db_session.add(Pair(placeId=placeId, playerA=userId))
         db_session.commit()
 
+        reply.pairing(userId)
         message.push_pairing_menu(userId)
-        message.push_text(userId, persona_id, text.waiting_pair)
 
         return func.user_response(msg="User start to pair.", status="pairing", code=200)
     return "success"
@@ -88,8 +84,6 @@ def send_last_word():
     player = func.recognize_player(userId)
     pair = func.get_pair(player, userId)
 
-    persona_id = func.get_persona_id()
-
     if status == "unSend":
         if player == "playerA":
             pair.playerA_lastedAt = datetime.now()
@@ -99,11 +93,7 @@ def send_last_word():
 
         db_session.commit()
 
-        recipient_id = func.get_recipient_id(userId)
-        message.push_text(recipient_id, persona_id,
-                          text.partner_last_message + lastWord)
-        message.push_text(userId, persona_id,
-                          text.user_last_message + lastWord)
+        reply.last_message(userId, lastWord)
 
     return func.user_response(msg="Send palyer's last word.", status="success", code=200)
 
@@ -148,7 +138,6 @@ def leave(userId):
     pair = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
         filter(Pair.deletedAt == None).first()
 
-    persona_id = func.get_persona_id()
     recipient_id = func.get_recipient_id(userId)
 
     if pair == None:
@@ -158,25 +147,10 @@ def leave(userId):
     pair.status = status_Enum(1)
     db_session.commit()
 
-    message.push_button(
-        id=userId,
-        text=text.leave_message,
-        persona=persona_id,
-        types=["web_url"],
-        payload=["/pair"],
-        title=[text.pair_again_button]
-    )
-
+    reply.pair_again(userId, text.leave_message)
     message.delete_menu(userId)
 
     if recipient_id != None:
-        message.push_button(
-            id=recipient_id,
-            text=text.partner_leave_message,
-            persona=persona_id,
-            types=["web_url"],
-            payload=["/pair"],
-            title=[text.pair_again_button]
-        )
+        reply.pair_again(recipient_id, text.partner_leave_message)
         message.delete_menu(recipient_id)
     return "User leave"

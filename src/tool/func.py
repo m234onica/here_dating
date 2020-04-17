@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from src.models import Pair, status_Enum
 from src.db import db_session
-from src.tool import message, text
+from src.tool import message, text, reply
 from config import Config
 
 
@@ -59,6 +59,8 @@ def get_recipient_id(userId):
 def get_persona_id():
 
     persona = message.requests_get("personas")
+    if persona["data"] == []:
+        message.persona()
     persona_id = persona["data"][0]["id"]
 
     return persona_id
@@ -76,18 +78,7 @@ def timeout_chat(userId):
 
             db_session.commit()
 
-            persona_id = get_persona_id()
-            message.push_text(id=userId, persona=persona_id,
-                              text=text.timeout_text[0])
-            message.push_button(
-                id=userId, persona=persona_id,
-                text=text.timeout_text[1],
-                types=["web_url", "web_url"],
-                payload=["/message/" + userId, "/pair"],
-                title=[text.send_partner_last_message_button,
-                       text.pair_again_button]
-                )
-
+            reply.timeout(userId)
             message.delete_menu(userId)
 
             return user_response(msg="Timeout to breaked pair", status="timeout", code=200)
