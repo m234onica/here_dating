@@ -25,6 +25,7 @@ def webhook_handle():
     data = request.get_json()
     messaging = data["entry"][0]["messaging"][0]
     userId = messaging["sender"]["id"]
+    placeId = func.get_placeId(userId)
 
     message.sender_action(userId, "mark_seen")
 
