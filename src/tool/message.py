@@ -7,6 +7,7 @@ def requests_post(url, payload):
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     post_url = "/".join([Config.FB_API_URL, "me", url])
     response = requests.request("POST", url=post_url, params=params, json=payload).json()
+    print(response)
     return response
 
 
