@@ -11,7 +11,9 @@ starttime = time.time()
 
 
 def send_expired_message(userId):
-    reply.pair_again(userId, text.pair_again_button)
+    placeId = func.get_placeId(userId)
+    reply.quick_pair(userId, placeId,
+                     text.wait_expired[0] + placeId + text.wait_expired[1])
     message.delete_menu(userId)
     
     return "sended success"
@@ -34,7 +36,7 @@ def delete(minutes):
         expired_data = active_data.filter(Pair.startedAt == None).\
             filter(Pair.createdAt <= expired_time).all()
 
-    else:
+    if minutes == Config.END_TIME:
         status = 2
         expired_data = active_data.filter(Pair.playerB != None).\
             filter(Pair.startedAt <= expired_time).all()
