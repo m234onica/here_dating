@@ -103,16 +103,7 @@ def webhook_handle():
     status = payload["payload"]["status"]
 
     if status == "unSend":
-        message.push_text(id=userId, persona=persona_id,
-                          text=text.timeout_text[0])
-
-        message.push_button(
-            id=userId, persona=persona_id,
-            text=text.timeout_text[1],
-            types=["web_url", "web_url"],
-            payload=["/message/" + userId, "/pair"],
-            title=[text.send_partner_last_message_button,
-                   text.pair_again_button])
+        reply.timeout(userId)
 
         return "Send the last message."
 
