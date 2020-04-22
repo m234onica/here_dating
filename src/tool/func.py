@@ -7,6 +7,10 @@ from src.tool import message, text, reply
 from config import Config
 
 
+def concat(*chunk, sep="/"):
+    return sep.join(chunk)
+
+
 def active_pair():
     return Pair.query.filter(Pair.deletedAt == None)
 
@@ -81,7 +85,6 @@ def timeout_chat(userId):
 
             reply.timeout(userId)
             message.delete_menu(userId)
-            message.delete_menu(recipient_id)
 
             reply.timeout(recipient_id)
             message.delete_menu(recipient_id)

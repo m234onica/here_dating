@@ -15,7 +15,7 @@ def general_start_pair(userId):
         text=text.introduction[1],
         persona=persona_id,
         types=["web_url"],
-        payload=["/pair.html"],
+        payload=["pair.html"],
         title=[text.start_chating]
     )
 
@@ -30,7 +30,7 @@ def qrcode_start_pair(userId, placeId):
         types=["postback", "web_url"],
         title=[text.qrcode_check_button,
                text.qrcode_intro_button],
-        payload=["Pair," + placeId, "/pair.html"],
+        payload=["Pair," + placeId, "pair.html"],
     )
 
 
@@ -57,19 +57,20 @@ def pair_again(userId, words):
         persona=persona_id,
         text=words,
         types=["web_url"],
-        payload=["/pair.html"],
+        payload=["pair.html"],
         title=[text.pair_again_button]
     )
 
 
 def quick_pair(userId, placeId, words):
     persona_id = func.get_persona_id()
+    postback_payload = func.concat("Pair", placeId, sep=",")
     return message.push_button(
         id=userId,
         persona=persona_id,
         text=words,
         types=["postback", "web_url"],
-        payload=["Pair," + placeId, "/pair.html"],
+        payload=[postback_payload, "pair.html"],
         title=[text.qrcode_check_button, text.qrcode_intro_button]
     )
 
@@ -83,7 +84,7 @@ def timeout(userId):
         id=userId, persona=persona_id,
         text=text.timeout_text[1],
         types=["web_url", "postback"],
-        payload=["/message.html", "Quick_pair"],
+        payload=["message.html", "Quick_pair"],
         title=[text.send_partner_last_message_button,
                text.pair_again_button]
     )
