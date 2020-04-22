@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from src.tool import message
 from src.tool import func, text
 
@@ -77,14 +79,18 @@ def quick_pair(userId, placeId, words):
 
 def timeout(userId):
     persona_id = func.get_persona_id()
+    pairId = func.get_pairId(userId)
 
+    params = urlencode({"pairId": pairId, "userId": userId})
+    web_url_payload = func.concat("message", params, sep="?")
+    
     message.push_text(id=userId, persona=persona_id,
                       text=text.timeout_text[0])
     message.push_button(
         id=userId, persona=persona_id,
         text=text.timeout_text[1],
         types=["web_url", "postback"],
-        payload=["message.html", "Quick_pair"],
+        payload=[web_url_payload, "Quick_pair"],
         title=[text.send_partner_last_message_button,
                text.pair_again_button]
     )

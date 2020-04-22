@@ -43,6 +43,12 @@ def get_pair(player, userId):
         return None
 
 
+def get_pairId(userId):
+    player = recognize_player(userId)
+    pair = get_pair(player, userId)
+    return str(pair.id)
+
+
 def get_recipient_id(userId):
 
     player = recognize_player(userId)
