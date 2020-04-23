@@ -82,7 +82,7 @@ def timeout(userId):
     pairId = func.get_pairId(userId)
 
     params = urlencode({"pairId": pairId, "userId": userId})
-    web_url_payload = func.concat("message", params, sep="?")
+    web_url_payload = func.concat("message.html", params, sep="?")
     
     message.push_text(id=userId, persona=persona_id,
                       text=text.timeout_text[0])
