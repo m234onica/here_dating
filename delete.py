@@ -12,8 +12,9 @@ starttime = time.time()
 
 def send_expired_message(userId):
     placeId = func.get_placeId(userId)
-    reply.quick_pair(userId, placeId,
-                     text.wait_expired[0] + placeId + text.wait_expired[1])
+    words = text.wait_expired
+
+    reply.quick_pair(userId, placeId, words.format(placeId=placeId))
     message.delete_menu(userId)
     
     return "sended success"

@@ -148,12 +148,12 @@ def leave(userId):
     db_session.commit()
 
     placeId = func.get_placeId(userId)
-    reply.quick_pair(userId, placeId,
-                     text.leave_message[0] + placeId + text.leave_message[1])
+    words = text.leave_message
+    reply.quick_pair(userId, placeId, words.format(placeId=placeId))
     message.delete_menu(userId)
 
     if recipient_id != None:
-        reply.quick_pair(recipient_id, placeId,
-                         text.partner_leave_message[0] + placeId + text.partner_leave_message[1])
+        words = text.partner_leave_message
+        reply.quick_pair(recipient_id, placeId, words.format(placeId=placeId))
         message.delete_menu(recipient_id)
     return "User leave"

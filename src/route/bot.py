@@ -49,7 +49,7 @@ def webhook_handle():
 
         if payload == "Quick_pair":
             return reply.quick_pair(userId, placeId,
-                                    text.quick_pairing_message[0] + placeId + text.quick_pairing_message[1])
+                                    text.quick_pairing_message.format(placeId=placeid))
 
         # 離開聊天室
         if payload == "Leave":
@@ -79,8 +79,9 @@ def webhook_handle():
 
     if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
         if placeId != None:
+            words = text.quick_pairing_message
             return reply.quick_pair(userId, placeId,
-                                    text.quick_pairing_message[0] + placeId + text.quick_pairing_message[1])
+                                    words.format(placeId=placeId))
 
         else:
             return reply.pair_again(userId, text.introduction[1])

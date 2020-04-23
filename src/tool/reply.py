@@ -24,11 +24,11 @@ def general_start_pair(userId):
 
 def qrcode_start_pair(userId, placeId):
     persona_id = func.get_persona_id()
+    words = text.qrcode_introduction
     return message.push_button(
         id=userId,
         persona=persona_id,
-        text=text.qrcode_introduction[0] + text.place_id_title +
-        placeId + text.qrcode_introduction[1],
+        text=words.format(placeId=placeId),
         types=["postback", "web_url"],
         title=[text.qrcode_check_button,
                text.qrcode_intro_button],
