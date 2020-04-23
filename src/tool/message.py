@@ -1,11 +1,11 @@
 import requests
-from src.tool import text
+from src.tool import text, func
 from config import Config
 
 
 def requests_post(url, payload):
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
-    post_url = "/".join([Config.FB_API_URL, "me", url])
+    post_url = func.concat(Config.FB_API_URL, "me", url)
     response = requests.request("POST", url=post_url, params=params, json=payload).json()
     return response
 
@@ -13,12 +13,12 @@ def requests_post(url, payload):
 def requests_get(url):
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
 
-    post_url = "/".join([Config.FB_API_URL, "me", url])
+    post_url = func.concat(Config.FB_API_URL, "me", url)
     response = requests.request("GET", url=post_url, params=params).json()
 
     #Debug才會用到的api
     if "error" in response.keys():
-        post_url = "/".join([Config.FB_API_URL, url])
+        post_url = func.concat(Config.FB_API_URL, url)
         response = requests.request("GET", url=post_url, params=params).json()
     return response
 
@@ -113,6 +113,7 @@ def push_button(id, persona, text, types, title, payload):
 
 
 def button_type(types, title, payload):
+    url = func.concat(Config.STATIC_URL, payload)
     if types == None:
         return None
 
@@ -120,7 +121,7 @@ def button_type(types, title, payload):
         return {
             "type": types,
             "title": title,
-            "url": Config.BASE_URL + payload,
+            "url": url,
             "messenger_extensions": True,
             "webview_height_ratio": "full"
         }
@@ -138,10 +139,13 @@ def get_started():
 
     whitelisted_domains = {
         "whitelisted_domains": [
+            Config.STATIC_URL,
             Config.BASE_URL
         ]
     }
 
+    pair_url = func.concat(Config.STATIC_URL, "pair.html")
+    rule_url = func.concat(Config.STATIC_URL, "rule.html")
     data = {
         "get_started": {
             "payload": "Start"
@@ -160,14 +164,14 @@ def get_started():
                     {
                         "type": "web_url",
                         "title": text.menu_start,
-                        "url": Config.BASE_URL + "/pair",
+                        "url": pair_url,
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     },
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": Config.BASE_URL + "/rule",
+                        "url": rule_url,
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
@@ -182,6 +186,7 @@ def get_started():
 
 
 def push_pairing_menu(id):
+    url = func.concat(Config.STATIC_URL, "rule.html")
     data = {
         "psid": id,
         "persistent_menu": [
@@ -197,7 +202,7 @@ def push_pairing_menu(id):
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": Config.BASE_URL + "/rule",
+                        "url": url,
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
@@ -211,6 +216,7 @@ def push_pairing_menu(id):
 
 
 def push_paired_menu(id):
+    url = func.concat(Config.STATIC_URL, "rule.html")
     data = {
         "psid": id,
         "persistent_menu": [
@@ -226,7 +232,7 @@ def push_paired_menu(id):
                     {
                         "type": "web_url",
                         "title": text.menu_rule,
-                        "url": Config.BASE_URL + "/rule",
+                        "url": url,
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     }
@@ -240,7 +246,7 @@ def push_paired_menu(id):
 
 
 def delete_menu(id):
-    url = Config.FB_API_URL + '/me/custom_user_settings'
+    url = func.concat(Config.FB_API_URL, "me", "custom_user_settings")
     params = {
         "psid": id,
         "params": '["persistent_menu"]',
@@ -255,6 +261,6 @@ def delete_menu(id):
 def persona():
     data = {
         "name": "系統訊息",
-        "profile_picture_url": "https://storage.googleapis.com/here_dating/user_pic.png"
+        "profile_picture_url": "https://storage.googleapis.com/here_dating/image/user_pic.png"
     }
     return requests_post("personas", data)

@@ -23,3 +23,6 @@ class Config:
     PAGE_ACCESS_TOKEN = ""
     PAGE_VERIFY_TOKEN = ""
     FB_API_URL = "https://graph.facebook.com/v6.0"
+
+    BASE_URL = ""
+    STATIC_URL = ""

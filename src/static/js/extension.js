@@ -1,3 +1,7 @@
+var base_url = config.BASE_URL;
+var app_id = config.APP_ID;
+console.log(base_url);
+
 $("input#placeId")
     .on("keyup", function () {
         var placeId = $("#placeId").val().trim();
@@ -8,23 +12,24 @@ $("input#placeId")
         if (placeId.length != 4) {
             $("#placeId").addClass("is-invalid")
                 .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
-            $("#intro-submit").attr("disabled", true);
+            $("#pair-submit").attr("disabled", true);
 
         } else {
             $.get(
                 base_url + "/api/place/" + placeId,
                 function (data, status) {
-
+                    console.log(status);
+                    
                     if (status == "success") {
                         if (data.payload == true) {
                             $(".placeId_error").remove();
                             $("#placeId").removeClass('is-invalid').addClass('is-valid')
-                            $("#intro-submit").attr("disabled", false);
+                            $("#pair-submit").attr("disabled", false);
+                        } else {
+                            $("#placeId").addClass("is-invalid")
+                                .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
+                            $("#pair-submit").attr("disabled", true);
                         }
-                    } else {
-                        $("#placeId").addClass("is-invalid")
-                            .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
-                        $("#intro-submit").attr("disabled", true);
                     }
                 }
             )
@@ -35,7 +40,7 @@ $("input#placeId")
     })
 
 
-$("#intro-submit").on("click", function (e) {
+$("#pair-submit").on("click", function (e) {
     $(this).attr("disabled", "disabled");
     $(this).html("搜尋中...");
     e.preventDefault()
@@ -49,12 +54,7 @@ $("#intro-submit").on("click", function (e) {
                 base_url + "/api/pair/" + placeId + "/" + userId,
                 function (data, status) {
                     if (status == "success") {
-                        var payload = data.payload;
-                        if (payload.status == "pairing") {
-                            window.location.href = base_url + "/wait/" + userId;
-                        } else {
-                            close_Webview();
-                        }
+                        close_Webview();
                     } else {
                         console.log(status);
                     }
@@ -65,24 +65,7 @@ $("#intro-submit").on("click", function (e) {
         });
 })
 
-$("#leave_waiting").on("click", function (e) {
-    $(this).attr("disabled", "disabled");
-    $(this).html("中斷中...");
-    e.preventDefault()
-
-    $.post(
-        base_url + "/api/user/leave/" + userId,
-        function (data, status) {
-            if (status == "success") {
-                close_Webview();
-            } else {
-                console.log(JSON.stringify(data));
-            }
-        })
-})
-
-
-$("#last-submit").on("click", function (e) {
+$("#message-submit").on("click", function (e) {
     e.preventDefault()
 
     MessengerExtensions.getContext(
@@ -115,19 +98,21 @@ $("#last-submit").on("click", function (e) {
 
 
 function get_status(userId) {
-    $.get(
-        base_url + "/api/user/status/" + userId,
-        function (data, status) {
-            if (status == "success") {
-                var payload = data.payload
-                if (payload.status != "pairing") {
-                    close_Webview();
-                }
-            } else {
-                console.log(err);
-            }
+    var result = null;
+
+    $.ajax({
+        type: "GET",
+        url: base_url + "/api/user/status/" + userId,
+        async: false,
+        success: function (data) {
+            var payload = data.payload
+            result = payload.status;            
+        },
+        error: function (data) {
+            console.log(err);
         }
-    )
+    })
+    return result;
 
 }
 

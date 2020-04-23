@@ -104,25 +104,3 @@ def webhook_handle():
         return "Send message"
 
     return "ok"
-
-
-@bot.route("/pair", methods=["GET"])
-def intro_page():
-    return render_template("pair.html", place_id_title=text.place_id_title)
-
-
-@bot.route("/wait/<userId>", methods=["GET"])
-def wait_page(userId):
-    return render_template("wait.html", cancel_words=text.cancel_pairing_button, userId=userId)
-
-
-@bot.route("/message/<userId>", methods=["GET"])
-def message_page(userId):
-    payload = get_status(userId).json
-    status = payload["payload"]["status"]
-    return render_template("message.html", status=status)
-
-
-@bot.route("/rule", methods=["GET"])
-def rule_page():
-    return render_template("rule.html")

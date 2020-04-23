@@ -7,6 +7,10 @@ from src.tool import message, text, reply
 from config import Config
 
 
+def concat(*chunk, sep="/"):
+    return sep.join(chunk)
+
+
 def active_pair():
     return Pair.query.filter(Pair.deletedAt == None)
 
@@ -37,6 +41,12 @@ def get_pair(player, userId):
             Pair.id.desc()).first()
     else:
         return None
+
+
+def get_pairId(userId):
+    player = recognize_player(userId)
+    pair = get_pair(player, userId)
+    return str(pair.id)
 
 
 def get_recipient_id(userId):

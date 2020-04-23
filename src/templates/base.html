@@ -5,16 +5,20 @@
     <title>{% block title %}{% endblock title %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <!-- bootstrap 4.3.1 -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="{{base_url}}/static/css/style.css?v={{version}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://storage.googleapis.com/here_dating/static/css/style.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
 
 <body>
+    <script type="text/javascript" src="https://storage.googleapis.com/here_dating/static/js/config.js"></script>
+
     <script type="text/javascript">
+        var base_url = config.BASE_URL;
+        var app_id = config.APP_ID;
+
         $(document).ready(function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) {
@@ -26,24 +30,22 @@
             fjs.parentNode.insertBefore(js, fjs);
         }(document, "script", "Messenger"));
     </script>
+
+    {% block pair_script %}{% endblock pair_script %}
+
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-md-6 col-sm-12">
-                {% block intro %}{% endblock intro %}
+                {% block pair %}{% endblock pair %}
                 {% block wait %}{% endblock wait %}
-                {% block leave %}{% endblock leave %}
+                {% block message %}{% endblock message %}
                 {% block rule %}{% endblock rule %}
             </div>
         </div>
     </div>
-    
+    <script type="text/javascript" src="https://storage.googleapis.com/here_dating/static/js/extension.js"></script>
 
-    <script type="text/javascript" src="{{base_url}}/static/js/extension.js?v={{version}}"></script>
-    <script>
-        var app_id = "{{app_id}}";
-        var base_url = "{{base_url}}";
-    </script>
-
+    {% block message_script %}{% endblock message_script %}
 </body>
 
 </html>

@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from src.tool import message
 from src.tool import func, text
 
@@ -15,7 +17,7 @@ def general_start_pair(userId):
         text=text.introduction[1],
         persona=persona_id,
         types=["web_url"],
-        payload=["/pair"],
+        payload=["pair.html"],
         title=[text.start_chating]
     )
 
@@ -30,7 +32,7 @@ def qrcode_start_pair(userId, placeId):
         types=["postback", "web_url"],
         title=[text.qrcode_check_button,
                text.qrcode_intro_button],
-        payload=["Pair," + placeId, "/pair"],
+        payload=["Pair," + placeId, "pair.html"],
     )
 
 
@@ -57,33 +59,38 @@ def pair_again(userId, words):
         persona=persona_id,
         text=words,
         types=["web_url"],
-        payload=["/pair"],
+        payload=["pair.html"],
         title=[text.pair_again_button]
     )
 
 
 def quick_pair(userId, placeId, words):
     persona_id = func.get_persona_id()
+    postback_payload = func.concat("Pair", placeId, sep=",")
     return message.push_button(
         id=userId,
         persona=persona_id,
         text=words,
         types=["postback", "web_url"],
-        payload=["Pair," + placeId, "/pair"],
+        payload=[postback_payload, "pair.html"],
         title=[text.qrcode_check_button, text.qrcode_intro_button]
     )
 
 
 def timeout(userId):
     persona_id = func.get_persona_id()
+    pairId = func.get_pairId(userId)
 
+    params = urlencode({"pairId": pairId, "userId": userId})
+    web_url_payload = func.concat("message", params, sep="?")
+    
     message.push_text(id=userId, persona=persona_id,
                       text=text.timeout_text[0])
     message.push_button(
         id=userId, persona=persona_id,
         text=text.timeout_text[1],
         types=["web_url", "postback"],
-        payload=["/message/" + userId, "Quick_pair"],
+        payload=[web_url_payload, "Quick_pair"],
         title=[text.send_partner_last_message_button,
                text.pair_again_button]
     )

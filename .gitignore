@@ -2,8 +2,11 @@
 .vscode
 node_modules
 
+node_modules
 static
 
-src/static/config.js
 config.py
+
 package-lock.json
+src/static/js/config.js
+cors-json-file.json
