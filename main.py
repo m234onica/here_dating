@@ -6,9 +6,9 @@ from src.db import db_session
 from src.tool import message
 
 app = create_app()
-CORS(app, resources={r"/api/*": {"origins": "*"}})
-
 start = message.get_started()
+
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.teardown_request
 def shutdown_session(exception=None):
