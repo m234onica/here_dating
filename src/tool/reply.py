@@ -45,9 +45,11 @@ def pairing(userId):
 def paired(userId):
     persona_id = func.get_persona_id()
 
-    message.push_text(id=userId, persona=persona_id, text=text.waiting_success[0])
-    message.push_quick_reply(id=userId, persona=persona_id, text=text.waiting_success[1])
-    
+    message.push_text(id=userId, persona=persona_id,
+                      text=text.waiting_success[0])
+    message.push_quick_reply(
+        id=userId, persona=persona_id, text=text.waiting_success[1])
+
     message.push_paired_menu(userId)
     return "paired success"
 
@@ -83,7 +85,7 @@ def timeout(userId):
 
     params = urlencode({"pairId": pairId, "userId": userId})
     web_url_payload = func.concat("message.html", params, sep="?")
-    
+
     message.push_text(id=userId, persona=persona_id,
                       text=text.timeout_text[0])
     message.push_button(

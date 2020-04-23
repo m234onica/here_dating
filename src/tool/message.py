@@ -6,7 +6,8 @@ from config import Config
 def requests_post(url, payload):
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     post_url = func.concat(Config.FB_API_URL, "me", url)
-    response = requests.request("POST", url=post_url, params=params, json=payload).json()
+    response = requests.request(
+        "POST", url=post_url, params=params, json=payload).json()
     return response
 
 
@@ -16,7 +17,7 @@ def requests_get(url):
     post_url = func.concat(Config.FB_API_URL, "me", url)
     response = requests.request("GET", url=post_url, params=params).json()
 
-    #Debug才會用到的api
+    # Debug才會用到的api
     if "error" in response.keys():
         post_url = func.concat(Config.FB_API_URL, url)
         response = requests.request("GET", url=post_url, params=params).json()
@@ -180,7 +181,8 @@ def get_started():
         ]
     }
     get_start_responese = requests_post("messenger_profile", data)
-    whitelisted_domains_response = requests_post("messenger_profile", whitelisted_domains)
+    whitelisted_domains_response = requests_post(
+        "messenger_profile", whitelisted_domains)
     response = [get_start_responese, whitelisted_domains_response]
     return response
 

@@ -90,7 +90,6 @@ def webhook_handle():
         timeout = func.timeout_chat(userId).json
 
         if timeout["payload"]["status"] == "paired" and "message" in messaging.keys():
-            # if "reply_to" in messaging["message"].keys():
 
             if "text" in messaging["message"].keys():
                 message.sender_action(recipient_id, "typing_on")

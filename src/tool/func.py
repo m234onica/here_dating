@@ -97,7 +97,7 @@ def timeout_chat(userId):
 
             return user_response(msg="Timeout to breaked pair", status="timeout", code=200)
 
-    return user_response(msg="User is chating",status="paired", code=200)
+    return user_response(msg="User is chating", status="paired", code=200)
 
 
 def get_placeId(userId):
