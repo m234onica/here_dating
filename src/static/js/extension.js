@@ -65,6 +65,21 @@ $("#pair-submit").on("click", function (e) {
         });
 })
 
+
+function message_status(status, pairId) {
+    var current_pairId = get_status(userId).pairId;
+
+    if (status == "noPair") {
+        $("#message-form").replaceWith("<p>已傳送留言囉！</p>");
+        window.setTimeout(close_Webview, 3000)
+
+    } else if (current_pairId != pairId || status != "unSend") {
+        $("#message-form").replaceWith("<p>已經離開此聊天室，無法再留言囉！</p>");
+        window.setTimeout(close_Webview, 3000);
+    };
+}
+
+
 $("#message-submit").on("click", function (e) {
     e.preventDefault()
 

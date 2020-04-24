@@ -6,13 +6,10 @@
     var base_url = config.BASE_URL;
     var serchParams = new URLSearchParams(window.location.search);
     var userId = serchParams.get("userId");
-    var status = get_status(userId);
-    console.log(status);
+    var pairId = serchParams.get("pairId");
+    var status = get_status(userId).status;
 
-    if (status != "unSend") {
-        $("#message-form").replaceWith("<p>已傳送留言囉！</p>");
-        window.setTimeout(close_Webview, 3000);
-    };
+    message_status(status, pairId);
 </script>
 {% endblock message_script %}
 
