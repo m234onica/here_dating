@@ -145,8 +145,8 @@ def get_started():
         ]
     }
 
-    pair_url = func.concat(Config.STATIC_URL, "pair")
-    rule_url = func.concat(Config.STATIC_URL, "rule")
+    pair_url = func.concat(Config.STATIC_URL, "pair.html")
+    rule_url = func.concat(Config.STATIC_URL, "rule.html")
     data = {
         "get_started": {
             "payload": "Start"
@@ -188,7 +188,7 @@ def get_started():
 
 
 def push_pairing_menu(id):
-    url = func.concat(Config.STATIC_URL, "rule")
+    url = func.concat(Config.STATIC_URL, "rule.html")
     data = {
         "psid": id,
         "persistent_menu": [
@@ -218,7 +218,7 @@ def push_pairing_menu(id):
 
 
 def push_paired_menu(id):
-    url = func.concat(Config.STATIC_URL, "rule")
+    url = func.concat(Config.STATIC_URL, "rule.html")
     data = {
         "psid": id,
         "persistent_menu": [
