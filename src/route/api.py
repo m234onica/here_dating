@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 
 from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
-from src.tool import message, func, text, reply
+from src.tool import message, func, reply
+from src.tool.text import Context
 from config import Config
 
 api = Blueprint("api", __name__)
@@ -157,12 +158,12 @@ def leave(userId):
     db_session.commit()
 
     placeId = func.get_placeId(userId)
-    words = text.leave_message
+    words = Context.leave_message
     reply.quick_pair(userId, placeId, words.format(placeId=placeId))
     message.delete_menu(userId)
 
     if recipient_id != None:
-        words = text.partner_leave_message
+        words = Context.partner_leave_message
         reply.quick_pair(recipient_id, placeId, words.format(placeId=placeId))
         message.delete_menu(recipient_id)
     return "User leave"

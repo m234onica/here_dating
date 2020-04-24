@@ -1,5 +1,6 @@
 import requests
-from src.tool import text, func
+from src.tool import func
+from src.tool.text import Context
 from config import Config
 
 
@@ -164,14 +165,14 @@ def get_started():
                 "call_to_actions": [
                     {
                         "type": "web_url",
-                        "title": text.menu_start,
+                        "title": Context.menu_start,
                         "url": pair_url,
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
                     },
                     {
                         "type": "web_url",
-                        "title": text.menu_rule,
+                        "title": Context.menu_rule,
                         "url": rule_url,
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
@@ -198,12 +199,12 @@ def push_pairing_menu(id):
                 "call_to_actions": [
                     {
                         "type": "postback",
-                        "title": text.menu_waiting_cancel,
+                        "title": Context.menu_waiting_cancel,
                         "payload": "Leave"
                     },
                     {
                         "type": "web_url",
-                        "title": text.menu_rule,
+                        "title": Context.menu_rule,
                         "url": url,
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"
@@ -228,12 +229,12 @@ def push_paired_menu(id):
                 "call_to_actions": [
                     {
                         "type": "postback",
-                        "title": text.menu_leave,
+                        "title": Context.menu_leave,
                         "payload": "Leave"
                     },
                     {
                         "type": "web_url",
-                        "title": text.menu_rule,
+                        "title": Context.menu_rule,
                         "url": url,
                         "messenger_extensions": True,
                         "webview_height_ratio": "full"

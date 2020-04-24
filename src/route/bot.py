@@ -3,7 +3,8 @@ from flask import Blueprint, render_template, request
 from src.db import init_db, db_session
 from src.models import Place, Pair
 from src.route.api import leave, get_status, pair_user
-from src.tool import message, func, text, reply
+from src.tool import message, func, reply
+from src.tool.text import Context
 from config import Config
 
 
@@ -48,7 +49,7 @@ def webhook_handle():
                 return reply.general_start_pair(userId)
 
         if payload == "Quick_pair":
-            words = text.quick_pairing_message
+            words = Context.quick_pairing_message
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
 
         # 離開聊天室
@@ -79,12 +80,12 @@ def webhook_handle():
 
     if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
         if placeId != None:
-            words = text.quick_pairing_message
+            words = Context.quick_pairing_message
             return reply.quick_pair(userId, placeId,
                                     words.format(placeId=placeId))
 
         else:
-            return reply.pair_again(userId, text.introduction[1])
+            return reply.pair_again(userId, Context.introduction[1])
     else:
         recipient_id = func.get_recipient_id(userId)
         timeout = func.timeout_chat(userId).json
