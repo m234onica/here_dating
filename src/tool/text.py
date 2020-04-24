@@ -10,7 +10,7 @@ class Context:
     qrcode_introduction = "您目前的地標編號為「{placeId}」，是否加入呢？"
     place_id_title = "#好奇心"
     qrcode_check_button = "確定"
-    qrcode_intro_button = "其他編號"
+    qrcode_intro_button = "使用其他編號"
 
     start_chating = "開始使用"
 
