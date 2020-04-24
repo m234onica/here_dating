@@ -68,13 +68,14 @@ def pair_again(userId, words):
 
 def quick_pair(userId, placeId, words):
     persona_id = func.get_persona_id()
-    postback_payload = func.concat("Pair", placeId, sep=",")
+    quick_pair_postback = func.concat("Pair", placeId, sep=",")
+    general_pair_postback = "General_pair"
     return message.push_button(
         id=userId,
         persona=persona_id,
         text=words,
-        types=["postback", "web_url"],
-        payload=[postback_payload, "pair.html"],
+        types=["postback", "postback"],
+        payload=[quick_pair_postback, general_pair_postback],
         title=[Context.qrcode_check_button, Context.qrcode_intro_button]
     )
 
