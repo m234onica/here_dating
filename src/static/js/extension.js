@@ -106,10 +106,13 @@ function get_status(userId) {
         async: false,
         success: function (data) {
             var payload = data.payload
-            result = payload.status;            
+            result = {
+                "status": payload.status,
+                "pairId": payload.pairId
+            };
         },
         error: function (data) {
-            console.log(err);
+            console.log(data);
         }
     })
     return result;
