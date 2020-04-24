@@ -17,7 +17,7 @@ def general_start_pair(userId):
         text=text.introduction[1],
         persona=persona_id,
         types=["web_url"],
-        payload=["pair"],
+        payload=["pair.html"],
         title=[text.start_chating]
     )
 
