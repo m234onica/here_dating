@@ -22,20 +22,6 @@ def general_start_pair(userId):
     )
 
 
-def qrcode_start_pair(userId, placeId):
-    persona_id = func.get_persona_id()
-    words = Context.qrcode_introduction
-    return message.push_button(
-        id=userId,
-        persona=persona_id,
-        text=words.format(placeId=placeId),
-        types=["postback", "web_url"],
-        title=[Context.qrcode_check_button,
-               Context.qrcode_intro_button],
-        payload=["Pair," + placeId, "pair.html"],
-    )
-
-
 def pairing(userId):
     persona_id = func.get_persona_id()
     return message.push_text(

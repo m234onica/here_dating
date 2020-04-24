@@ -43,7 +43,8 @@ def webhook_handle():
                 placeId = referral[1]
 
                 if entrance == "qrcode":
-                    return reply.qrcode_start_pair(userId, placeId)
+                    words = Context.qrcode_introduction
+                    return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
             else:
                 return reply.general_start_pair(userId)
 
@@ -80,7 +81,8 @@ def webhook_handle():
         if "referral" in messaging.keys():
             referral = messaging["referral"]["ref"].split(",")
             placeId = referral[1]
-            return reply.qrcode_start_pair(userId, placeId)
+            words = Context.qrcode_introduction
+            return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
 
         return reply.pair_again(userId, Context.introduction[1])
 
