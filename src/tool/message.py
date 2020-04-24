@@ -114,7 +114,7 @@ def push_button(id, persona, text, types, title, payload):
 
 
 def button_type(types, title, payload):
-    url = func.concat(Config.STATIC_URL, payload)
+    url = func.concat(Config.BASE_URL, payload)
     if types == None:
         return None
 
@@ -140,13 +140,13 @@ def get_started():
 
     whitelisted_domains = {
         "whitelisted_domains": [
-            Config.STATIC_URL,
+            # Config.BASE_URL,
             Config.BASE_URL
         ]
     }
 
-    pair_url = func.concat(Config.STATIC_URL, "pair.html")
-    rule_url = func.concat(Config.STATIC_URL, "rule.html")
+    pair_url = func.concat(Config.BASE_URL, "pair")
+    rule_url = func.concat(Config.BASE_URL, "rule")
     data = {
         "get_started": {
             "payload": "Start"
@@ -188,7 +188,7 @@ def get_started():
 
 
 def push_pairing_menu(id):
-    url = func.concat(Config.STATIC_URL, "rule.html")
+    url = func.concat(Config.BASE_URL, "rule")
     data = {
         "psid": id,
         "persistent_menu": [
@@ -218,7 +218,7 @@ def push_pairing_menu(id):
 
 
 def push_paired_menu(id):
-    url = func.concat(Config.STATIC_URL, "rule.html")
+    url = func.concat(Config.BASE_URL, "rule")
     data = {
         "psid": id,
         "persistent_menu": [

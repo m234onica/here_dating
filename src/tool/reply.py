@@ -17,7 +17,7 @@ def general_start_pair(userId):
         text=text.introduction[1],
         persona=persona_id,
         types=["web_url"],
-        payload=["pair.html"],
+        payload=["pair"],
         title=[text.start_chating]
     )
 
@@ -32,7 +32,7 @@ def qrcode_start_pair(userId, placeId):
         types=["postback", "web_url"],
         title=[text.qrcode_check_button,
                text.qrcode_intro_button],
-        payload=["Pair," + placeId, "pair.html"],
+        payload=["Pair," + placeId, "pair"],
     )
 
 
@@ -61,7 +61,7 @@ def pair_again(userId, words):
         persona=persona_id,
         text=words,
         types=["web_url"],
-        payload=["pair.html"],
+        payload=["pair"],
         title=[text.pair_again_button]
     )
 
@@ -74,7 +74,7 @@ def quick_pair(userId, placeId, words):
         persona=persona_id,
         text=words,
         types=["postback", "web_url"],
-        payload=[postback_payload, "pair.html"],
+        payload=[postback_payload, "pair"],
         title=[text.qrcode_check_button, text.qrcode_intro_button]
     )
 
@@ -84,7 +84,7 @@ def timeout(userId):
     pairId = func.get_pairId(userId)
 
     params = urlencode({"pairId": pairId, "userId": userId})
-    web_url_payload = func.concat("message.html", params, sep="?")
+    web_url_payload = func.concat("message", params, sep="?")
 
     message.push_text(id=userId, persona=persona_id,
                       text=text.timeout_text[0])
