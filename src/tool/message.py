@@ -140,8 +140,8 @@ def get_started():
 
     whitelisted_domains = {
         "whitelisted_domains": [
-            Config.STATIC_URL,
-            Config.BASE_URL
+            Config.BASE_URL,
+            Config.STATIC_URL
         ]
     }
 

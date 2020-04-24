@@ -95,9 +95,9 @@ def timeout_chat(userId):
             reply.timeout(recipient_id)
             message.delete_menu(recipient_id)
 
-            return user_response(msg="Timeout to breaked pair", status="timeout", code=200)
+            return user_response(msg="Timeout to breaked pair", payload={"status": "timeout"}, code=200)
 
-    return user_response(msg="User is chating", status="paired", code=200)
+    return user_response(msg="User is chating", payload={"status": "paired"}, code=200)
 
 
 def get_placeId(userId):
@@ -109,11 +109,9 @@ def get_placeId(userId):
         return None
 
 
-def user_response(msg, status, code):
+def user_response(msg, payload, code):
     response = make_response({
         "status_msg": msg,
-        "payload": {
-            "status": status
-        }
+        "payload": payload
     }, code)
     return response
