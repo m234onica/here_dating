@@ -12,22 +12,22 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 
-@app.route("/pair", methods=["GET"])
+@app.route("/pair.html", methods=["GET"])
 def intro_page():
     return render_template("pair.html")
 
 
-@app.route("/wait", methods=["GET"])
+@app.route("/wait.html", methods=["GET"])
 def wait_page():
     return render_template("wait.html")
 
 
-@app.route("/message", methods=["GET"])
+@app.route("/message.html", methods=["GET"])
 def message_page():
     return render_template("message.html")
 
 
-@app.route("/rule", methods=["GET"])
+@app.route("/rule.html", methods=["GET"])
 def rule_page():
     return render_template("rule.html")
 
