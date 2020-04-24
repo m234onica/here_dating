@@ -10,32 +10,6 @@ def introduction(userId):
         id=userId, text=Context.introduction[0], persona=persona_id)
 
 
-def general_start_pair(userId):
-    persona_id = func.get_persona_id()
-    return message.push_button(
-        id=userId,
-        text=Context.introduction[1],
-        persona=persona_id,
-        types=["web_url"],
-        payload=["pair.html"],
-        title=[Context.start_chating]
-    )
-
-
-def qrcode_start_pair(userId, placeId):
-    persona_id = func.get_persona_id()
-    words = Context.qrcode_introduction
-    return message.push_button(
-        id=userId,
-        persona=persona_id,
-        text=words.format(placeId=placeId),
-        types=["postback", "web_url"],
-        title=[Context.qrcode_check_button,
-               Context.qrcode_intro_button],
-        payload=["Pair," + placeId, "pair.html"],
-    )
-
-
 def pairing(userId):
     persona_id = func.get_persona_id()
     return message.push_text(
@@ -54,7 +28,7 @@ def paired(userId):
     return "paired success"
 
 
-def pair_again(userId, words):
+def general_pair(userId, words):
     persona_id = func.get_persona_id()
     return message.push_button(
         id=userId,
@@ -62,19 +36,20 @@ def pair_again(userId, words):
         text=words,
         types=["web_url"],
         payload=["pair.html"],
-        title=[Context.pair_again_button]
+        title=[Context.start_chating]
     )
 
 
 def quick_pair(userId, placeId, words):
     persona_id = func.get_persona_id()
-    postback_payload = func.concat("Pair", placeId, sep=",")
+    quick_pair_postback = func.concat("Pair", placeId, sep=",")
+    general_pair_postback = "General_pair"
     return message.push_button(
         id=userId,
         persona=persona_id,
         text=words,
-        types=["postback", "web_url"],
-        payload=[postback_payload, "pair.html"],
+        types=["postback", "postback"],
+        payload=[quick_pair_postback, general_pair_postback],
         title=[Context.qrcode_check_button, Context.qrcode_intro_button]
     )
 
