@@ -73,12 +73,12 @@ def webhook_handle():
     if status == "pairing":
         return reply.pairing(userId)
 
-    if "referral" in messaging.keys() and status not in ["paired", "pairing"]:
-        referral = messaging["referral"]["ref"].split(",")
-        placeId = referral[1]
-        return reply.qrcode_start_pair(userId, placeId)
-
     if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
+        if "referral" in messaging.keys():
+            referral = messaging["referral"]["ref"].split(",")
+            placeId = referral[1]
+            return reply.qrcode_start_pair(userId, placeId)
+
         if placeId != None:
             words = Context.quick_pairing_message
             return reply.quick_pair(userId, placeId,
