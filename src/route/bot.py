@@ -26,7 +26,6 @@ def webhook_handle():
     data = request.get_json()
     messaging = data["entry"][0]["messaging"][0]
     userId = messaging["sender"]["id"]
-    placeId = func.get_placeId(userId)
 
     message.sender_action(userId, "mark_seen")
 
@@ -44,13 +43,18 @@ def webhook_handle():
                 placeId = referral[1]
 
                 if entrance == "qrcode":
-                    return reply.qrcode_start_pair(userId, placeId)
+                    words = Context.qrcode_introduction
+                    return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
             else:
-                return reply.general_start_pair(userId)
+                return reply.general_pair(userId, Context.introduction[1])
 
         if payload == "Quick_pair":
             words = Context.quick_pairing_message
+            placeId = func.get_placeId(userId)
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
+
+        if payload == "General_pair":
+            return reply.general_pair(userId, Context.introduction[1])
 
         # 離開聊天室
         if payload == "Leave":
@@ -73,19 +77,15 @@ def webhook_handle():
     if status == "pairing":
         return reply.pairing(userId)
 
-    if "referral" in messaging.keys() and status not in ["paired", "pairing"]:
-        referral = messaging["referral"]["ref"].split(",")
-        placeId = referral[1]
-        return reply.qrcode_start_pair(userId, placeId)
-
     if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
-        if placeId != None:
-            words = Context.quick_pairing_message
-            return reply.quick_pair(userId, placeId,
-                                    words.format(placeId=placeId))
+        if "referral" in messaging.keys():
+            referral = messaging["referral"]["ref"].split(",")
+            placeId = referral[1]
+            words = Context.qrcode_introduction
+            return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
 
-        else:
-            return reply.pair_again(userId, Context.introduction[1])
+        return reply.general_pair(userId, Context.introduction[1])
+
     else:
         recipient_id = func.get_recipient_id(userId)
         timeout = func.timeout_chat(userId).json
