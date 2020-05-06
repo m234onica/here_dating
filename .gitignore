@@ -2,7 +2,7 @@
 .vscode
 node_modules
 
-static
+/static
 
 config.py
 
