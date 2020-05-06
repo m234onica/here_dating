@@ -29,7 +29,7 @@ def send_end_message(userId):
 
 def delete(minutes):
 
-    active_data = func.active_pair()
+    active_data = func.all_active_pair()
     expired_time = datetime.now() - timedelta(minutes=minutes)
 
     if minutes == Config.EXPIRED_TIME:

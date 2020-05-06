@@ -32,7 +32,7 @@ def verify_distance(placeId):
 @api.route("/api/pair/<placeId>/<userId>", methods=["POST"])
 def pair_user(placeId, userId):
 
-    active = func.active_pair()
+    active = func.all_active_pair()
     # userId is in active data
     is_player = active.filter((Pair.playerA == userId)
                               | (Pair.playerB == userId)).first()
@@ -144,7 +144,7 @@ def get_status(userId):
 # 用戶離開聊天室
 @api.route("/api/user/leave/<userId>", methods=["POST"])
 def leave(userId):
-    active = func.active_pair()
+    active = func.all_active_pair()
     pair = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
         filter(Pair.deletedAt == None).first()
 

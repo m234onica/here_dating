@@ -7,7 +7,7 @@ from src.tool import message, text, reply
 from config import Config
 
 
-def active_pair():
+def all_active_pair():
     return Pair.query.filter(Pair.deletedAt == None)
 
 
