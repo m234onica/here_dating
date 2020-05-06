@@ -12,18 +12,6 @@ def requests_post(url, payload):
     return response
 
 
-def requests_get(url):
-    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
-    post_url = "/".join([Config.FB_API_URL, "me", url])
-    response = requests.request("GET", url=post_url, params=params).json()
-
-    # Debug才會用到的api
-    if "error" in response.keys():
-        post_url = "/".join([Config.FB_API_URL, "me", url])
-        response = requests.request("GET", url=post_url, params=params).json()
-    return response
-
-
 def sender_action(id, action):
     data = {
         "recipient": {
