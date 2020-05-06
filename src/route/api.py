@@ -83,7 +83,7 @@ def send_last_word():
     status = payload["payload"]["status"]
 
     player = func.recognize_player(userId)
-    pair = func.get_pair(player, userId)
+    pair = func.get_pair(userId)
 
     if status == "unSend":
         if player == "playerA":
@@ -101,8 +101,7 @@ def send_last_word():
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
-    player = func.recognize_player(userId)
-    pair = func.get_pair(player, userId)
+    pair = func.get_pair(userId)
     pairId = func.get_pairId(userId)
 
     if pair == None:
