@@ -56,7 +56,7 @@ def pair_user(placeId, userId):
         waiting.startedAt = datetime.now()
         db_session.commit()
 
-        recipient_id = func.get_recipient_id(userId)
+        recipient_id = func.recipient_id(userId)
 
         reply.paired(userId)
         reply.paired(recipient_id)
@@ -82,7 +82,7 @@ def send_last_word():
     payload = get_status(userId).json
     status = payload["payload"]["status"]
 
-    player = func.recognize_player(userId)
+    player = func.get_player(userId)
     pair = func.get_pair(userId)
 
     if status == "unSend":

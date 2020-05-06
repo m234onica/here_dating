@@ -17,7 +17,7 @@ def get_pair(userId):
         Pair.playerB == userId)).order_by(Pair.id.desc()).first()
 
 
-def recognize_player(userId):
+def get_player(userId):
 
     pair = Pair.query.filter((Pair.playerA == userId) | (
         Pair.playerB == userId)).order_by(Pair.id.desc()).first()
