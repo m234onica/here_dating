@@ -1,4 +1,5 @@
 import requests
+from urllib.parse import urljoin
 from flask import make_response
 from datetime import datetime, timedelta
 
@@ -39,7 +40,7 @@ def get_pairId(userId):
 
 def get_recipient_id(userId):
 
-    player = recognize_player(userId)
+    player = get_player(userId)
     pair = get_pair(userId)
     if player == "playerA":
         recipient_id = pair.playerB
@@ -54,7 +55,7 @@ def get_recipient_id(userId):
 
 def get_persona_id():
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
-    api_url = "/".join([Config.FB_API_URL, "me", "personas"])
+    api_url = urljoin(Config.FB_API_URL, "me", "personas")
     persona = requests.request("GET", url=api_url, params=params).json()
 
     if persona["data"] == []:

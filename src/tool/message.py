@@ -1,4 +1,6 @@
 import requests
+import os
+from urllib.parse import urljoin
 from src.tool import request
 from src.tool.text import Context
 from config import Config
@@ -94,7 +96,7 @@ def push_button(id, persona, text, types, title, payload):
 
 
 def button_type(types, title, payload):
-    url = "/".join([Config.STATIC_URL, payload])
+    url = urljoin(Config.STATIC_URL, payload)
     if types == None:
         return None
 
@@ -124,8 +126,8 @@ def get_started():
             Config.STATIC_URL
         ]
     }
-    pair_url = "/".join([Config.STATIC_URL, "pair.html"])
-    rule_url = "/".join([Config.STATIC_URL, "rule.html"])
+    pair_url = urljoin(Config.STATIC_URL, "pair.html")
+    rule_url = urljoin(Config.STATIC_URL, "rule.html")
     data = {
         "get_started": {
             "payload": "Start"
@@ -167,7 +169,7 @@ def get_started():
 
 
 def push_pairing_menu(id):
-    url = "/".join([Config.STATIC_URL, "rule.html"])
+    url = urljoin(Config.STATIC_URL, "rule.html")
     data = {
         "psid": id,
         "persistent_menu": [
@@ -197,7 +199,7 @@ def push_pairing_menu(id):
 
 
 def push_paired_menu(id):
-    url = "/".join([Config.STATIC_URL, "rule.html"])
+    url = urljoin(Config.STATIC_URL, "rule.html")
     data = {
         "psid": id,
         "persistent_menu": [
@@ -227,7 +229,9 @@ def push_paired_menu(id):
 
 
 def delete_menu(id):
-    url = "/".join([Config.FB_API_URL, "me", "custom_user_settings"])
+    url = urljoin(Config.FB_API_URL, os.path.join(
+        "me", "custom_user_settings"))
+
     params = {
         "psid": id,
         "params": '["persistent_menu"]',
