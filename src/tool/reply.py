@@ -1,3 +1,4 @@
+import os
 from urllib.parse import urlencode
 
 from src.tool import message, func
@@ -42,7 +43,7 @@ def general_pair(userId, words):
 
 def quick_pair(userId, placeId, words):
     persona_id = func.get_persona_id()
-    quick_pair_postback = func.concat("Pair", placeId, sep=",")
+    quick_pair_postback = ",".join(["Pair", placeId])
     general_pair_postback = "General_pair"
     return message.push_button(
         id=userId,
@@ -59,7 +60,7 @@ def timeout(userId):
     pairId = func.get_pairId(userId)
 
     params = urlencode({"pairId": pairId, "userId": userId})
-    web_url_payload = func.concat("message.html", params, sep="?")
+    web_url_payload = "?".join(["message.html", params])
 
     message.push_text(id=userId, persona=persona_id,
                       text=Context.timeout_text[0])

@@ -6,7 +6,7 @@ from config import Config
 
 def requests_post(url, payload):
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
-    post_url = func.concat(Config.FB_API_URL, "me", url)
+    post_url = "/".join([Config.FB_API_URL, "me", url])
     response = requests.request(
         "POST", url=post_url, params=params, json=payload).json()
     return response
@@ -14,13 +14,12 @@ def requests_post(url, payload):
 
 def requests_get(url):
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
-
-    post_url = func.concat(Config.FB_API_URL, "me", url)
+    post_url = "/".join([Config.FB_API_URL, "me", url])
     response = requests.request("GET", url=post_url, params=params).json()
 
     # Debug才會用到的api
     if "error" in response.keys():
-        post_url = func.concat(Config.FB_API_URL, url)
+        post_url = "/".join([Config.FB_API_URL, "me", url])
         response = requests.request("GET", url=post_url, params=params).json()
     return response
 
@@ -115,7 +114,7 @@ def push_button(id, persona, text, types, title, payload):
 
 
 def button_type(types, title, payload):
-    url = func.concat(Config.STATIC_URL, payload)
+    url = "/".join([Config.STATIC_URL, payload])
     if types == None:
         return None
 
@@ -145,9 +144,8 @@ def get_started():
             Config.STATIC_URL
         ]
     }
-
-    pair_url = func.concat(Config.STATIC_URL, "pair.html")
-    rule_url = func.concat(Config.STATIC_URL, "rule.html")
+    pair_url = "/".join([Config.STATIC_URL, "pair.html"])
+    rule_url = "/".join([Config.STATIC_URL, "rule.html"])
     data = {
         "get_started": {
             "payload": "Start"
@@ -189,7 +187,7 @@ def get_started():
 
 
 def push_pairing_menu(id):
-    url = func.concat(Config.STATIC_URL, "rule.html")
+    url = "/".join([Config.STATIC_URL, "rule.html"])
     data = {
         "psid": id,
         "persistent_menu": [
@@ -219,7 +217,7 @@ def push_pairing_menu(id):
 
 
 def push_paired_menu(id):
-    url = func.concat(Config.STATIC_URL, "rule.html")
+    url = "/".join([Config.STATIC_URL, "rule.html"])
     data = {
         "psid": id,
         "persistent_menu": [
@@ -249,7 +247,7 @@ def push_paired_menu(id):
 
 
 def delete_menu(id):
-    url = func.concat(Config.FB_API_URL, "me", "custom_user_settings")
+    url = "/".join([Config.FB_API_URL, "me", "custom_user_settings"])
     params = {
         "psid": id,
         "params": '["persistent_menu"]',

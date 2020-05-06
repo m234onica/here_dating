@@ -7,10 +7,6 @@ from src.tool import message, text, reply
 from config import Config
 
 
-def concat(*chunk, sep="/"):
-    return sep.join(chunk)
-
-
 def active_pair():
     return Pair.query.filter(Pair.deletedAt == None)
 
