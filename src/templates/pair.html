@@ -35,12 +35,12 @@
 <br>
 <form class="form" method="POST" id="pair-form" role="form" novalidate autocomplete="off">
     <div class="form-group">
-        <label id="place_label">請輸入地標編號</label>
+        <label id="place_label">{{pair.title}}</label>
         <div class="input-group mb-2">
             <input class="form-control" id="placeId" type="text" name="placeId" maxlength="4" required>
         </div>
 
         <button class="btn btn-primary btn-block btn-lg" id="pair-submit" type="submit" name="submit"
-            disabled>開始找人聊天</button>
+            disabled>{{pair.button}}</button>
 </form>
 {% endblock pair %}

@@ -17,11 +17,11 @@
 <br>
 <form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off">
     <div class="form-group">
-        <label>想對對面的鹹魚說什麼嗎？</label>
+        <label>{{message.title}}</label>
         <textarea class="form-control" id="lastWord" name="lastWord" required></textarea>
     </div>
 
-    <button class="btn btn-primary btn-block btn-lg" id="message-submit" type="submit" name="submit">Submit</button>
+    <button class="btn btn-primary btn-block btn-lg" id="message-submit" type="submit" name="submit">{{message.button}}</button>
 </form>
 
 {% endblock message %}

@@ -2,7 +2,8 @@
 var gulp = require("gulp"),
     rev = require("gulp-rev"),
     clean = require("gulp-clean"),
-    revCollector = require("gulp-rev-collector");
+    revCollector = require("gulp-rev-collector"),
+    fs = require("fs");
 
 var webserver = require("gulp-webserver");
 
@@ -11,28 +12,36 @@ gulp.task("clean", function() {
         .pipe(clean())
 })
 
-gulp.task('compile', function () {
+gulp.task('compile', function (done) {
     "use strict";
     var twig = require("gulp-twig");
-    return gulp.src("./src/templates/*.html")
+    var data = JSON.parse(fs.readFileSync("./src/static/data/text.json"))
+
+    gulp.src("./src/templates/pair.html")
         .pipe(twig({
-            title: "Gulp and Twig",
-            benefits: [
-                'Fast',
-                'Flexible',
-                'Secure'
-            ]
+            data: {
+                pair: data.pair
+            }
         }))
-        .pipe(gulp.dest('./static'));
+        .pipe(gulp.dest("./static"))
+        
+        gulp.src("./src/templates/message.html")
+            .pipe(twig({
+                data: {
+                    message: data.message
+                }
+            }))
+            .pipe(gulp.dest("./static"))
+    done();
+    return "done"
 })
-
-
 
 gulp.task("revsion", function () {
     return gulp.src(
         [
             "./src/static/**/*.css",
             "./src/static/**/*.js",
+            "./src/static/**/*.json"
         ],
     )
         .pipe(rev())
