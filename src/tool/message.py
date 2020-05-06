@@ -1,15 +1,7 @@
 import requests
-from src.tool import func
+from src.tool import request
 from src.tool.text import Context
 from config import Config
-
-
-def requests_post(url, payload):
-    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
-    post_url = "/".join([Config.FB_API_URL, "me", url])
-    response = requests.request(
-        "POST", url=post_url, params=params, json=payload).json()
-    return response
 
 
 def sender_action(id, action):
@@ -19,7 +11,7 @@ def sender_action(id, action):
         },
         "sender_action": action
     }
-    return requests_post("messages", data)
+    return request.post("messages", data)
 
 
 def push_text(id, persona, text):
@@ -32,7 +24,7 @@ def push_text(id, persona, text):
             "text": text
         }
     }
-    return requests_post("messages", data)
+    return request.post("messages", data)
 
 
 def push_quick_reply(id, persona, text):
@@ -53,7 +45,7 @@ def push_quick_reply(id, persona, text):
             ]
         }
     }
-    return requests_post("messages", data)
+    return request.post("messages", data)
 
 
 def push_attachment(id, persona, url):
@@ -72,7 +64,7 @@ def push_attachment(id, persona, url):
             }
         }
     }
-    return requests_post("messages", data)
+    return request.post("messages", data)
 
 
 def push_button(id, persona, text, types, title, payload):
@@ -98,7 +90,7 @@ def push_button(id, persona, text, types, title, payload):
             }
         }
     }
-    return requests_post("messages", data)
+    return request.post("messages", data)
 
 
 def button_type(types, title, payload):
@@ -167,8 +159,8 @@ def get_started():
             }
         ]
     }
-    get_start_responese = requests_post("messenger_profile", data)
-    whitelisted_domains_response = requests_post(
+    get_start_responese = request.post("messenger_profile", data)
+    whitelisted_domains_response = request.post(
         "messenger_profile", whitelisted_domains)
     response = [get_start_responese, whitelisted_domains_response]
     return response
@@ -199,7 +191,7 @@ def push_pairing_menu(id):
             }
         ]
     }
-    response = requests_post("custom_user_settings", data)
+    response = request.post("custom_user_settings", data)
     print("pairing_menu:", response)
     return response
 
@@ -229,7 +221,7 @@ def push_paired_menu(id):
             }
         ]
     }
-    response = requests_post("custom_user_settings", data)
+    response = request.post("custom_user_settings", data)
     print("paired_menu: ", response)
     return response
 
@@ -252,4 +244,4 @@ def persona():
         "name": "系統訊息",
         "profile_picture_url": "https://storage.googleapis.com/here_dating/image/user_pic.png"
     }
-    return requests_post("personas", data)
+    return request.post("personas", data)
