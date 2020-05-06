@@ -7,7 +7,7 @@ var gulp = require("gulp"),
 
 var webserver = require("gulp-webserver");
 
-gulp.task("clean", function() {
+gulp.task("clean", function () {
     return gulp.src("./static")
         .pipe(clean())
 })
@@ -24,14 +24,14 @@ gulp.task('compile', function (done) {
             }
         }))
         .pipe(gulp.dest("./static"))
-        
-        gulp.src("./src/templates/message.html")
-            .pipe(twig({
-                data: {
-                    message: data.message
-                }
-            }))
-            .pipe(gulp.dest("./static"))
+
+    gulp.src("./src/templates/message.html")
+        .pipe(twig({
+            data: {
+                message: data.message
+            }
+        }))
+        .pipe(gulp.dest("./static"))
     done();
     return "done"
 })
@@ -60,7 +60,7 @@ gulp.task("replace", function () {
         .pipe(gulp.dest("static"));
 })
 
-gulp.task("webserver", function() {
+gulp.task("webserver", function () {
     setTimeout(function () {
         gulp.src("static")                   // 預設開啟路徑
             .pipe(webserver({                     // 啟動 webserver
