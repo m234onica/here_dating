@@ -68,7 +68,7 @@ def pair_user(placeId, userId):
         db_session.commit()
 
         reply.pairing(userId)
-        message.push_pairing_menu(userId)
+        message.push_customer_menu(userId, Context.menu_waiting_cancel)
 
         return func.user_response(msg="User start to pair.", payload={"status": "pairing"}, code=200)
     return "success"

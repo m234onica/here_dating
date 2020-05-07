@@ -109,30 +109,18 @@ def get_started():
     return response
 
 
-def push_pairing_menu(id):
+def push_customer_menu(id, postback_title):
     url = urljoin(Config.STATIC_URL, "rule.html")
 
     template = json_file.get_template("data.json")
     rendered = template.module.custom_menu(id=id,
-                                           postback_title=Context.menu_waiting_cancel,
+                                           postback_title=postback_title,
                                            url_title=Context.menu_rule, url=url)
     data = json.loads(rendered)
     response = request.post("custom_user_settings", data)
-    print("pairing_menu:", response)
+
     return response
 
-
-def push_paired_menu(id):
-    url = urljoin(Config.STATIC_URL, "rule.html")
-
-    template = json_file.get_template("data.json")
-    rendered = template.module.custom_menu(id=id,
-                                           postback_title=Context.menu_leave,
-                                           url_title=Context.menu_rule, url=url)
-    data = json.loads(rendered)
-    response = request.post("custom_user_settings", data)
-    print("paired_menu: ", response)
-    return response
 
 
 def delete_menu(id):

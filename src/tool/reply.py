@@ -25,7 +25,7 @@ def paired(userId):
     message.push_quick_reply(
         id=userId, persona=persona_id, text=Context.waiting_success[1])
 
-    message.push_paired_menu(userId)
+    message.push_customer_menu(userId, Context.menu_leave)
     return "paired success"
 
 
