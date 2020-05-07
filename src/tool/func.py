@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from src.models import Pair, status_Enum
 from src.db import db_session
-from src.tool import message
+from src.tool import message, reply
 from config import Config
 
 
@@ -74,6 +74,28 @@ def get_placeId(userId):
         return placeId
     else:
         return None
+
+
+def timeout_chat(userId):
+    player = get_player(userId)
+    pair = get_pair(userId)
+    recipient_id = get_recipient_id(userId)
+    now_time = datetime.now()
+
+    if pair.startedAt != None and pair.deletedAt == None:
+        if now_time - timedelta(minutes=Config.END_TIME) >= pair.startedAt:
+            pair.deletedAt = now_time
+            pair.status = status_Enum(2)
+
+            db_session.commit()
+
+            reply.timeout(userId)
+            reply.timeout(recipient_id)
+
+            return user_response(msg="Timeout to breaked pair", payload={"status": "timeout"}, code=200)
+
+    return user_response(msg="User is chating", payload={"status": "paired"}, code=200)
+
 
 
 def user_response(msg, payload, code):
