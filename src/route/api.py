@@ -56,7 +56,7 @@ def pair_user(placeId, userId):
         waiting.startedAt = datetime.now()
         db_session.commit()
 
-        recipient_id = func.recipient_id(userId)
+        recipient_id = func.get_recipient_id(userId)
 
         reply.paired(userId)
         reply.paired(recipient_id)
