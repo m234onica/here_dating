@@ -1,4 +1,4 @@
-import requests
+import requests, os
 from urllib.parse import urljoin
 from flask import make_response
 from datetime import datetime, timedelta
@@ -55,7 +55,7 @@ def get_recipient_id(userId):
 
 def get_persona_id():
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
-    api_url = urljoin(Config.FB_API_URL, "me", "personas")
+    api_url = urljoin(Config.FB_API_URL, os.path.join( "me", "personas"))
     persona = requests.request("GET", url=api_url, params=params).json()
 
     if persona["data"] == []:
