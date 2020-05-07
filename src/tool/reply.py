@@ -62,6 +62,7 @@ def timeout(userId):
     params = urlencode({"pairId": pairId, "userId": userId})
     web_url_payload = "?".join(["message.html", params])
 
+    message.delete_menu(userId)
     message.push_text(id=userId, persona=persona_id,
                       text=Context.timeout_text[0])
     message.push_button(
