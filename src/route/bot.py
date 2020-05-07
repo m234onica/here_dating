@@ -94,14 +94,14 @@ def webhook_handle():
 
             if "text" in messaging["message"].keys():
                 message.sender_action(recipient_id, "typing_on")
-                message.push_text(recipient_id, None,
+                message.push_text(recipient_id, "",
                                   messaging["message"]["text"])
 
             if "attachments" in messaging["message"].keys():
                 attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
                 message.sender_action(recipient_id, "typing-on")
                 message.push_attachment(
-                    recipient_id, None, attachment_url)
+                    recipient_id, "", attachment_url)
         return "Send message"
 
     return "ok"
