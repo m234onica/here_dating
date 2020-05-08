@@ -1,12 +1,11 @@
 import os
 from urllib.parse import urljoin
-from flask import make_response
 from datetime import datetime, timedelta
 
 from src.models import Pair, status_Enum
 from src.db import db_session
 from src.tool import message, reply
-from src.func import api_request
+from src.func import http_request, response
 from config import Config
 
 
@@ -90,15 +89,6 @@ def timeout_chat(userId):
             reply.timeout(userId)
             reply.timeout(recipient_id)
 
-            return user_response(msg="Timeout to breaked pair", payload={"status": "timeout"}, code=200)
+            return response(msg="Timeout to breaked pair", payload={"status": "timeout"}, code=200)
 
-    return user_response(msg="User is chating", payload={"status": "paired"}, code=200)
-
-
-
-def user_response(msg, payload, code):
-    response = make_response({
-        "status_msg": msg,
-        "payload": payload
-    }, code)
-    return response
+    return response(msg="User is chating", payload={"status": "paired"}, code=200)

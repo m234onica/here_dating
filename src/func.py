@@ -11,3 +11,11 @@ def api_request(method, url, json=None, params={"access_token": Config.PAGE_ACCE
     response = requests.request(
         method=method, url=url, params=params, json=json).json()
     return response
+
+
+def response(msg, payload, code):
+    response = make_response({
+        "status_msg": msg,
+        "payload": payload
+    }, code)
+    return response
