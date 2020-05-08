@@ -98,8 +98,7 @@ def delete_menu(id):
 
 
 def persona():
-    data = {
-        "name": "系統訊息",
-        "profile_picture_url": "https://storage.googleapis.com/here_dating/image/user_pic.png"
-    }
-    return request.post("personas", data)
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.persona()
+    data = json.loads(rendered)
+    return http_request("POST", "personas", data)
