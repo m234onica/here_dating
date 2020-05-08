@@ -38,10 +38,9 @@ def webhook_handle():
             reply.introduction(userId)
 
             if "referral" in postback.keys():
-                referral = postback["referral"]["ref"].split(",")
+                referral = postback["referral"]["ref"].split("@")
                 entrance = referral[0]
                 placeId = referral[1]
-
                 if entrance == "qrcode":
                     words = Context.qrcode_introduction
                     return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
@@ -65,7 +64,7 @@ def webhook_handle():
                 leave(userId)
             return "User leaved"
 
-        payload_param = payload.split(",")
+        payload_param = payload.split("@")
         placeId = payload_param[1]
 
         if payload_param[0] == "Pair":
@@ -79,7 +78,7 @@ def webhook_handle():
 
     if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
         if "referral" in messaging.keys():
-            referral = messaging["referral"]["ref"].split(",")
+            referral = messaging["referral"]["ref"].split("@")
             placeId = referral[1]
             words = Context.qrcode_introduction
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
