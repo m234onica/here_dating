@@ -39,51 +39,11 @@ def push_attachment(id, persona, url):
 
 
 def push_button(id, persona, text, types, title, payload):
-    buttons = []
-    for i in range(len(types)):
-        buttons.append(
-            button_type(types=types[i], title=title[i], payload=payload[i])
-        )
-
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "persona_id": persona,
-        "message": {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "button",
-                    "text": text,
-                    "buttons": buttons
-                }
-            }
-        }
-    }
+    template = json_file.get_template("data.json")
+    rendered = template.module.push_button(
+        id=id, persona=persona, text=text, types=types, payload=payload, title=title)
+    data = json.loads(rendered)
     return request.post("messages", data)
-
-
-def button_type(types, title, payload):
-    url = urljoin(Config.STATIC_URL, payload)
-    if types == None:
-        return None
-
-    if types == "web_url":
-        return {
-            "type": types,
-            "title": title,
-            "url": url,
-            "messenger_extensions": True,
-            "webview_height_ratio": "full"
-        }
-
-    if types == "postback":
-        return {
-            "type": types,
-            "title": title,
-            "payload": payload
-        }
 
 
 def get_started():
@@ -120,7 +80,6 @@ def push_customer_menu(id, postback_title):
     response = request.post("custom_user_settings", data)
 
     return response
-
 
 
 def delete_menu(id):

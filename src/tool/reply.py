@@ -35,7 +35,7 @@ def general_pair(userId, words):
         id=userId,
         persona=persona_id,
         text=words,
-        types=["web_url"],
+        types="general_pair",
         payload=["pair.html"],
         title=[Context.start_chating]
     )
@@ -43,13 +43,13 @@ def general_pair(userId, words):
 
 def quick_pair(userId, placeId, words):
     persona_id = func.get_persona_id()
-    quick_pair_postback = ",".join(["Pair", placeId])
+    quick_pair_postback = "&".join(["Pair", placeId])
     general_pair_postback = "General_pair"
     return message.push_button(
         id=userId,
         persona=persona_id,
         text=words,
-        types=["postback", "postback"],
+        types="quick_pair",
         payload=[quick_pair_postback, general_pair_postback],
         title=[Context.qrcode_check_button, Context.qrcode_intro_button]
     )
@@ -68,7 +68,7 @@ def timeout(userId):
     message.push_button(
         id=userId, persona=persona_id,
         text=Context.timeout_text[1],
-        types=["web_url", "postback"],
+        types="timeout",
         payload=[web_url_payload, "Quick_pair"],
         title=[Context.send_partner_last_message_button,
                Context.pair_again_button]

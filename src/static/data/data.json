@@ -55,8 +55,68 @@
         ]
     }
 }
-
 {% endmacro %}
+
+{% macro push_button(id, persona, text, title, types, payload) %}
+{
+    "recipient": {
+        "id": "{{id}}"
+    },
+    "persona_id": "{{persona}}",
+    "message": {
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "button",
+                "text": "{{text}}",
+                "buttons": 
+                {% if types == "quick_pair" %}
+                [
+                    {
+                        "type": "postback",
+                        "title": "{{title[0]}}",
+                        "payload": "{{payload[0]}}"
+                    },
+                    {
+                        "type": "postback",
+                        "title": "{{title[1]}}",
+                        "payload": "{{payload[1]}}"
+                    }
+                ]
+                {% endif %}
+
+                {% if types == "general_pair" %}
+                [{
+                    "type": "web_url",
+                    "title": "{{title[0]}}",
+                    "url": "https://ngrok.momoka.tw/joyce/{{payload[0]}}",
+                    "messenger_extensions": true,
+                    "webview_height_ratio": "full"
+                }]
+                {% endif %}
+
+                {% if types == "timeout" %}
+                [
+                    {
+                        "type": "web_url",
+                        "title": "{{title[0]}}",
+                        "url": "https://ngrok.momoka.tw/joyce/{{payload[0]}}",
+                        "messenger_extensions": true,
+                        "webview_height_ratio": "full"
+                    },
+                    {
+                        "type": "postback",
+                        "title": "{{title[1]}}",
+                        "payload": "{{payload[1]}}"
+                    }
+                ]
+                {% endif %}
+            }
+        }
+    }
+}
+{% endmacro %}
+
 {% macro get_started(menu_start, pair_url, menu_rule, rule_url) %}
 {
     "get_started": {
