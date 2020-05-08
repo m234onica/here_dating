@@ -7,24 +7,24 @@ from src.tool.text import Context
 from config import Config
 from jinja2 import Environment, PackageLoader
 
-json_file = Environment(loader=PackageLoader("src", "./static/data"))
+json_file = Environment(loader=PackageLoader("src", "templates"))
 
 def sender_action(id, action):
-    template = json_file.get_template("data.json")
+    template = json_file.get_template("data.json.jinja")
     rendered = template.module.sender_action(id=id, action=action)
     data = json.loads(rendered)
     return request.post("messages", data)
 
 
 def push_text(id, persona, text):
-    template = json_file.get_template("data.json")
+    template = json_file.get_template("data.json.jinja")
     rendered = template.module.push_text(id=id, persona=persona, text=text)
     data = json.loads(rendered)
     return request.post("messages", data)
 
 
 def push_quick_reply(id, persona, text):
-    template = json_file.get_template("data.json")
+    template = json_file.get_template("data.json.jinja")
     rendered = template.module.push_quick_reply(
         id=id, persona=persona, text=text)
     data = json.loads(rendered)
@@ -32,14 +32,14 @@ def push_quick_reply(id, persona, text):
 
 
 def push_attachment(id, persona, url):
-    template = json_file.get_template("data.json")
+    template = json_file.get_template("data.json.jinja")
     rendered = template.module.push_attachment(id=id, persona=persona, url=url)
     data = json.loads(rendered)
     return request.post("messages", data)
 
 
 def push_button(id, persona, text, types, title, payload):
-    template = json_file.get_template("data.json")
+    template = json_file.get_template("data.json.jinja")
     rendered = template.module.push_button(
         id=id, persona=persona, text=text, types=types, payload=payload, title=title)
     data = json.loads(rendered)
@@ -52,7 +52,7 @@ def get_started():
     pair_url = urljoin(Config.STATIC_URL, "pair.html")
     rule_url = urljoin(Config.STATIC_URL, "rule.html")
 
-    template = json_file.get_template("data.json")
+    template = json_file.get_template("data.json.jinja")
     rendered = template.module.get_started(
         menu_start=Context.menu_start, pair_url=pair_url,
         menu_rule=Context.menu_rule, rule_url=rule_url)
@@ -72,7 +72,7 @@ def get_started():
 def push_customer_menu(id, postback_title):
     url = urljoin(Config.STATIC_URL, "rule.html")
 
-    template = json_file.get_template("data.json")
+    template = json_file.get_template("data.json.jinja")
     rendered = template.module.custom_menu(id=id,
                                            postback_title=postback_title,
                                            url_title=Context.menu_rule, url=url)
