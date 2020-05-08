@@ -2,25 +2,26 @@ import requests
 import os
 import json
 from urllib.parse import urljoin
-from src.tool import request
+from src.func import api_request
 from src.tool.text import Context
 from config import Config
 from jinja2 import Environment, PackageLoader
 
 json_file = Environment(loader=PackageLoader("src", "templates"))
 
+
 def sender_action(id, action):
     template = json_file.get_template("data.json.jinja")
     rendered = template.module.sender_action(id=id, action=action)
     data = json.loads(rendered)
-    return request.post("messages", data)
+    return api_request("POST", url="messages", json=data)
 
 
 def push_text(id, persona, text):
     template = json_file.get_template("data.json.jinja")
     rendered = template.module.push_text(id=id, persona=persona, text=text)
     data = json.loads(rendered)
-    return request.post("messages", data)
+    return api_request("POST", url="messages", json=data)
 
 
 def push_quick_reply(id, persona, text):
@@ -28,14 +29,14 @@ def push_quick_reply(id, persona, text):
     rendered = template.module.push_quick_reply(
         id=id, persona=persona, text=text)
     data = json.loads(rendered)
-    return request.post("messages", data)
+    return api_request("POST", url="messages", json=data)
 
 
 def push_attachment(id, persona, url):
     template = json_file.get_template("data.json.jinja")
     rendered = template.module.push_attachment(id=id, persona=persona, url=url)
     data = json.loads(rendered)
-    return request.post("messages", data)
+    return api_request("POST", url="messages", json=data)
 
 
 def push_button(id, persona, text, types, title, payload):
@@ -43,7 +44,7 @@ def push_button(id, persona, text, types, title, payload):
     rendered = template.module.push_button(
         id=id, persona=persona, text=text, types=types, payload=payload, title=title)
     data = json.loads(rendered)
-    return request.post("messages", data)
+    return api_request("POST", url="messages", json=data)
 
 
 def get_started():
@@ -58,12 +59,13 @@ def get_started():
         menu_rule=Context.menu_rule, rule_url=rule_url)
 
     data = json.loads(rendered)
-    get_start_responese = request.post("messenger_profile", data)
+    get_start_responese = api_request(
+        "POST", url="messenger_profile", json=data)
 
     whitelisted_domains = {
         "whitelisted_domains": [Config.BASE_URL, Config.STATIC_URL]}
-    whitelisted_domains_response = request.post(
-        "messenger_profile", whitelisted_domains)
+    whitelisted_domains_response = api_request(
+        "POST", url="messenger_profile", json=whitelisted_domains)
 
     response = [get_start_responese, whitelisted_domains_response]
     return response
@@ -77,28 +79,20 @@ def push_customer_menu(id, postback_title):
                                            postback_title=postback_title,
                                            url_title=Context.menu_rule, url=url)
     data = json.loads(rendered)
-    response = request.post("custom_user_settings", data)
-
-    return response
+    return api_request("POST", url="custom_user_settings", json=data)
 
 
 def delete_menu(id):
-    url = urljoin(Config.FB_API_URL, os.path.join(
-        "me", "custom_user_settings"))
-
     params = {
         "psid": id,
         "params": '["persistent_menu"]',
         "access_token": Config.PAGE_ACCESS_TOKEN
-
     }
-    response = requests.request("DELETE", url, params=params)
-    print("delete_menu: ", response.json())
-    return response
+    return api_request("DELETE", url="custom_user_settings", params=params)
 
 
 def persona():
     template = json_file.get_template("data.json.jinja")
     rendered = template.module.persona()
     data = json.loads(rendered)
-    return http_request("POST", "personas", data)
+    return api_request("POST", url="personas", json=data)
