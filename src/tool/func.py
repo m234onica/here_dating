@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from src.models import Pair, status_Enum
 from src.db import db_session
 from src.tool import message, reply
-from src.func import http_request, response
+from src.func import api_request, response
 from config import Config
 
 
