@@ -33,10 +33,8 @@ def verify_distance(placeId):
 @api.route("/api/pair/<placeId>/<userId>", methods=["POST"])
 def pair_user(placeId, userId):
 
-    active = filter.all_active_pair()
     # userId is in active data
-    is_player = active.filter((Pair.playerA == userId)
-                              | (Pair.playerB == userId)).first()
+    is_player = filter.get_active_pair(userId)
 
     # 有userId但沒有開始時間：配對
     if is_player is not None:
@@ -49,6 +47,7 @@ def pair_user(placeId, userId):
             return response(msg="User is chatting.", payload={"status": "paired"}, code=200)
 
     # userId not in data -> find a waiting userId
+    active = filter.all_active_pair()
     waiting = active.filter(Pair.playerB == None).filter(Pair.placeId == placeId).\
         order_by(Pair.createdAt.asc()).order_by(Pair.id.asc()).first()
 
@@ -143,10 +142,7 @@ def get_status(userId):
 # 用戶離開聊天室
 @api.route("/api/user/leave/<userId>", methods=["POST"])
 def leave(userId):
-    active = filter.all_active_pair()
-    pair = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
-        filter(Pair.deletedAt == None).first()
-
+    pair = filter.get_active_pair(userId)
     recipient_id = filter.get_recipient_id(userId)
 
     if pair == None:

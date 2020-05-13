@@ -16,6 +16,12 @@ def get_pair(userId):
         Pair.playerB == userId)).order_by(Pair.id.desc()).first()
 
 
+def get_active_pair(userId):
+    all_active = all_active_pair()
+    return all_active.filter((Pair.playerA == userId) | (
+        Pair.playerB == userId)).first()
+
+
 def get_recipient_id(userId):
     pair = get_pair(userId)
     if pair.playerA == userId:
