@@ -37,7 +37,7 @@ def get_persona_id():
     return persona_id
 
 
-def get_placeId(userId):
+def get_place_id(userId):
     pair = get_pair(userId)
     placeId = pair.placeId
     return placeId

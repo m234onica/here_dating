@@ -49,7 +49,7 @@ def webhook_handle():
 
         if payload == "Quick_pair":
             words = Context.quick_pairing_message
-            placeId = filter.get_placeId(userId)
+            placeId = filter.get_place_id(userId)
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
 
         if payload == "General_pair":

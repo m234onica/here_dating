@@ -156,7 +156,7 @@ def leave(userId):
     pair.status = status_Enum(1)
     db_session.commit()
 
-    placeId = filter.get_placeId(userId)
+    placeId = filter.get_place_id(userId)
     words = Context.leave_message
     reply.quick_pair(userId, placeId, words.format(placeId=placeId))
     message.delete_menu(userId)
