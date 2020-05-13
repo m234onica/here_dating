@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
 from src.func import response
-from src.tool import message, filter, reply
+from src.tool import message, filter, reply, status
 from src.tool.text import Context
 from config import Config
 
@@ -102,41 +102,31 @@ def get_status(userId):
     pair = filter.get_pair(userId)
 
     if pair == None:
-        payload = {"status": "noPair", "pairId": None}
-        return response(msg="User does not pair.", payload=payload, code=200)
+        return response(msg="User does not pair.", payload={"status": "noPair"}, code=200)
 
-    pairId = pair.id
+    if status.is_pairing(pair):
+        payload = {"status": "pairing", "pairId": pair.id}
+        return response(msg="User is pairing", payload=payload, code=200)
 
-    if pair.deletedAt == None:
-        if pair.startedAt == None:
-            payload = {"status": "pairing", "pairId": pairId}
-            return response(msg="User is pairing", payload=payload, code=200)
-
-        payload = {"status": "paired", "pairId": pairId}
-        return response(msg="User is chating", payload=payload, code=200)
-
-    if pair.startedAt == None:
-        payload = {"status": "pairing_fail", "pairId": pairId}
+    elif status.is_pair_fail(pair):
+        payload = {"status": "pairing_fail", "pairId": pair.id}
         return response(msg="User stop waiting", payload=payload, code=200)
 
-    if pair.deletedAt - timedelta(minutes=Config.END_TIME) < pair.startedAt:
-        payload = {"status": "leaved", "pairId": pairId}
+    elif status.is_paired(pair):
+        payload = {"status": "paired", "pairId": pair.id}
+        return response(msg="User is chating", payload=payload, code=200)
+
+    elif status.is_leaved(pair):
+        payload = {"status": "leaved", "pairId": pair.id}
         return response(msg="User leaved", payload=payload, code=200)
 
-    if pair.deletedAt - timedelta(minutes=Config.END_TIME) >= pair.startedAt:
+    else:
+        if status.is_send_last_message(userId) is False:
+            payload = {"status": "unSend", "pairId": pair.id}
+            return response(msg="Timeout but not send last word.", payload=payload, code=200)
 
-        if userId == pair.playerA:
-            if pair.playerA_lastedAt == None:
-                payload = {"status": "unSend", "pairId": pairId}
-                return response(msg="Timeout but not send last word.", payload=payload, code=200)
-
-        if userId == pair.playerB:
-            if pair.playerB_lastedAt == None:
-                payload = {"status": "unSend", "pairId": pairId}
-                return response(msg="Timeout but not send last word.", payload=payload, code=200)
-
-        payload = {"status": "noPair", "pairId": pairId}
-        return response(msg="User is pairing", payload=payload, code=200)
+        payload = {"status": "noPair", "pairId": pair.id}
+        return response(msg="User does not pair.", payload=payload, code=200)
 
 
 # 用戶離開聊天室
