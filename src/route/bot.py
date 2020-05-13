@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request
 from src.db import init_db, db_session
 from src.models import Place, Pair
 from src.route.api import leave, get_status, pair_user
-from src.tool import message, func, reply
+from src.tool import message, filter, reply
 from src.tool.text import Context
 from config import Config
 
@@ -49,7 +49,7 @@ def webhook_handle():
 
         if payload == "Quick_pair":
             words = Context.quick_pairing_message
-            placeId = func.get_placeId(userId)
+            placeId = filter.get_placeId(userId)
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
 
         if payload == "General_pair":
@@ -86,8 +86,8 @@ def webhook_handle():
         return reply.general_pair(userId, Context.introduction[1])
 
     else:
-        recipient_id = func.get_recipient_id(userId)
-        timeout = func.timeout_chat(userId).json
+        recipient_id = filter.get_recipient_id(userId)
+        timeout = filter.timeout_chat(userId).json
 
         if timeout["payload"]["status"] == "paired" and "message" in messaging.keys():
 

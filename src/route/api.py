@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
 from src.func import response
-from src.tool import message, func, reply
+from src.tool import message, filter, reply
 from src.tool.text import Context
 from config import Config
 
@@ -33,7 +33,7 @@ def verify_distance(placeId):
 @api.route("/api/pair/<placeId>/<userId>", methods=["POST"])
 def pair_user(placeId, userId):
 
-    active = func.all_active_pair()
+    active = filter.all_active_pair()
     # userId is in active data
     is_player = active.filter((Pair.playerA == userId)
                               | (Pair.playerB == userId)).first()
@@ -57,7 +57,7 @@ def pair_user(placeId, userId):
         waiting.startedAt = datetime.now()
         db_session.commit()
 
-        recipient_id = func.get_recipient_id(userId)
+        recipient_id = filter.get_recipient_id(userId)
 
         reply.paired(userId)
         reply.paired(recipient_id)
@@ -83,7 +83,7 @@ def send_last_word():
     payload = get_status(userId).json
     status = payload["payload"]["status"]
 
-    pair = func.get_pair(userId)
+    pair = filter.get_pair(userId)
 
     if status == "unSend":
         if pair.playerA == userId:
@@ -100,7 +100,7 @@ def send_last_word():
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
-    pair = func.get_pair(userId)
+    pair = filter.get_pair(userId)
     pairId = pair.id
 
     if pair == None:
@@ -142,11 +142,11 @@ def get_status(userId):
 # 用戶離開聊天室
 @api.route("/api/user/leave/<userId>", methods=["POST"])
 def leave(userId):
-    active = func.all_active_pair()
+    active = filter.all_active_pair()
     pair = active.filter((Pair.playerA == userId) | (Pair.playerB == userId)).\
         filter(Pair.deletedAt == None).first()
 
-    recipient_id = func.get_recipient_id(userId)
+    recipient_id = filter.get_recipient_id(userId)
 
     if pair == None:
         return response(msg="User isn't in chatroom", payload={"status": "noPair"}, code=200)
@@ -155,7 +155,7 @@ def leave(userId):
     pair.status = status_Enum(1)
     db_session.commit()
 
-    placeId = func.get_placeId(userId)
+    placeId = filter.get_placeId(userId)
     words = Context.leave_message
     reply.quick_pair(userId, placeId, words.format(placeId=placeId))
     message.delete_menu(userId)

@@ -1,24 +1,24 @@
 import os
 from urllib.parse import urlencode
 
-from src.tool import message, func
+from src.tool import message, filter
 from src.tool.text import Context
 
 
 def introduction(userId):
-    persona_id = func.get_persona_id()
+    persona_id = filter.get_persona_id()
     return message.push_text(
         id=userId, text=Context.introduction[0], persona=persona_id)
 
 
 def pairing(userId):
-    persona_id = func.get_persona_id()
+    persona_id = filter.get_persona_id()
     return message.push_text(
         id=userId, text=Context.waiting_pair, persona=persona_id)
 
 
 def paired(userId):
-    persona_id = func.get_persona_id()
+    persona_id = filter.get_persona_id()
 
     message.push_text(id=userId, persona=persona_id,
                       text=Context.waiting_success[0])
@@ -30,7 +30,7 @@ def paired(userId):
 
 
 def general_pair(userId, words):
-    persona_id = func.get_persona_id()
+    persona_id = filter.get_persona_id()
     return message.push_button(
         id=userId,
         persona=persona_id,
@@ -42,7 +42,7 @@ def general_pair(userId, words):
 
 
 def quick_pair(userId, placeId, words):
-    persona_id = func.get_persona_id()
+    persona_id = filter.get_persona_id()
     quick_pair_postback = "@".join(["Pair", placeId])
     general_pair_postback = "General_pair"
     return message.push_button(
@@ -56,8 +56,8 @@ def quick_pair(userId, placeId, words):
 
 
 def timeout(userId):
-    persona_id = func.get_persona_id()
-    pair = func.get_pair(userId)
+    persona_id = filter.get_persona_id()
+    pair = filter.get_pair(userId)
     pairId = pair.id
 
     params = urlencode({"pairId": pairId, "userId": userId})
@@ -78,8 +78,8 @@ def timeout(userId):
 
 
 def last_message(userId, lastWord):
-    persona_id = func.get_persona_id()
-    recipient_id = func.get_recipient_id(userId)
+    persona_id = filter.get_persona_id()
+    recipient_id = filter.get_recipient_id(userId)
 
     message.push_text(userId, persona_id,
                       Context.user_last_message + lastWord)
