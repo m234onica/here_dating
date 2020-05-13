@@ -18,37 +18,17 @@ def get_pair(userId):
         Pair.playerB == userId)).order_by(Pair.id.desc()).first()
 
 
-def get_player(userId):
-
-    pair = Pair.query.filter((Pair.playerA == userId) | (
-        Pair.playerB == userId)).order_by(Pair.id.desc()).first()
-
-    if pair == None:
-        return None
-
-    if userId == pair.playerA:
-        return "playerA"
-
-    if userId == pair.playerB:
-        return "playerB"
-
-
 def get_pairId(userId):
     pair = get_pair(userId)
     return str(pair.id)
 
 
 def get_recipient_id(userId):
-
-    player = get_player(userId)
     pair = get_pair(userId)
-    if player == "playerA":
+    if pair.playerA == userId:
         recipient_id = pair.playerB
-
-    elif player == "playerB":
-        recipient_id = pair.playerA
     else:
-        recipient_id = None
+        recipient_id = pair.playerA
 
     return recipient_id
 
@@ -74,7 +54,6 @@ def get_placeId(userId):
 
 
 def timeout_chat(userId):
-    player = get_player(userId)
     pair = get_pair(userId)
     recipient_id = get_recipient_id(userId)
     now_time = datetime.now()

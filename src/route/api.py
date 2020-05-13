@@ -83,14 +83,12 @@ def send_last_word():
     payload = get_status(userId).json
     status = payload["payload"]["status"]
 
-    player = func.get_player(userId)
     pair = func.get_pair(userId)
 
     if status == "unSend":
-        if player == "playerA":
+        if pair.playerA == userId:
             pair.playerA_lastedAt = datetime.now()
-
-        elif player == "playerB":
+        else:
             pair.playerB_lastedAt = datetime.now()
 
         db_session.commit()
