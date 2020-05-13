@@ -18,11 +18,6 @@ def get_pair(userId):
         Pair.playerB == userId)).order_by(Pair.id.desc()).first()
 
 
-def get_pairId(userId):
-    pair = get_pair(userId)
-    return str(pair.id)
-
-
 def get_recipient_id(userId):
     pair = get_pair(userId)
     if pair.playerA == userId:

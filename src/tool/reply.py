@@ -57,7 +57,8 @@ def quick_pair(userId, placeId, words):
 
 def timeout(userId):
     persona_id = func.get_persona_id()
-    pairId = func.get_pairId(userId)
+    pair = func.get_pair(userId)
+    pairId = pair.id
 
     params = urlencode({"pairId": pairId, "userId": userId})
     web_url_payload = "?".join(["message.html", params])
