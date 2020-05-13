@@ -5,7 +5,7 @@ from src.db import init_db, db_session
 from src.models import Place, Pair, status_Enum
 from src.func import response
 from src.tool import message, filter, reply, status
-from src.tool.text import Context
+from src.context import Context
 from config import Config
 
 api = Blueprint("api", __name__)

@@ -2,10 +2,11 @@ import requests
 import os
 import json
 from urllib.parse import urljoin
-from src.func import api_request
-from src.tool.text import Context
-from config import Config
 from jinja2 import Environment, PackageLoader
+
+from src.func import api_request
+from src.context import Context
+from config import Config
 
 json_file = Environment(loader=PackageLoader("src", "templates"))
 

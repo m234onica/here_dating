@@ -5,7 +5,7 @@ import time
 from src.db import db_session
 from src.models import Pair, status_Enum
 from src.tool import message, filter, reply
-from src.tool.text import Context
+from src.context import Context
 from config import Config
 
 starttime = time.time()

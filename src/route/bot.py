@@ -4,7 +4,7 @@ from src.db import init_db, db_session
 from src.models import Place, Pair
 from src.route.api import leave, get_status, pair_user
 from src.tool import message, filter, reply, broken
-from src.tool.text import Context
+from src.context import Context
 from config import Config
 
 

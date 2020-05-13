@@ -2,7 +2,7 @@ import os
 from urllib.parse import urlencode
 
 from src.tool import message, filter
-from src.tool.text import Context
+from src.context import Context
 
 
 def introduction(userId):
