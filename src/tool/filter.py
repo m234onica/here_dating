@@ -1,10 +1,6 @@
-from datetime import datetime, timedelta
-
-from src.models import Pair, status_Enum
-from src.db import db_session
-from src.tool import message, reply
-from src.func import api_request, response
-from config import Config
+from src.models import Pair
+from src.tool import message
+from src.func import api_request
 
 
 def all_active_pair():
@@ -47,23 +43,3 @@ def get_place_id(userId):
     pair = get_pair(userId)
     placeId = pair.placeId
     return placeId
-
-
-def timeout(userId):
-    pair = get_pair(userId)
-    recipient_id = get_recipient_id(userId)
-    now_time = datetime.now()
-
-    if pair.startedAt != None and pair.deletedAt == None:
-        if now_time - timedelta(minutes=Config.END_TIME) >= pair.startedAt:
-            pair.deletedAt = now_time
-            pair.status = status_Enum(2)
-
-            db_session.commit()
-
-            reply.timeout_message(userId)
-            reply.timeout_message(recipient_id)
-
-            return response(msg="Timeout to breaked pair", payload={"status": "timeout"}, code=200)
-
-    return response(msg="User is chating", payload={"status": "paired"}, code=200)
