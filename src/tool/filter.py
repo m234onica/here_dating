@@ -1,5 +1,3 @@
-import os
-from urllib.parse import urljoin
 from datetime import datetime, timedelta
 
 from src.models import Pair, status_Enum
