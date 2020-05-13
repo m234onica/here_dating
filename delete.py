@@ -22,7 +22,7 @@ def send_expired_message(userId):
 
 
 def send_end_message(userId):
-    reply.timeout(userId)
+    reply.timeout_message(userId)
     message.delete_menu(userId)
     return "sended success"
 

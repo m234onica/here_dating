@@ -58,8 +58,8 @@ def timeout_chat(userId):
 
             db_session.commit()
 
-            reply.timeout(userId)
-            reply.timeout(recipient_id)
+            reply.timeout_message(userId)
+            reply.timeout_message(recipient_id)
 
             return response(msg="Timeout to breaked pair", payload={"status": "timeout"}, code=200)
 

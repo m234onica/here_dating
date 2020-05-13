@@ -55,7 +55,7 @@ def quick_pair(userId, placeId, words):
     )
 
 
-def timeout(userId):
+def timeout_message(userId):
     persona_id = filter.get_persona_id()
     pair = filter.get_pair(userId)
     pairId = pair.id
