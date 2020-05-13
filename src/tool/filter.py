@@ -39,14 +39,11 @@ def get_persona_id():
 
 def get_placeId(userId):
     pair = get_pair(userId)
-    if pair != None:
-        placeId = pair.placeId
-        return placeId
-    else:
-        return None
+    placeId = pair.placeId
+    return placeId
 
 
-def timeout_chat(userId):
+def timeout(userId):
     pair = get_pair(userId)
     recipient_id = get_recipient_id(userId)
     now_time = datetime.now()

@@ -87,7 +87,7 @@ def webhook_handle():
 
     else:
         recipient_id = filter.get_recipient_id(userId)
-        timeout = filter.timeout_chat(userId).json
+        timeout = filter.timeout(userId).json
 
         if timeout["payload"]["status"] == "paired" and "message" in messaging.keys():
 
