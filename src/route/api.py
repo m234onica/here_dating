@@ -101,11 +101,12 @@ def send_last_word():
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
     pair = filter.get_pair(userId)
-    pairId = pair.id
 
     if pair == None:
-        payload = {"status": "noPair", "pairId": pairId}
+        payload = {"status": "noPair", "pairId": None}
         return response(msg="User does not pair.", payload=payload, code=200)
+
+    pairId = pair.id
 
     if pair.deletedAt == None:
         if pair.startedAt == None:
