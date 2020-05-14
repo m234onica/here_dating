@@ -117,7 +117,7 @@
 }
 {% endmacro %}
 
-{% macro get_started(menu_start, pair_url, menu_rule, rule_url) %}
+{% macro get_started(menu_start, pair_url, menu_rule, rule_url, username) %}
 {
     "get_started": {
         "payload": "Start"
@@ -125,7 +125,7 @@
     "greeting": [
         {
             "locale": "default",
-            "text": "我是問候語\n我是問候語我是問候語我是問候語\n我是問候語\n"
+            "text": "Hi, {{username}} \n歡迎使用 HereDating"
         }
     ],
     "persistent_menu": [
@@ -181,7 +181,7 @@
 
 {% macro persona() %}
 {
-    "name": "系統訊息",
+    "name": "小天使",
     "profile_picture_url": "https://storage.googleapis.com/here_dating/image/user_pic.png"
 }
 {% endmacro %}

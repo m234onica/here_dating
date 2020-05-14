@@ -56,6 +56,7 @@ def get_started():
 
     template = json_file.get_template("data.json.jinja")
     rendered = template.module.get_started(
+        username="{{user_first_name}}",
         menu_start=Context.menu_start, pair_url=pair_url,
         menu_rule=Context.menu_rule, rule_url=rule_url)
 
