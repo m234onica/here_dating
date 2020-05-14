@@ -142,13 +142,17 @@ def leave(userId):
     pair.status = status_Enum(1)
     db_session.commit()
 
-    placeId = filter.get_place_id(userId)
-    words = Context.leave_message
-    reply.quick_pair(userId, placeId, words.format(placeId=placeId))
-    message.delete_menu(userId)
+    placeId = pair.placeId
+    if recipient_id == None:
+        words = Context.waiting_leave
+        reply.quick_pair(userId, placeId, words)
 
-    if recipient_id != None:
+    else:
+        words = Context.leave_message
+        reply.quick_pair(userId, placeId, words)
+        message.delete_menu(userId)
+
         words = Context.partner_leave_message
-        reply.quick_pair(recipient_id, placeId, words.format(placeId=placeId))
+        reply.quick_pair(recipient_id, placeId, words)
         message.delete_menu(recipient_id)
     return "User leave"
