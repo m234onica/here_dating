@@ -74,8 +74,11 @@ def webhook_handle():
     status = payload["payload"]["status"]
 
     if status == "pairing":
-        return reply.pairing(userId)
-
+        timeout = broken.timeout(userId).json
+        if timeout["payload"]["status"] == "pairing":
+            return reply.pairing(userId)
+        else:
+            return "pairing broken"
     if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
         if "referral" in messaging.keys():
             referral = messaging["referral"]["ref"].split("@")
