@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request
 from src.db import init_db, db_session
 from src.models import Place, Pair
 from src.route.api import leave, get_status, pair_user
-from src.tool import message, filter, reply, broken
+from src.tool import message, filter, reply, broken, status
 from src.context import Context
 from config import Config
 
@@ -26,6 +26,7 @@ def webhook_handle():
     data = request.get_json()
     messaging = data["entry"][0]["messaging"][0]
     userId = messaging["sender"]["id"]
+    pair = filter.get_pair(userId)
 
     message.sender_action(userId, "mark_seen")
 
@@ -57,10 +58,7 @@ def webhook_handle():
 
         # 離開聊天室
         if payload == "Leave":
-            payload = get_status(userId).json
-            status = payload["payload"]["status"]
-
-            if status in ["paired", "pairing"]:
+            if status.is_pairing(pair) or status.is_paired(pair):
                 leave(userId)
             return "User leaved"
 
@@ -70,26 +68,22 @@ def webhook_handle():
         if payload_param[0] == "Pair":
             return pair_user(placeId, userId)
 
-    payload = get_status(userId).json
-    status = payload["payload"]["status"]
-
-    if status == "pairing":
+    if status.is_pairing(pair):
         timeout = broken.timeout(userId).json
         if timeout["payload"]["status"] == "pairing":
             return reply.pairing(userId)
         else:
             return "pairing broken"
 
-    if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
+    if not (status.is_pairing(pair) or status.is_paired(pair)):
         if "referral" in messaging.keys():
             referral = messaging["referral"]["ref"].split("@")
             placeId = referral[1]
             words = Context.qrcode_introduction
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
-
         return reply.general_pair(userId)
 
-    else:
+    if status.is_paired(pair):
         recipient_id = filter.get_recipient_id(userId)
         timeout = broken.timeout(userId).json
 
@@ -99,7 +93,6 @@ def webhook_handle():
                 message.sender_action(recipient_id, "typing_on")
                 message.push_text(recipient_id, "",
                                   messaging["message"]["text"])
-
             if "attachments" in messaging["message"].keys():
                 attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
                 message.sender_action(recipient_id, "typing-on")
