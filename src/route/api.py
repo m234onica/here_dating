@@ -78,6 +78,7 @@ def pair_user(placeId, userId):
 def send_last_word():
     userId = request.json["userId"]
     lastWord = request.json["lastWord"]
+    current_time = datetime.now()
 
     payload = get_status(userId).json
     status = payload["payload"]["status"]
@@ -92,7 +93,7 @@ def send_last_word():
 
         db_session.commit()
 
-        reply.last_message(userId, lastWord)
+        reply.last_message(userId, lastWord, current_time.hour, current_time.minute)
 
     return response(msg="Send palyer's last word.", payload={"status": "success"}, code=200)
 

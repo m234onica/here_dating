@@ -30,8 +30,8 @@ class Context:
     send_partner_last_message_button = "留下最後一段話"
 
     user_last_message = "這是我傳的遺言："
-    partner_last_message = "這是對方傳的遺言："
-
+    partner_last_message = "這是{hour}點{minute}分傳來的最後一段話：\n"
+    # partner_last_message = "這是{hour}點{minute}分的{user_first_name}傳來的最後一段話：\n"
     pair_again_button = "我要開啟新對話"
     pair_again_text = "請問您想要找下個人聊天，再認識一位新朋友嗎？"
 
