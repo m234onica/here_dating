@@ -8,13 +8,14 @@
 {% endmacro %}
 
 {% macro push_text(id, persona, text) %}
+{% set text = text.split('\n') %}
 {
     "recipient": {
         "id": "{{id}}"
     },
     "persona_id": "{{persona}}",
     "message": {
-        "text": "{{text}}"
+        "text": "{{text[0]}}\n{{text[1]}}"
     }
 }
 {% endmacro %}

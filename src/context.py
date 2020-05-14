@@ -14,7 +14,7 @@ class Context:
 
     start_chating = "開始使用"
 
-    waiting_pair = "配對中，請稍等..."
+    waiting_pair = "正在為你找人中，請稍候。\n對規則有疑問可以在右下角觀看說明"
     wait_expired = "由於超過 2 分鐘沒有找到聊天對象，系統已經自動斷開，是否想以地標編號「{placeId}」繼續尋找聊天對象呢？"
     waiting_leave = "您已經離開等待室了，要不要再重新加入呢？"
     waiting_success = ["已為您尋找到聊天對象！你們剛好都在這場活動中，現在開始您有 10 分鐘可以聊天唷！", "先試著說聲「Hi」吧！"]
