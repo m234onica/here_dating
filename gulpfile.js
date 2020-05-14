@@ -32,6 +32,11 @@ gulp.task('compile', function (done) {
             }
         }))
         .pipe(gulp.dest("./static"))
+
+    gulp.src("./src/templates/rule.html")
+        .pipe(twig())
+        .pipe(gulp.dest("./static"))
+
     done();
     return "done"
 })
