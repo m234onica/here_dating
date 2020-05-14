@@ -8,7 +8,7 @@ from src.context import Context
 def introduction(userId):
     persona_id = filter.get_persona_id()
     return message.push_text(
-        id=userId, text=Context.introduction[0], persona=persona_id)
+        id=userId, text=Context.introduction, persona=persona_id)
 
 
 def pairing(userId):
@@ -34,10 +34,10 @@ def general_pair(userId):
     return message.push_button(
         id=userId,
         persona=persona_id,
-        text=Context.introduction[1],
+        text=Context.general_pair_message,
         types="general_pair",
         payload=["pair.html"],
-        title=[Context.start_chating]
+        title=[Context.general_pair_button]
     )
 
 
@@ -51,7 +51,7 @@ def quick_pair(userId, placeId, words):
         text=words,
         types="quick_pair",
         payload=[quick_pair_postback, general_pair_postback],
-        title=[Context.qrcode_check_button, Context.qrcode_intro_button]
+        title=[Context.quick_pair_button, Context.pair_other_button]
     )
 
 

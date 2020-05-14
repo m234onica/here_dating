@@ -15,7 +15,7 @@ def send_expired_message(userId):
     placeId = filter.get_place_id(userId)
     words = Context.wait_expired
 
-    reply.quick_pair(userId, placeId, words.format(placeId=placeId))
+    reply.quick_pair(userId, placeId, words)
     message.delete_menu(userId)
     
     return "sended success"
