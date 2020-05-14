@@ -45,7 +45,7 @@ def webhook_handle():
                     words = Context.qrcode_introduction
                     return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
             else:
-                return reply.general_pair(userId, Context.introduction[1])
+                return reply.general_pair(userId)
 
         if payload == "Quick_pair":
             words = Context.quick_pairing_message
@@ -53,7 +53,7 @@ def webhook_handle():
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
 
         if payload == "General_pair":
-            return reply.general_pair(userId, Context.introduction[1])
+            return reply.general_pair(userId)
 
         # 離開聊天室
         if payload == "Leave":
@@ -79,6 +79,7 @@ def webhook_handle():
             return reply.pairing(userId)
         else:
             return "pairing broken"
+
     if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
         if "referral" in messaging.keys():
             referral = messaging["referral"]["ref"].split("@")
@@ -86,7 +87,7 @@ def webhook_handle():
             words = Context.qrcode_introduction
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
 
-        return reply.general_pair(userId, Context.introduction[1])
+        return reply.general_pair(userId)
 
     else:
         recipient_id = filter.get_recipient_id(userId)

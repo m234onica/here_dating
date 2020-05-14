@@ -29,12 +29,12 @@ def paired(userId):
     return "paired success"
 
 
-def general_pair(userId, words):
+def general_pair(userId):
     persona_id = filter.get_persona_id()
     return message.push_button(
         id=userId,
         persona=persona_id,
-        text=words,
+        text=Context.introduction[1],
         types="general_pair",
         payload=["pair.html"],
         title=[Context.start_chating]
