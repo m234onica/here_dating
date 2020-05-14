@@ -143,6 +143,8 @@ def leave(userId):
     db_session.commit()
 
     placeId = pair.placeId
+    message.delete_menu(userId)
+
     if recipient_id == None:
         words = Context.waiting_leave
         reply.quick_pair(userId, placeId, words)
@@ -150,7 +152,6 @@ def leave(userId):
     else:
         words = Context.leave_message
         reply.quick_pair(userId, placeId, words)
-        message.delete_menu(userId)
 
         words = Context.partner_leave_message
         reply.quick_pair(recipient_id, placeId, words)
