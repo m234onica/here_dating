@@ -1,251 +1,99 @@
 import requests
 import os
+import json
 from urllib.parse import urljoin
-from src.tool import request
-from src.tool.text import Context
+from jinja2 import Environment, PackageLoader
+
+from src.func import api_request
+from src.context import Context
 from config import Config
+
+json_file = Environment(loader=PackageLoader("src", "templates"))
 
 
 def sender_action(id, action):
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "sender_action": action
-    }
-    return request.post("messages", data)
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.sender_action(id=id, action=action)
+    data = json.loads(rendered)
+    return api_request("POST", url="messages", json=data)
 
 
 def push_text(id, persona, text):
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "persona_id": persona,
-        "message": {
-            "text": text
-        }
-    }
-    return request.post("messages", data)
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.push_text(id=id, persona=persona, text=text)
+    data = json.loads(rendered)
+    return api_request("POST", url="messages", json=data)
 
 
 def push_quick_reply(id, persona, text):
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "messaging_type": "RESPONSE",
-        "persona_id": persona,
-        "message": {
-            "text": text,
-            "quick_replies": [
-                {
-                    "content_type": "text",
-                    "title": "Hi",
-                    "payload": "Hi",
-                }
-            ]
-        }
-    }
-    return request.post("messages", data)
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.push_quick_reply(
+        id=id, persona=persona, text=text)
+    data = json.loads(rendered)
+    return api_request("POST", url="messages", json=data)
 
 
 def push_attachment(id, persona, url):
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "persona_id": persona,
-        "message": {
-            "attachment": {
-                "type": "image",
-                "payload": {
-                    "is_reusable": True,
-                    "url": url
-                }
-            }
-        }
-    }
-    return request.post("messages", data)
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.push_attachment(id=id, persona=persona, url=url)
+    data = json.loads(rendered)
+    return api_request("POST", url="messages", json=data)
 
 
 def push_button(id, persona, text, types, title, payload):
-    buttons = []
-    for i in range(len(types)):
-        buttons.append(
-            button_type(types=types[i], title=title[i], payload=payload[i])
-        )
-
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "persona_id": persona,
-        "message": {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "button",
-                    "text": text,
-                    "buttons": buttons
-                }
-            }
-        }
-    }
-    return request.post("messages", data)
-
-
-def button_type(types, title, payload):
-    url = urljoin(Config.STATIC_URL, payload)
-    if types == None:
-        return None
-
-    if types == "web_url":
-        return {
-            "type": types,
-            "title": title,
-            "url": url,
-            "messenger_extensions": True,
-            "webview_height_ratio": "full"
-        }
-
-    if types == "postback":
-        return {
-            "type": types,
-            "title": title,
-            "payload": payload
-        }
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.push_button(
+        id=id, persona=persona, text=text, types=types, payload=payload, title=title)
+    data = json.loads(rendered)
+    return api_request("POST", url="messages", json=data)
 
 
 def get_started():
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
 
-    whitelisted_domains = {
-        "whitelisted_domains": [
-            Config.BASE_URL,
-            Config.STATIC_URL
-        ]
-    }
     pair_url = urljoin(Config.STATIC_URL, "pair.html")
     rule_url = urljoin(Config.STATIC_URL, "rule.html")
-    data = {
-        "get_started": {
-            "payload": "Start"
-        },
-        "greeting": [
-            {
-                "locale": "default",
-                "text": "我是問候語\n我是問候語我是問候語我是問候語\n我是問候語\n"
-            }
-        ],
-        "persistent_menu": [
-            {
-                "locale": "default",
-                "composer_input_disabled": False,
-                "call_to_actions": [
-                    {
-                        "type": "web_url",
-                        "title": Context.menu_start,
-                        "url": pair_url,
-                        "messenger_extensions": True,
-                        "webview_height_ratio": "full"
-                    },
-                    {
-                        "type": "web_url",
-                        "title": Context.menu_rule,
-                        "url": rule_url,
-                        "messenger_extensions": True,
-                        "webview_height_ratio": "full"
-                    }
-                ]
-            }
-        ]
-    }
-    get_start_responese = request.post("messenger_profile", data)
-    whitelisted_domains_response = request.post(
-        "messenger_profile", whitelisted_domains)
+
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.get_started(
+        menu_start=Context.menu_start, pair_url=pair_url,
+        menu_rule=Context.menu_rule, rule_url=rule_url)
+
+    data = json.loads(rendered)
+    get_start_responese = api_request(
+        "POST", url="messenger_profile", json=data)
+
+    whitelisted_domains = {
+        "whitelisted_domains": [Config.BASE_URL, Config.STATIC_URL]}
+    whitelisted_domains_response = api_request(
+        "POST", url="messenger_profile", json=whitelisted_domains)
+
     response = [get_start_responese, whitelisted_domains_response]
     return response
 
 
-def push_pairing_menu(id):
+def push_customer_menu(id, postback_title):
     url = urljoin(Config.STATIC_URL, "rule.html")
-    data = {
-        "psid": id,
-        "persistent_menu": [
-            {
-                "locale": "default",
-                "composer_input_disabled": False,
-                "call_to_actions": [
-                    {
-                        "type": "postback",
-                        "title": Context.menu_waiting_cancel,
-                        "payload": "Leave"
-                    },
-                    {
-                        "type": "web_url",
-                        "title": Context.menu_rule,
-                        "url": url,
-                        "messenger_extensions": True,
-                        "webview_height_ratio": "full"
-                    }
-                ]
-            }
-        ]
-    }
-    response = request.post("custom_user_settings", data)
-    print("pairing_menu:", response)
-    return response
 
-
-def push_paired_menu(id):
-    url = urljoin(Config.STATIC_URL, "rule.html")
-    data = {
-        "psid": id,
-        "persistent_menu": [
-            {
-                "locale": "default",
-                "composer_input_disabled": False,
-                "call_to_actions": [
-                    {
-                        "type": "postback",
-                        "title": Context.menu_leave,
-                        "payload": "Leave"
-                    },
-                    {
-                        "type": "web_url",
-                        "title": Context.menu_rule,
-                        "url": url,
-                        "messenger_extensions": True,
-                        "webview_height_ratio": "full"
-                    }
-                ]
-            }
-        ]
-    }
-    response = request.post("custom_user_settings", data)
-    print("paired_menu: ", response)
-    return response
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.custom_menu(id=id,
+                                           postback_title=postback_title,
+                                           url_title=Context.menu_rule, url=url)
+    data = json.loads(rendered)
+    return api_request("POST", url="custom_user_settings", json=data)
 
 
 def delete_menu(id):
-    url = urljoin(Config.FB_API_URL, os.path.join(
-        "me", "custom_user_settings"))
-
     params = {
         "psid": id,
         "params": '["persistent_menu"]',
         "access_token": Config.PAGE_ACCESS_TOKEN
-
     }
-    response = requests.request("DELETE", url, params=params)
-    print("delete_menu: ", response.json())
-    return response
+    return api_request("DELETE", url="custom_user_settings", params=params)
 
 
 def persona():
-    data = {
-        "name": "系統訊息",
-        "profile_picture_url": "https://storage.googleapis.com/here_dating/image/user_pic.png"
-    }
-    return request.post("personas", data)
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.persona()
+    data = json.loads(rendered)
+    return api_request("POST", url="personas", json=data)

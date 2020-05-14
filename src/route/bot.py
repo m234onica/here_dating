@@ -3,8 +3,8 @@ from flask import Blueprint, render_template, request
 from src.db import init_db, db_session
 from src.models import Place, Pair
 from src.route.api import leave, get_status, pair_user
-from src.tool import message, func, reply
-from src.tool.text import Context
+from src.tool import message, filter, reply, broken
+from src.context import Context
 from config import Config
 
 
@@ -38,10 +38,9 @@ def webhook_handle():
             reply.introduction(userId)
 
             if "referral" in postback.keys():
-                referral = postback["referral"]["ref"].split(",")
+                referral = postback["referral"]["ref"].split("@")
                 entrance = referral[0]
                 placeId = referral[1]
-
                 if entrance == "qrcode":
                     words = Context.qrcode_introduction
                     return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
@@ -50,7 +49,7 @@ def webhook_handle():
 
         if payload == "Quick_pair":
             words = Context.quick_pairing_message
-            placeId = func.get_placeId(userId)
+            placeId = filter.get_place_id(userId)
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
 
         if payload == "General_pair":
@@ -65,7 +64,7 @@ def webhook_handle():
                 leave(userId)
             return "User leaved"
 
-        payload_param = payload.split(",")
+        payload_param = payload.split("@")
         placeId = payload_param[1]
 
         if payload_param[0] == "Pair":
@@ -79,7 +78,7 @@ def webhook_handle():
 
     if status in ["pairing_fail", "leaved", "noPair", "unSend"]:
         if "referral" in messaging.keys():
-            referral = messaging["referral"]["ref"].split(",")
+            referral = messaging["referral"]["ref"].split("@")
             placeId = referral[1]
             words = Context.qrcode_introduction
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
@@ -87,21 +86,21 @@ def webhook_handle():
         return reply.general_pair(userId, Context.introduction[1])
 
     else:
-        recipient_id = func.get_recipient_id(userId)
-        timeout = func.timeout_chat(userId).json
+        recipient_id = filter.get_recipient_id(userId)
+        timeout = broken.timeout(userId).json
 
         if timeout["payload"]["status"] == "paired" and "message" in messaging.keys():
 
             if "text" in messaging["message"].keys():
                 message.sender_action(recipient_id, "typing_on")
-                message.push_text(recipient_id, None,
+                message.push_text(recipient_id, "",
                                   messaging["message"]["text"])
 
             if "attachments" in messaging["message"].keys():
                 attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
                 message.sender_action(recipient_id, "typing-on")
                 message.push_attachment(
-                    recipient_id, None, attachment_url)
+                    recipient_id, "", attachment_url)
         return "Send message"
 
     return "ok"

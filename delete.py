@@ -4,15 +4,15 @@ import time
 
 from src.db import db_session
 from src.models import Pair, status_Enum
-from src.tool import message, func, reply
-from src.tool.text import Context
+from src.tool import message, filter, reply
+from src.context import Context
 from config import Config
 
 starttime = time.time()
 
 
 def send_expired_message(userId):
-    placeId = func.get_placeId(userId)
+    placeId = filter.get_place_id(userId)
     words = Context.wait_expired
 
     reply.quick_pair(userId, placeId, words.format(placeId=placeId))
@@ -22,14 +22,14 @@ def send_expired_message(userId):
 
 
 def send_end_message(userId):
-    reply.timeout(userId)
+    reply.timeout_message(userId)
     message.delete_menu(userId)
     return "sended success"
 
 
 def delete(minutes):
 
-    active_data = func.all_active_pair()
+    active_data = filter.all_active_pair()
     expired_time = datetime.now() - timedelta(minutes=minutes)
 
     if minutes == Config.EXPIRED_TIME:

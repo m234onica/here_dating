@@ -1,0 +1,187 @@
+{% macro sender_action(id, action) %}
+{
+    "recipient": {
+        "id": "{{id}}"
+    },
+    "sender_action": "{{action}}"
+}
+{% endmacro %}
+
+{% macro push_text(id, persona, text) %}
+{
+    "recipient": {
+        "id": "{{id}}"
+    },
+    "persona_id": "{{persona}}",
+    "message": {
+        "text": "{{text}}"
+    }
+}
+{% endmacro %}
+
+{% macro push_attachment(id, persona, url) %}
+{
+    "recipient": {
+        "id": "{{id}}"
+    },
+    "persona_id": "{{persona_id}}",
+    "message": {
+        "attachment": {
+            "type": "image",
+            "payload": {
+                "is_reusable": true,
+                "url": "{{url}}"
+            }
+        }
+    }
+}
+{% endmacro %}
+
+{% macro push_quick_reply(id, persona, text) %}
+{
+    "recipient": {
+        "id": "{{id}}"
+    },
+    "persona_id": "{{persona}}",
+    "messaging_type": "RESPONSE",
+    "message": {
+        "text": "{{text}}",
+        "quick_replies": [
+            {
+                "content_type": "text",
+                "title": "Hi",
+                "payload": "Hi"
+            }
+        ]
+    }
+}
+{% endmacro %}
+
+{% macro push_button(id, persona, text, title, types, payload) %}
+{
+    "recipient": {
+        "id": "{{id}}"
+    },
+    "persona_id": "{{persona}}",
+    "message": {
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "button",
+                "text": "{{text}}",
+                "buttons": 
+                {% if types == "quick_pair" %}
+                [
+                    {
+                        "type": "postback",
+                        "title": "{{title[0]}}",
+                        "payload": "{{payload[0]}}"
+                    },
+                    {
+                        "type": "postback",
+                        "title": "{{title[1]}}",
+                        "payload": "{{payload[1]}}"
+                    }
+                ]
+                {% endif %}
+
+                {% if types == "general_pair" %}
+                [{
+                    "type": "web_url",
+                    "title": "{{title[0]}}",
+                    "url": "https://ngrok.momoka.tw/joyce/{{payload[0]}}",
+                    "messenger_extensions": true,
+                    "webview_height_ratio": "full"
+                }]
+                {% endif %}
+
+                {% if types == "timeout" %}
+                [
+                    {
+                        "type": "web_url",
+                        "title": "{{title[0]}}",
+                        "url": "https://ngrok.momoka.tw/joyce/{{payload[0]}}",
+                        "messenger_extensions": true,
+                        "webview_height_ratio": "full"
+                    },
+                    {
+                        "type": "postback",
+                        "title": "{{title[1]}}",
+                        "payload": "{{payload[1]}}"
+                    }
+                ]
+                {% endif %}
+            }
+        }
+    }
+}
+{% endmacro %}
+
+{% macro get_started(menu_start, pair_url, menu_rule, rule_url) %}
+{
+    "get_started": {
+        "payload": "Start"
+    },
+    "greeting": [
+        {
+            "locale": "default",
+            "text": "我是問候語\n我是問候語我是問候語我是問候語\n我是問候語\n"
+        }
+    ],
+    "persistent_menu": [
+        {
+            "locale": "default",
+            "composer_input_disabled": false,
+            "call_to_actions": [
+                {
+                    "type": "web_url",
+                    "title": "{{menu_start}}",
+                    "url": "{{pair_url}}",
+                    "messenger_extensions": true,
+                    "webview_height_ratio": "full"
+                },
+                {
+                    "type": "web_url",
+                    "title": "{{menu_rule}}",
+                    "url": "{{rule_url}}",
+                    "messenger_extensions": true,
+                    "webview_height_ratio": "full"
+                }
+            ]
+        }
+    ]
+}
+{% endmacro %}
+
+{% macro custom_menu(id, postback_title, postback, url_title, url) %}
+{
+    "psid": "{{id}}",
+    "persistent_menu": [
+        {
+            "locale": "default",
+            "composer_input_disabled": false,
+            "call_to_actions": [
+                {
+                    "type": "postback",
+                    "title": "{{postback_title}}",
+                    "payload": "Leave"
+                },
+                {
+                    "type": "web_url",
+                    "title": "{{url_title}}",
+                    "url": "{{url}}",
+                    "messenger_extensions": true,
+                    "webview_height_ratio": "full"
+                }
+            ]
+        }
+    ]
+}
+{% endmacro %}
+
+{% macro persona() %}
+{
+    "name": "系統訊息",
+    "profile_picture_url": "https://storage.googleapis.com/here_dating/image/user_pic.png"
+}
+{% endmacro %}
