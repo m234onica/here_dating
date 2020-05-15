@@ -4,6 +4,13 @@ from src.models import Pair
 from config import Config
 
 
+def is_noPair(pair):
+    if pair == None:
+        return True
+    else:
+        return False
+
+
 def is_pairing(pair):
     if pair.startedAt == None and pair.deletedAt == None:
         return True

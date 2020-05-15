@@ -67,6 +67,9 @@ def webhook_handle():
             placeId = payload[1]
             return pair_user(placeId, userId)
 
+    if status.is_noPair(pair):
+        return reply.general_pair(userId)
+
     if status.is_pairing(pair):
         timeout = broken.timeout(userId).json
         if timeout["payload"]["status"] == "pairing":
