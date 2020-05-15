@@ -30,7 +30,6 @@
         }(document, "script", "Messenger"));
     </script>
 
-    {% block pair_script %}{% endblock pair_script %}
 
     <div class="container">
         <div class="row d-flex justify-content-center">
@@ -43,6 +42,7 @@
         </div>
     </div>
     <script type="text/javascript" src="https://storage.googleapis.com/here_dating/static/js/extension.js"></script>
+    {% block pair_script %}{% endblock pair_script %}
     {% block message_script %}{% endblock message_script %}
 </body>
 

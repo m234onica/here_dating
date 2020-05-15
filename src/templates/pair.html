@@ -3,44 +3,26 @@
 
 {% block pair_script %}
 <script>
-    window.extAsyncInit = function () {
-        MessengerExtensions.getContext(
-            app_id,
-            function success(uids) {
-                var userId = uids.psid;
-                $.get(
-                    base_url + "/api/user/status/" + userId,
-                    function (data, status) {
-                        if (status == "success") {
-                            var payload = data.payload
-                            if (payload.status == "paired" || payload.status == "pairing") {
-                                console.log(payload.status)
-                                close_Webview();
-                            }
-                        } else {
-                            console.log(err)
-                        }
-                    })
-
-            },
-            function error(err, errorMessage) {
-                console.log(JSON.stringify(errorMessage));
-            }
-        )
-    }
+    var serchParams = new URLSearchParams(window.location.search);
+    var userId = serchParams.get("userId");
+    status = get_status(userId).status;
+    pair_status(status);
 </script>
 {% endblock pair_script %}
 
 {% block pair %}
 <br>
-<form class="form" method="POST" id="pair-form" role="form" novalidate autocomplete="off">
+<form class="form" method="POST" id="pair-form" role="form" novalidate autocomplete="off" style="display: none;">
     <div class="form-group">
         <label id="place_label">{{pair.title}}</label>
         <div class="input-group mb-2">
             <input class="form-control" id="placeId" type="text" name="placeId" maxlength="4" required>
         </div>
+    </div>
 
-        <button class="btn btn-primary btn-block btn-lg" id="pair-submit" type="submit" name="submit"
-            disabled>{{pair.button}}</button>
+    <button class="btn btn-primary btn-block btn-lg" id="pair-submit" type="submit" name="submit"
+        disabled>{{pair.button}}</button>
 </form>
+<p id="pairing-status" style="display: none;">配對中，請稍等...</p>
+<p id="paired-status" style="display: none;">有人在等你聊天喔！快回去吧～</p>
 {% endblock pair %}

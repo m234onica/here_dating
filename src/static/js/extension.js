@@ -1,6 +1,20 @@
 var base_url = config.BASE_URL;
 var app_id = config.APP_ID;
 
+function pair_status(status) {
+    var timeout = config.SET_TIMEOUT;
+
+    if (status == "pairing") {
+        $("#pairing-status").css("display", "");
+        window.setTimeout(close_Webview, timeout);
+    } else if (status == "paired") {
+        $("#paired-status").css("display", "");
+        window.setTimeout(close_Webview, timeout);
+    } else {
+        $("#pair-form").css("display", "");
+    }
+}
+
 $("input#placeId")
     .on("keyup", function () {
         var placeId = $("#placeId").val().trim();
@@ -68,7 +82,6 @@ function message_status(pairId) {
     var timeout = config.SET_TIMEOUT;
     var status = get_status(userId).status;
     var current_pairId = get_status(userId).pairId;
-    document.querySelector(".sk-fading-circle").style.display = "none";
 
     if (status == "noPair") {
         $("#sended").css("display", "");

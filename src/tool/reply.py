@@ -31,12 +31,15 @@ def paired(userId):
 
 def general_pair(userId):
     persona_id = filter.get_persona_id()
+    params = urlencode({"userId": userId})
+    web_url_payload = "?".join(["pair.html", params])
+
     return message.push_button(
         id=userId,
         persona=persona_id,
         text=Context.general_pair_message,
         types="general_pair",
-        payload=["pair.html"],
+        payload=[web_url_payload],
         title=[Context.general_pair_button]
     )
 
