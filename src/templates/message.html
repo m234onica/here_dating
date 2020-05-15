@@ -9,17 +9,12 @@
     var pairId = serchParams.get("pairId");
     var status = get_status(userId).status;
 
-    message_status(status, pairId);
+    message_status(pairId);
 </script>
 {% endblock message_script %}
 
 {% block message %}
 <br>
-<div class="sk-fading-circle">
-    {% for i in range(1, 12) %}
-    <div class="sk-circle{{i}} sk-circle"></div>
-    {% endfor %}
-</div>
 <form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off" style="display: none;">
     <div class="form-group">
         <label>{{message.title}}</label>
