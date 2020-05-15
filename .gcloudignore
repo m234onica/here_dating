@@ -14,7 +14,8 @@
 .env
 .vscode
 
-src/static/*
+src/static/js/*
+src/static/css/*
 src/templates/*
 
 static

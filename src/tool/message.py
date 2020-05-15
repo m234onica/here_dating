@@ -8,7 +8,7 @@ from src.func import api_request
 from src.context import Context
 from config import Config
 
-json_file = Environment(loader=PackageLoader("src", "templates"))
+json_file = Environment(loader=PackageLoader("src", "static/data"))
 
 
 def sender_action(id, action):
