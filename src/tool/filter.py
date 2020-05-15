@@ -29,7 +29,7 @@ def get_recipient_id(userId):
 
 
 def get_persona_id():
-    persona = api_request("GET", url="personas")
+    persona = api_request("GET", urls=["me", "personas"])
     if persona["data"] == []:
         response = message.persona()
         persona_id = response["id"]

@@ -6,8 +6,8 @@ from flask import make_response
 from config import Config
 
 
-def api_request(method, url, json=None, params={"access_token": Config.PAGE_ACCESS_TOKEN}):
-    url = urljoin(Config.FB_API_URL, os.path.join("me", url))
+def api_request(method, urls, json=None, params={"access_token": Config.PAGE_ACCESS_TOKEN}): 
+    url = urljoin(Config.FB_API_URL,  "/".join(urls))
     response = requests.request(
         method=method, url=url, params=params, json=json).json()
     return response
