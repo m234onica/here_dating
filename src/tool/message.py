@@ -98,3 +98,14 @@ def persona():
     rendered = template.module.persona()
     data = json.loads(rendered)
     return api_request("POST", urls=["me","personas"], json=data)
+
+
+def get_username(userId):
+    params = urlencode(
+        {"fields": "first_name, last_name", "access_token": Config.PAGE_ACCESS_TOKEN})
+
+    user_profile = api_request(
+        "GET", urls=[userId], params=params)
+
+    username = user_profile["last_name"] + user_profile["first_name"]
+    return username
