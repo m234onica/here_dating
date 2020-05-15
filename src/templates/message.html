@@ -15,6 +15,11 @@
 
 {% block message %}
 <br>
+<div class="sk-fading-circle">
+    {% for i in range(1, 12) %}
+    <div class="sk-circle{{i}} sk-circle"></div>
+    {% endfor %}
+</div>
 <form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off">
     <div class="form-group">
         <label>{{message.title}}</label>
