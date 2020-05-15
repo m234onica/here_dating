@@ -8,7 +8,7 @@ var gulp = require("gulp"),
 var webserver = require("gulp-webserver");
 
 gulp.task("clean", function () {
-    return gulp.src("./static")
+    return gulp.src("./static/")
         .pipe(clean())
 })
 
@@ -23,7 +23,7 @@ gulp.task('compile', function (done) {
                 pair: data.pair
             }
         }))
-        .pipe(gulp.dest("./static"))
+        .pipe(gulp.dest("./static/templates"))
 
     gulp.src("./src/templates/message.html")
         .pipe(twig({
@@ -31,7 +31,7 @@ gulp.task('compile', function (done) {
                 message: data.message
             }
         }))
-        .pipe(gulp.dest("./static"))
+        .pipe(gulp.dest("./static/templates"))
 
     gulp.src("./src/templates/rule.html")
         .pipe(twig(
@@ -41,7 +41,7 @@ gulp.task('compile', function (done) {
                 }
             }
         ))
-        .pipe(gulp.dest("./static"))
+        .pipe(gulp.dest("./static/templates"))
 
     done();
     return "done"
@@ -52,7 +52,7 @@ gulp.task("revsion", function () {
         [
             "./src/static/**/*.css",
             "./src/static/**/*.js",
-            "./src/static/**/*.json"
+            "./src/static/rev/*.json"
         ],
     )
         .pipe(rev())
@@ -64,11 +64,11 @@ gulp.task("revsion", function () {
 
 
 gulp.task("replace", function () {
-    return gulp.src(["static/rev/*.json", "static/*.html"])
+    return gulp.src(["static/rev/*.json", "static/templates/*.html"])
         .pipe(revCollector({
             replaceReved: true
         }))
-        .pipe(gulp.dest("static"));
+        .pipe(gulp.dest("./static/templates"));
 })
 
 gulp.task("webserver", function () {
