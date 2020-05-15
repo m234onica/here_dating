@@ -2,23 +2,18 @@
     "pair": {
         "header": "交誼廳",
         "title": "請輸入地標編號",
-        "button": "開始找人聊天"
+        "button": "開始找人聊天",
+        "pairing": "你要耐心等待，仔細尋找...",
+        "paired": "對方在等你聊天喔！快回去吧～"
     },
     "message": {
         "header": "會面時間已到",
         "title": "你可以選填要留下最後一段訊息給對方，如果覺得聊天過程很愉快，不妨和對方交個朋友吧！",
-        "content": [
-            {
-                "contact": "FB"
-            },
-            {
-                "contact": "Line"
-            },
-            {
-                "contact": "最後一段話"
-            }
-        ],
-        "button": "送出"
+        "lastWord": "最後的訊息",
+        "contact": "聯絡方式",
+        "button": "送出",
+        "sended": "已經留過言囉！",
+        "leaved":"已經離開交誼廳囉！"
     },
     "rule": {
         "header": "常見問題",

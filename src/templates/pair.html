@@ -23,6 +23,6 @@
     <button class="btn btn-primary btn-block btn-lg" id="pair-submit" type="submit" name="submit"
         disabled>{{pair.button}}</button>
 </form>
-<p id="pairing-status" style="display: none;">配對中，請稍等...</p>
-<p id="paired-status" style="display: none;">有人在等你聊天喔！快回去吧～</p>
+<p id="pairing-status" style="display: none;"> {{pair.pairing}} </p>
+<p id="paired-status" style="display: none;"> {{pair.paired}} </p>
 {% endblock pair %}

@@ -16,15 +16,19 @@
 {% block message %}
 <br>
 <form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off" style="display: none;">
+    <span>{{message.title}}</span>
     <div class="form-group">
-        <label>{{message.title}}</label>
-        <textarea class="form-control" id="lastWord" name="lastWord" required></textarea>
+        <label for="contact">  </label>
+        <input class="form-control" type="text" id="contact" name="contact" placeholder="{{message.contact}}"/>
     </div>
-
+    <div class="form-group">
+        <label></label>
+        <textarea class="form-control" id="lastWord" name="lastWord" placeholder="{{message.lastWord}}" required></textarea>
+    </div>
     <button class="btn btn-primary btn-block btn-lg" id="message-submit" type="submit"
         name="submit">{{message.button}}</button>
 </form>
 
-<p id="sended" style="display: none;">已經留過言囉！</p>
-<p id="leave-pair" style="display: none;">您已經離開交誼廳囉！</p>
+<p id="sended" style="display: none;"> {{message.sended}} </p>
+<p id="leave-pair" style="display: none;"> {{message.leaved}} </p>
 {% endblock message %}
