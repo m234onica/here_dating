@@ -62,10 +62,9 @@ def webhook_handle():
                 leave(userId)
             return "User leaved"
 
-        payload_param = payload.split("@")
-        placeId = payload_param[1]
-
-        if payload_param[0] == "Pair":
+        payload = payload.split("@")
+        if payload[0] == "Pair":
+            placeId = payload[1]
             return pair_user(placeId, userId)
 
     if status.is_pairing(pair):
