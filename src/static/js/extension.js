@@ -1,6 +1,5 @@
 var base_url = config.BASE_URL;
 var app_id = config.APP_ID;
-console.log(base_url);
 
 $("input#placeId")
     .on("keyup", function () {
@@ -66,17 +65,18 @@ $("#pair-submit").on("click", function (e) {
 
 
 function message_status(pairId) {
+    var timeout = config.SET_TIMEOUT;
     var status = get_status(userId).status;
     var current_pairId = get_status(userId).pairId;
     document.querySelector(".sk-fading-circle").style.display = "none";
 
     if (status == "noPair") {
         $("#sended").css("display", "");
-        window.setTimeout(close_Webview, 1000);
+        window.setTimeout(close_Webview, timeout);
 
     } else if (current_pairId != pairId || status != "unSend") {
         $("#leave-pair").css("display", "");
-        window.setTimeout(close_Webview, 1000);
+        window.setTimeout(close_Webview, timeout);
 
     } else {
         $("#message-form").css("display", "");
