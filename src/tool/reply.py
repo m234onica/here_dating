@@ -84,8 +84,7 @@ def last_message(userId, lastWord, hour, minute):
     persona_id = filter.get_persona_id()
     recipient_id = filter.get_recipient_id(userId)
     partner_message = Context.partner_last_message + lastWord
-    message.push_text(userId, persona_id,
-                      Context.user_last_message + lastWord)
+    message.push_text(userId, persona_id, Context.user_last_message)
     message.push_text(recipient_id, persona_id,
                       partner_message.format(hour=hour, minute=minute))
     return "sended last message"

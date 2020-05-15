@@ -29,7 +29,7 @@ class Context:
                     "現在開始你有 3 分鐘的時間可以留下最後一段話給對方，如果覺得聊天過程很愉快，不妨和對方交個朋友吧！"]
     send_partner_last_message_button = "留下最後一段話"
 
-    user_last_message = "這是我傳的遺言："
+    user_last_message = "留言發送成功！"
     partner_last_message = "這是{hour}點{minute}分傳來的最後一段話：\n"
     # partner_last_message = "這是{hour}點{minute}分的{user_first_name}傳來的最後一段話：\n"
     pair_again_button = "我要開啟新對話"
