@@ -20,13 +20,16 @@
     <div class="sk-circle{{i}} sk-circle"></div>
     {% endfor %}
 </div>
-<form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off">
+<form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off" style="display: none;">
     <div class="form-group">
         <label>{{message.title}}</label>
         <textarea class="form-control" id="lastWord" name="lastWord" required></textarea>
     </div>
 
-    <button class="btn btn-primary btn-block btn-lg" id="message-submit" type="submit" name="submit">{{message.button}}</button>
+    <button class="btn btn-primary btn-block btn-lg" id="message-submit" type="submit"
+        name="submit">{{message.button}}</button>
 </form>
 
+<p id="sended" style="display: none;">已經留過言囉！</p>
+<p id="leave-pair" style="display: none;">您已經離開交誼廳囉！</p>
 {% endblock message %}

@@ -18,8 +18,7 @@ $("input#placeId")
             $.get(
                 base_url + "/api/place/" + placeId,
                 function (data, status) {
-                    console.log(status);
-                    
+
                     if (status == "success") {
                         if (data.payload == true) {
                             $(".placeId_error").remove();
@@ -66,17 +65,22 @@ $("#pair-submit").on("click", function (e) {
 })
 
 
-function message_status(status, pairId) {
+function message_status(pairId) {
+    var status = get_status(userId).status;
     var current_pairId = get_status(userId).pairId;
+    document.querySelector(".sk-fading-circle").style.display = "none";
 
     if (status == "noPair") {
-        $("#message-form").replaceWith("<p>已傳送留言囉！</p>");
-        window.setTimeout(close_Webview, 3000)
+        $("#sended").css("display", "");
+        window.setTimeout(close_Webview, 1000);
 
     } else if (current_pairId != pairId || status != "unSend") {
-        $("#message-form").replaceWith("<p>已經離開此聊天室，無法再留言囉！</p>");
-        window.setTimeout(close_Webview, 3000);
-    };
+        $("#leave-pair").css("display", "");
+        window.setTimeout(close_Webview, 1000);
+
+    } else {
+        $("#message-form").css("display", "");
+    }
 }
 
 
