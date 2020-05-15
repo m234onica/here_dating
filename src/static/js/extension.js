@@ -106,6 +106,7 @@ $("#message-submit").on("click", function (e) {
             var userId = uids.psid;
             var data = {
                 "lastWord": $("#lastWord").val(),
+                "contact": $("#contact").val(),
                 "userId": userId,
             }
             $.ajax({
