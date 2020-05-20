@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, request
 
 from src.db import init_db, db_session
 from src.models import Place, Pair
-from src.route.api import leave, get_status, pair_user
-from src.tool import message, filter, reply, broken, status
+from src.route import api
+from src.tool import message, filter, reply, broken, status, bothook
 from src.context import Context
 from config import Config
 
@@ -24,82 +24,82 @@ def webhook():
 @bot.route("/webhook", methods=["POST"])
 def webhook_handle():
     data = request.get_json()
+
     messaging = data["entry"][0]["messaging"][0]
     userId = messaging["sender"]["id"]
+
     pair = filter.get_pair(userId)
 
+    # 已讀
     message.sender_action(userId, "mark_seen")
 
     # 接收type=postback的回應
-    if "postback" in messaging.keys():
-        postback = messaging["postback"]
-        payload = postback["payload"]
+    postback = bothook.postback(messaging)
+    if postback != None:
 
+        payload = postback["payload"]
         if payload == "Start":
             reply.introduction(userId)
 
-            if "referral" in postback.keys():
-                referral = postback["referral"]["ref"].split("@")
-                entrance = referral[0]
-                placeId = referral[1]
-                if entrance == "qrcode":
-                    words = Context.qrcode_introduction
-                    return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
-            else:
-                return reply.general_pair(userId)
+            # qrcode
+            placeId = bothook.referral(postback)
+            if placeId != None:
+                words = Context.qrcode_introduction
+                return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
 
-        if payload == "Quick_pair":
+            # general
+            return reply.general_pair(userId)
+
+        elif payload == "Quick_pair":
             words = Context.quick_pairing_message
             placeId = filter.get_place_id(userId)
             return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
-
-        if payload == "General_pair":
+ 
+        elif payload == "General_pair":
             return reply.general_pair(userId)
 
-        # 離開聊天室
-        if payload == "Leave":
+        elif payload == "Leave":
             if status.is_pairing(pair) or status.is_paired(pair):
-                leave(userId)
-            return "User leaved"
-
-        payload = payload.split("@")
-        if payload[0] == "Pair":
-            placeId = payload[1]
-            return pair_user(placeId, userId)
-
-    if status.is_noPair(pair):
-        return reply.general_pair(userId)
-
-    if status.is_pairing(pair):
-        timeout = broken.timeout(userId).json
-        if timeout["payload"]["status"] == "pairing":
-            return reply.pairing(userId)
+                return api.leave(userId)
+            else:
+                return "User has no pair to leave"
+ 
         else:
-            return "pairing broken"
+            payload = payload.split("@")
+            placeId = payload[1]
+            return api.pair_user(placeId, userId)
 
-    if not (status.is_pairing(pair) or status.is_paired(pair)):
-        if "referral" in messaging.keys():
-            referral = messaging["referral"]["ref"].split("@")
-            placeId = referral[1]
-            words = Context.qrcode_introduction
-            return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
-        return reply.general_pair(userId)
-
-    if status.is_paired(pair):
-        recipient_id = filter.get_recipient_id(userId)
+    # 傳送聊天訊息or附件
+    if status.is_pairing(pair) or status.is_paired(pair):
         timeout = broken.timeout(userId).json
+        paylaod = timeout["payload"]["status"]
 
-        if timeout["payload"]["status"] == "paired" and "message" in messaging.keys():
+        if paylaod == "pairing":
+            return reply.pairing(userId)
 
-            if "text" in messaging["message"].keys():
-                message.sender_action(recipient_id, "typing_on")
-                message.push_text(recipient_id, "",
-                                  messaging["message"]["text"])
-            if "attachments" in messaging["message"].keys():
-                attachment_url = messaging["message"]["attachments"][0]["payload"]["url"]
-                message.sender_action(recipient_id, "typing-on")
-                message.push_attachment(
+        elif paylaod == "paired":
+            # tpying action
+            recipient_id = filter.get_recipient_id(userId)
+            message.sender_action(recipient_id, "typing_on")
+
+            messages = messaging["message"]
+            text = bothook.texts(messages)
+            attachment = bothook.attachments(messages)
+
+            if text != None:
+                return message.push_text(recipient_id, "", text)
+
+            if attachment != None:
+                attachment_url = bothook.attachments(messages)
+                return message.push_attachment(
                     recipient_id, "", attachment_url)
         return "Send message"
 
-    return "ok"
+    # status = {noPair, leave, pairing_fail, unsend}
+    else:
+        placeId = bothook.referral(messaging)
+        if placeId != None:
+            words = Context.qrcode_introduction
+            return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
+        else:
+            return reply.general_pair(userId)
