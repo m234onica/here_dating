@@ -62,12 +62,9 @@ def send_last_word():
     contact = request.json["contact"]
     current_time = datetime.now()
 
-    payload = get_status(userId).json
-    status = payload["payload"]["status"]
-
     pair = filter.get_pair(userId)
 
-    if status == "unSend":
+    if status.is_send_last_message(userId):
         if pair.playerA == userId:
             pair.playerA_lastedAt = datetime.now()
         else:
@@ -75,7 +72,8 @@ def send_last_word():
 
         db_session.commit()
 
-        reply.last_message(userId, lastWord, current_time.hour, current_time.minute, contact)
+        reply.last_message(userId, lastWord, current_time.hour,
+                           current_time.minute, contact)
 
     return response(msg="Send palyer's last word.", payload={"status": "success"}, code=200)
 
