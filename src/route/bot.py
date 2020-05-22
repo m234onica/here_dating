@@ -70,6 +70,9 @@ def webhook_handle():
             return api.pair_user(placeId, userId)
 
     # 傳送聊天訊息or附件
+    if status.is_noPair(userId):
+        return reply.general_pair(userId)
+
     if status.is_pairing(pair) or status.is_paired(pair):
         timeout = broken.timeout(userId).json
         paylaod = timeout["payload"]["status"]
