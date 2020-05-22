@@ -11,7 +11,15 @@ class Config:
     TEMPLATES_AUTO_RELOAD = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{username}:{passwword}@{host}/{db_name}'
+    USER = ""
+    PASSWORD = ""
+    HOST = ""
+    PORT = ""
+    NAME = ""
+
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}?charset=utf8mb4".format(
+        USER=USER, PASSWORD=PASSWORD, HOST=HOST, PORT=PORT, NAME=NAME)
+
     BASE_URL = ""
 
     # delete timing
