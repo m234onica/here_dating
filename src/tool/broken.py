@@ -9,8 +9,8 @@ from config import Config
 
 
 def timeout(userId):
-        pool = filter.get_active_pool(userId)
-        pair = filter.get_active_pair(userId)
+    pair = filter.get_active_pair(userId)
+    pool = filter.get_active_pool(userId)
 
     if status.is_pairing(userId):
         time_diff = expired_time(Config.EXPIRED_TIME)
@@ -39,4 +39,3 @@ def timeout(userId):
             return response(msg="User is paired", payload={"status": "paired"}, code=200)
 
     return response(msg="Timeout to breaked pair", payload={"status": "pair_broken"}, code=200)
-
