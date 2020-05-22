@@ -107,28 +107,24 @@ def get_status(userId):
 # 用戶離開聊天室
 @api.route("/api/user/leave/<userId>", methods=["POST"])
 def leave(userId):
-    pair = filter.get_active_pair(userId)
-    recipient_id = filter.get_recipient_id(userId)
+    if status.is_pairing(userId):
+        data = filter.get_active_pool(userId)
+        placeId = data.placeId
+        words = Context.waiting_leave
 
-    if pair == None:
-        return response(msg="User isn't in chatroom", payload={"status": "noPair"}, code=200)
+    elif status.is_paired(userId):
+        data = filter.get_active_pair(userId)
+        data.status = status_Enum(1)
 
-    pair.deletedAt = datetime.now()
-    pair.status = status_Enum(1)
+        placeId = data.placeId
+        recipient_id = filter.get_recipient_id(userId)
+        message.delete_menu(recipient_id)
+        reply.quick_pair(recipient_id, placeId, Context.partner_leave_message)
+
+        words = Context.leave_message
+
+    data.deletedAt = datetime.now()
     db_session.commit()
 
-    placeId = pair.placeId
     message.delete_menu(userId)
-
-    if recipient_id == None:
-        words = Context.waiting_leave
-        reply.quick_pair(userId, placeId, words)
-
-    else:
-        words = Context.leave_message
-        reply.quick_pair(userId, placeId, words)
-
-        words = Context.partner_leave_message
-        reply.quick_pair(recipient_id, placeId, words)
-        message.delete_menu(recipient_id)
-    return "User leave"
+    return reply.quick_pair(userId, placeId, words)
