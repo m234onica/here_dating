@@ -24,6 +24,25 @@ async def pool():
         await cur.execute(pool)
         group = await cur.fetchall()
 
+        for i in range(len(group)):
+
+            user = group[i][1].split(",")
+            length = len(user)
+
+            if length % 2 != 0:
+                length -= 1
+
+            for id in range(0, length, 2):
+                pair = '''INSERT INTO pair(placeId, playerA, playerB, startedAt) values ({}, {}, {}, current_time())'''
+                placeId = group[i][0]
+                playerA = user[id]
+                playerB = user[id+1]
+
+                await cur.execute(pair.format(placeId, playerA, playerB))
+                await conn.commit()
+
+        await conn.commit()
+
     conn.close()
 
 loop.run_until_complete(pool())
