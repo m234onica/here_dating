@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, Enum, Integer, DECIMAL, func
+from sqlalchemy import Column, String, DateTime, Enum, Integer, DECIMAL, func, Boolean
 from sqlalchemy.dialects import mysql
 from src.db import Base
 
@@ -39,3 +39,16 @@ class Pair(Base):
     def __repr__(self):
         return "<Pair: {}, {}, {}, {}>".format(self.id, self.placeId, self.playerA, self.playerB)
 
+
+class Pool(Base):
+    __tablename__ = "pool"
+    id = Column(Integer, primary_key=True, comment="配對池代號")
+    placeId = Column(String(50), nullable=False, comment="商店代號")
+    userId = Column(String(100), nullable=False, comment="等待者")
+    createdAt = Column(DateTime, nullable=False,
+                       server_default=func.now(), comment="建立時間")
+    deletedAt = Column(DateTime, nullable=True, comment="刪除時間")
+    status = Column(Boolean, nullable=False, default=False, comment="是否有配對")
+
+    def __repr__(self):
+        return "<Pool: {}, {}, {}, {}, {}>".format(self.id, self.userId, self.createdAt, self.deletedAt, self.status)

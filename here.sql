@@ -21,5 +21,15 @@ CREATE TABLE pair(
     PRIMARY KEY( id )
 );
 
+CREATE TABLE pool(
+    id                  INT                 NOT NULL    AUTO_INCREMENT,
+    placeId             VARCHAR( 50 )       NOT NULL,
+    userId              VARCHAR( 100 )      NOT NULL,
+    createdAt           DATETIME        	NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    deletedAt           DATETIME,                                                   
+    status              BOOLEAN             NOT NULL    DEFAULT 0    
+    PRIMARY KEY( id )
+);
+
 INSERT INTO place (id, name, longitude, latitude) VALUE ("2322", "木木卡門市", 25.066765, 121.526336);
 INSERT INTO pair (placeId, playerA) VALUE ("2332", "3564003720340673");
