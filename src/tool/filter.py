@@ -1,6 +1,14 @@
-from src.models import Pair
+from src.models import Pair, Pool
 from src.tool import message
 from src.func import api_request
+
+
+def all_active_pool():
+    return Pool.query.filter(Pool.deletedAt == None)
+
+
+def get_active_pool(userId):
+    return Pool.query.filter(Pool.userId == userId).filter(Pool.deletedAt == None).first()
 
 
 def all_active_pair():
