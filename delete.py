@@ -3,8 +3,9 @@ import base64
 import time
 
 from src.db import db_session
-from src.models import Pair, status_Enum
+from src.models import Pair, Pool, status_Enum
 from src.tool import message, filter, reply
+from src.func import expired_time
 from src.context import Context
 from config import Config
 
@@ -17,7 +18,7 @@ def send_expired_message(userId):
 
     reply.quick_pair(userId, placeId, words)
     message.delete_menu(userId)
-    
+
     return "sended success"
 
 
@@ -28,36 +29,37 @@ def send_end_message(userId):
 
 
 def delete(minutes):
-
-    active_data = filter.all_active_pair()
-    expired_time = datetime.now() - timedelta(minutes=minutes)
+    time_diff = expired_time(minutes)
 
     if minutes == Config.EXPIRED_TIME:
-        status = 0
-        expired_data = active_data.filter(Pair.startedAt == None).\
-            filter(Pair.createdAt <= expired_time).all()
+        active_pool = filter.all_active_pool()
+        expired_data = active_pool.filter(Pool.createdAt <= time_diff).all()
+
+        if expired_data == []:
+            print("No expired data")
+            return {"status_msg": "No expired data"}, 200
+
+        for expired in expired_data:
+            expired.deletedAt = datetime.now()
+            print(send_expired_message(expired.userId))
+            print("delete data:", expired)
 
     if minutes == Config.END_TIME:
-        status = 2
-        expired_data = active_data.filter(Pair.playerB != None).\
-            filter(Pair.startedAt <= expired_time).all()
+        active_pair = filter.all_active_pair()
+        expired_data = active_pair.filter(Pair.createdAt <= time_diff).all()
 
-    if expired_data == []:
-        print("No expired data")
-        return {"status_msg": "No expired data"}, 200
+        if expired_data == []:
+            print("No expired data")
+            return {"status_msg": "No expired data"}, 200
 
-    for expired in expired_data:
-        expired.deletedAt = datetime.now()
-        expired.status = status_Enum(status)
+        for expired in expired_data:
+            expired.deletedAt = datetime.now()
+            expired.status = status_Enum(2)
 
-        if expired.playerB == None:
-            send_expired_message(expired.playerA)
-
-        else:
             send_end_message(expired.playerA)
             send_end_message(expired.playerB)
 
-        print("delete data:", expired)
+            print("delete data:", expired)
 
     db_session.commit()
     print("delete success")
