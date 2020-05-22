@@ -1,6 +1,6 @@
 from src.models import Pair, Pool
 from src.tool import message
-from src.func import api_request
+from src.func import api_request, expired_time
 
 
 def all_active_pool():
@@ -9,6 +9,10 @@ def all_active_pool():
 
 def get_active_pool(userId):
     return Pool.query.filter(Pool.userId == userId).filter(Pool.deletedAt == None).first()
+
+
+def get_expired_pool(time_diff):
+    return Pool.query.filter(Pool.deletedAt == None).filter(Pool.createdAt <= time_diff).all()
 
 
 def all_active_pair():
@@ -24,6 +28,10 @@ def get_active_pair(userId):
     all_active = all_active_pair()
     return all_active.filter((Pair.playerA == userId) | (
         Pair.playerB == userId)).first()
+
+
+def get_expired_pair(time_diff):
+    return Pair.query.filter(Pair.deletedAt == None).filter(Pair.createdAt <= time_diff).all()
 
 
 def get_recipient_id(userId):

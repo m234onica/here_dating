@@ -12,10 +12,11 @@ from config import Config
 starttime = time.time()
 
 
-def send_expired_message(userId):
-    message.delete_menu(userId)
+def send_expired_message(pool):
+    userId = pool.userId
+    placeId = pool.placeIds
 
-    placeId = filter.get_place_id(userId)
+    message.delete_menu(userId)
     return reply.quick_pair(userId, placeId, Context.wait_expired)
 
 
@@ -23,21 +24,19 @@ def delete(minutes):
     time_diff = expired_time(minutes)
 
     if minutes == Config.EXPIRED_TIME:
-        active_pool = filter.all_active_pool()
-        expired_data = active_pool.filter(Pool.createdAt <= time_diff).all()
+        expired_data = filter.get_expired_pool(time_diff)
 
         if expired_data == []:
             print("No expired pairing")
             return {"status_msg": "No expired pairing"}, 200
 
-        for expired in expired_data:
+        for expired in expired_pool:
             expired.deletedAt = datetime.now()
-            print(send_expired_message(expired.userId))
+            send_expired_message(expired)
             print("delete pairing:", expired)
 
     if minutes == Config.END_TIME:
-        active_pair = filter.all_active_pair()
-        expired_data = active_pair.filter(Pair.createdAt <= time_diff).all()
+        expired_data = filter.get_expired_pair(time_diff)
 
         if expired_data == []:
             print("No expired paired")
