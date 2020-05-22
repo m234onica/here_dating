@@ -6,10 +6,12 @@ from src.tool import reply
 loop = asyncio.get_event_loop()
 
 
-async def pool():
+async def push_message(user):
+    for userId in user:
+        reply.paired(userId)
 
-    conn = await aiomysql.connect(host=Config.HOST, port=Config.PORT, user=Config.USER, password=Config.PASSWORD, db=Config.NAME, loop=loop)
 
+async def pair(conn):
     async with conn.cursor() as cur:
 
         pool = ''' SELECT 
@@ -46,11 +48,14 @@ async def pool():
                 await cur.execute(pool.format(user[id+1]))
                 result = await cur.fetchall()
 
-                reply.paired(playerA)
-                reply.paired(playerB)
-
         await conn.commit()
 
     conn.close()
+    await push_message(user[:length])
 
-loop.run_until_complete(pool())
+async def pool(loop):
+    conn = await aiomysql.connect(host=Config.HOST, port=Config.PORT, user=Config.USER, password=Config.PASSWORD, db=Config.NAME, loop=loop)
+    await pair(conn)
+
+
+loop.run_until_complete(pool(loop))
