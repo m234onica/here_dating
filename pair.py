@@ -41,6 +41,14 @@ async def pool():
                 await cur.execute(pair.format(placeId, playerA, playerB))
                 await conn.commit()
 
+                pool = ''' UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE userId={} and deletedAt is NULL;'''
+                await cur.execute(pool.format(user[id]))
+                await cur.execute(pool.format(user[id+1]))
+                result = await cur.fetchall()
+
+                reply.paired(playerA)
+                reply.paired(playerB)
+
         await conn.commit()
 
     conn.close()
