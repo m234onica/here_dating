@@ -13,19 +13,10 @@ starttime = time.time()
 
 
 def send_expired_message(userId):
+    message.delete_menu(userId)
+
     placeId = filter.get_place_id(userId)
-    words = Context.wait_expired
-
-    reply.quick_pair(userId, placeId, words)
-    message.delete_menu(userId)
-
-    return "sended success"
-
-
-def send_end_message(userId):
-    reply.timeout_message(userId)
-    message.delete_menu(userId)
-    return "sended success"
+    return reply.quick_pair(userId, placeId, Context.wait_expired)
 
 
 def delete(minutes):
@@ -36,30 +27,30 @@ def delete(minutes):
         expired_data = active_pool.filter(Pool.createdAt <= time_diff).all()
 
         if expired_data == []:
-            print("No expired data")
-            return {"status_msg": "No expired data"}, 200
+            print("No expired pairing")
+            return {"status_msg": "No expired pairing"}, 200
 
         for expired in expired_data:
             expired.deletedAt = datetime.now()
             print(send_expired_message(expired.userId))
-            print("delete data:", expired)
+            print("delete pairing:", expired)
 
     if minutes == Config.END_TIME:
         active_pair = filter.all_active_pair()
         expired_data = active_pair.filter(Pair.createdAt <= time_diff).all()
 
         if expired_data == []:
-            print("No expired data")
-            return {"status_msg": "No expired data"}, 200
+            print("No expired paired")
+            return {"status_msg": "No expired paired"}, 200
 
         for expired in expired_data:
             expired.deletedAt = datetime.now()
             expired.status = status_Enum(2)
 
-            send_end_message(expired.playerA)
-            send_end_message(expired.playerB)
+            reply.timeout_message(expired.playerA)
+            reply.timeout_message(expired.playerB)
 
-            print("delete data:", expired)
+            print("delete paired:", expired)
 
     db_session.commit()
     print("delete success")
