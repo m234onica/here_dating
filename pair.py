@@ -107,7 +107,7 @@ async def pool(loop):
     user_list = await pair(conn)
 
     for id in user_list:
-        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False)) as session:
+        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
             await push_text(session, id)
             await push_quick_reply(session, id)
             await push_customer_menu(session, id)
