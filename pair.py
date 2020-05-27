@@ -75,7 +75,6 @@ async def pair(conn):
         for i in range(len(group)):
 
             user = group[i][1].split(",")
-            user_list.append(user)
 
             length = len(user)
 
@@ -86,6 +85,9 @@ async def pair(conn):
                 placeId = group[i][0]
                 playerA = user[id]
                 playerB = user[id+1]
+
+                user_list.append(playerA)
+                user_list.append(playerB)
 
                 await cur.execute(pair.format(placeId, playerA, playerB))
                 await conn.commit()
@@ -104,12 +106,11 @@ async def pool(loop):
     conn = await aiomysql.connect(host=Config.HOST, port=Config.PORT, user=Config.USER, password=Config.PASSWORD, db=Config.NAME, loop=loop)
     user_list = await pair(conn)
 
-    for group in user_list:
-        for id in group:
-            async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False)) as session:
-                await push_paired_text(session, id)
-                await push_quick_reply(session, id)
-                await push_menu(session, id)
+    for id in user_list:
+        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False)) as session:
+            await push_paired_text(session, id)
+            await push_quick_reply(session, id)
+            await push_menu(session, id)
 
 
 if __name__ == "__main__":
