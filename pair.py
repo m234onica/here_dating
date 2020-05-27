@@ -1,12 +1,15 @@
+import json
 import asyncio
 import aiomysql
 import aiohttp
 from urllib.parse import urljoin
+from jinja2 import Environment, PackageLoader
 
 from config import Config
 from src.tool import reply, filter
 from src.context import Context
 
+json_file = Environment(loader=PackageLoader("src", "static/data"))
 
 
 async def push_paired_text(session, id):
@@ -14,15 +17,11 @@ async def push_paired_text(session, id):
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     persona_id = filter.get_persona_id()
 
-    data = {
-        "recipient": {
-            "id": id
-        },
-        "persona_id": persona_id,
-        "message": {
-            "text": Context.waiting_success[0]
-        }
-    }
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.push_text(
+        id=id, persona=persona_id, text=Context.waiting_success[0])
+    data = json.loads(rendered)
+
 
     async with session.post(url, params=params, json=data) as response:
         return response.text()
@@ -33,25 +32,10 @@ async def push_quick_reply(session, id):
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     persona_id = filter.get_persona_id()
 
-    data = {
-        "recipient": {
-            "id": id
-        },
-
-        "persona_id": persona_id,
-        "messaging_type": "RESPONSE",
-        "message": {
-            "text": Context.waiting_success[1],
-            "quick_replies": [
-                {
-                    "content_type": "text",
-                    "title": "Hi",
-                    "payload": "Hi"
-                }
-            ]
-        }
-
-    }
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.push_quick_reply(
+        id=id, persona=persona_id, text=Context.waiting_success[1])
+    data = json.loads(rendered)
 
     async with session.post(url, params=params, json=data) as response:
         return response.text()
@@ -62,29 +46,12 @@ async def push_menu(session, id):
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     static_url = urljoin(Config.STATIC_URL, "rule.html")
 
-    data = {
-        "psid": id,
-        "persistent_menu": [
-            {
-                "locale": "default",
-                "composer_input_disabled": False,
-                "call_to_actions": [
-                    {
-                        "type": "postback",
-                        "title": Context.menu_leave,
-                        "payload": "Leave"
-                    },
-                    {
-                        "type": "web_url",
-                        "title": Context.menu_rule,
-                        "url": static_url,
-                        "messenger_extensions": True,
-                        "webview_height_ratio": "full"
-                    }
-                ]
-            }
-        ]
-    }
+    template = json_file.get_template("data.json.jinja")
+    rendered = template.module.custom_menu(id=id,
+                                           postback_title=Context.menu_leave,
+                                           url_title=Context.menu_rule, url=static_url)
+    data = json.loads(rendered)
+
     async with session.post(url, params=params, json=data) as response:
         return response.text()
 
