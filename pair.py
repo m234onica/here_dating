@@ -24,7 +24,7 @@ async def push_text(session, id):
 
 
     async with session.post(url, params=params, json=data) as response:
-        return response.text()
+        return await response.text()
 
 
 async def push_quick_reply(session, id):
@@ -38,7 +38,7 @@ async def push_quick_reply(session, id):
     data = json.loads(rendered)
 
     async with session.post(url, params=params, json=data) as response:
-        return response.text()
+        return await response.text()
 
 
 async def push_customer_menu(session, id):
@@ -53,7 +53,7 @@ async def push_customer_menu(session, id):
     data = json.loads(rendered)
 
     async with session.post(url, params=params, json=data) as response:
-        return response.text()
+        return await response.text()
 
 
 async def pair(conn):
