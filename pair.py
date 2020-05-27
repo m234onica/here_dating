@@ -12,7 +12,7 @@ from src.context import Context
 json_file = Environment(loader=PackageLoader("src", "static/data"))
 
 
-async def push_paired_text(session, id):
+async def push_text(session, id):
     url = urljoin(Config.FB_API_URL, "/me/messages")
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     persona_id = filter.get_persona_id()
@@ -41,7 +41,7 @@ async def push_quick_reply(session, id):
         return response.text()
 
 
-async def push_menu(session, id):
+async def push_customer_menu(session, id):
     url = urljoin(Config.FB_API_URL, "/me/custom_user_settings")
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     static_url = urljoin(Config.STATIC_URL, "rule.html")
@@ -108,9 +108,9 @@ async def pool(loop):
 
     for id in user_list:
         async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False)) as session:
-            await push_paired_text(session, id)
+            await push_text(session, id)
             await push_quick_reply(session, id)
-            await push_menu(session, id)
+            await push_customer_menu(session, id)
 
 
 if __name__ == "__main__":
