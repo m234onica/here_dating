@@ -71,9 +71,9 @@ def delete(minutes):
 #     return "success"
 
 
-if __name__ == '__main__':
-    while True:
-        delete(Config.EXPIRED_TIME)
-        delete(Config.END_TIME)
-        db_session.remove()
-        time.sleep(60.0 - ((time.time() - starttime) % 60))
+# if __name__ == '__main__':
+#     while True:
+#         delete(Config.EXPIRED_TIME)
+#         delete(Config.END_TIME)
+#         db_session.remove()
+#         time.sleep(60.0 - ((time.time() - starttime) % 60))
