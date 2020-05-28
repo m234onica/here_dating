@@ -27,7 +27,6 @@ class Pair(Base):
     playerA = Column(String(100), nullable=False, comment="使用者A")
     playerB = Column(String(100), nullable=True, comment="使用者B")
     createdAt = Column(DateTime, nullable=False,server_default=func.now(), comment="建立時間")
-    startedAt = Column(DateTime, nullable=True, comment="建立時間")
     deletedAt = Column(DateTime, nullable=True, comment="刪除時間")
 
     playerA_lastedAt = Column(DateTime, nullable=True, comment="用戶A的遺言時間")
