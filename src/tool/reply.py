@@ -13,7 +13,8 @@ def introduction(userId):
 
 def pairing(userId):
     persona_id = filter.get_persona_id()
-    placeId = filter.get_place_id(userId)
+    pool = filter.get_active_pool(userId)
+    placeId = pool.placeId
     placeName = filter.get_place_name(placeId)
     words = Context.waiting_pair
     return message.push_text(
