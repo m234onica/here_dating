@@ -7,7 +7,7 @@ import aiohttp
 from urllib.parse import urljoin
 from jinja2 import Environment, PackageLoader
 
-from config import Config
+from config import mysql, Config
 from src.tool import reply, filter
 from src.context import Context
 
@@ -105,7 +105,7 @@ async def pair(conn):
 
 
 async def pool(loop):
-    conn = await aiomysql.connect(host=Config.HOST, port=Config.PORT, user=Config.USER, password=Config.PASSWORD, db=Config.NAME, loop=loop)
+    conn = await aiomysql.connect(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)
     user_list = await pair(conn)
     sslcontext = ssl.create_default_context(cafile=certifi.where())
 
