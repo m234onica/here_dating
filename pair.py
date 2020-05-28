@@ -1,3 +1,5 @@
+import ssl
+import certifi
 import json
 import asyncio
 import aiomysql
@@ -105,9 +107,10 @@ async def pair(conn):
 async def pool(loop):
     conn = await aiomysql.connect(host=Config.HOST, port=Config.PORT, user=Config.USER, password=Config.PASSWORD, db=Config.NAME, loop=loop)
     user_list = await pair(conn)
+    sslcontext = ssl.create_default_context(cafile=certifi.where())
 
     for id in user_list:
-        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
+        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=sslcontext)) as session:
             await push_text(session, id)
             await push_quick_reply(session, id)
             await push_customer_menu(session, id)
