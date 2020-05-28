@@ -64,7 +64,7 @@ def send_last_word():
 
     pair = filter.get_pair(userId)
 
-    if status.is_send_last_message(userId):
+    if status.is_send_last_message(userId) == False:
         if pair.playerA == userId:
             pair.playerA_lastedAt = datetime.now()
         else:
