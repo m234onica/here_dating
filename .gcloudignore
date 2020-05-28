@@ -24,6 +24,7 @@ node_modules
 here.sql
 README.md
 delete.py
+pair.py
 config.sample.py
 cors-json-file.json
 package-lock.json
