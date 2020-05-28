@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, g, redirect, fla
 from datetime import datetime, timedelta
 
 from src.db import init_db, db_session
-from src.models import Place, Pair, status_Enum
+from src.models import Place, Pair, Pool, status_Enum
 from src.func import response
 from src.tool import message, filter, reply, status
 from src.context import Context
@@ -33,44 +33,25 @@ def verify_distance(placeId):
 @api.route("/api/pair/<placeId>/<userId>", methods=["POST"])
 def pair_user(placeId, userId):
 
-    # userId is in active data
-    is_player = filter.get_active_pair(userId)
+    pool = filter.get_active_pool(userId)
+    pair = filter.get_active_pair(userId)
 
-    # 有userId但沒有開始時間：配對
-    if is_player is not None:
-        if is_player.startedAt == None:
-            reply.pairing(userId)
-            return response(msg="User is exist and pairing.", payload={"status": "pairing"}, code=200)
-
-        # 有userId且有開始時間：聊天
-        else:
-            return response(msg="User is chatting.", payload={"status": "paired"}, code=200)
-
-    # userId not in data -> find a waiting userId
-    active = filter.all_active_pair()
-    waiting = active.filter(Pair.playerB == None).filter(Pair.placeId == placeId).\
-        order_by(Pair.createdAt.asc()).order_by(Pair.id.asc()).first()
-
-    if waiting is not None:
-        waiting.playerB = userId
-        waiting.startedAt = datetime.now()
-        db_session.commit()
-
-        recipient_id = filter.get_recipient_id(userId)
-
-        reply.paired(userId)
-        reply.paired(recipient_id)
-
-        return response(msg="Pairing success.", payload={"status": "paired"}, code=200)
-
-    else:
-        db_session.add(Pair(placeId=placeId, playerA=userId))
+    if status.is_noPair(userId):
+        db_session.add(Pool(placeId=placeId, userId=userId))
         db_session.commit()
 
         reply.pairing(userId)
         message.push_customer_menu(userId, Context.menu_waiting_cancel)
 
         return response(msg="User start to pair.", payload={"status": "pairing"}, code=200)
+
+    elif status.is_pairing(userId):
+        reply.pairing(userId)
+        return response(msg="User is exist and pairing.", payload={"status": "pairing"}, code=200)
+
+    else:
+        return response(msg="User is chatting.", payload={"status": "paired"}, code=200)
+
     return "success"
 
 
@@ -81,12 +62,9 @@ def send_last_word():
     contact = request.json["contact"]
     current_time = datetime.now()
 
-    payload = get_status(userId).json
-    status = payload["payload"]["status"]
-
     pair = filter.get_pair(userId)
 
-    if status == "unSend":
+    if status.is_send_last_message(userId):
         if pair.playerA == userId:
             pair.playerA_lastedAt = datetime.now()
         else:
@@ -94,7 +72,8 @@ def send_last_word():
 
         db_session.commit()
 
-        reply.last_message(userId, lastWord, current_time.hour, current_time.minute, contact)
+        reply.last_message(userId, lastWord, current_time.hour,
+                           current_time.minute, contact)
 
     return response(msg="Send palyer's last word.", payload={"status": "success"}, code=200)
 
@@ -106,21 +85,13 @@ def get_status(userId):
     if pair == None:
         return response(msg="User does not pair.", payload={"status": "noPair"}, code=200)
 
-    if status.is_pairing(pair):
+    if status.is_pairing(userId):
         payload = {"status": "pairing", "pairId": pair.id}
         return response(msg="User is pairing", payload=payload, code=200)
 
-    elif status.is_pair_fail(pair):
-        payload = {"status": "pairing_fail", "pairId": pair.id}
-        return response(msg="User stop waiting", payload=payload, code=200)
-
-    elif status.is_paired(pair):
+    elif status.is_paired(userId):
         payload = {"status": "paired", "pairId": pair.id}
         return response(msg="User is chating", payload=payload, code=200)
-
-    elif status.is_leaved(pair):
-        payload = {"status": "leaved", "pairId": pair.id}
-        return response(msg="User leaved", payload=payload, code=200)
 
     else:
         if status.is_send_last_message(userId) is False:
@@ -134,28 +105,24 @@ def get_status(userId):
 # 用戶離開聊天室
 @api.route("/api/user/leave/<userId>", methods=["POST"])
 def leave(userId):
-    pair = filter.get_active_pair(userId)
-    recipient_id = filter.get_recipient_id(userId)
+    if status.is_pairing(userId):
+        data = filter.get_active_pool(userId)
+        placeId = data.placeId
+        words = Context.waiting_leave
 
-    if pair == None:
-        return response(msg="User isn't in chatroom", payload={"status": "noPair"}, code=200)
+    elif status.is_paired(userId):
+        data = filter.get_active_pair(userId)
+        data.status = status_Enum(1)
 
-    pair.deletedAt = datetime.now()
-    pair.status = status_Enum(1)
+        placeId = data.placeId
+        recipient_id = filter.get_recipient_id(userId)
+        message.delete_menu(recipient_id)
+        reply.quick_pair(recipient_id, placeId, Context.partner_leave_message)
+
+        words = Context.leave_message
+
+    data.deletedAt = datetime.now()
     db_session.commit()
 
-    placeId = pair.placeId
     message.delete_menu(userId)
-
-    if recipient_id == None:
-        words = Context.waiting_leave
-        reply.quick_pair(userId, placeId, words)
-
-    else:
-        words = Context.leave_message
-        reply.quick_pair(userId, placeId, words)
-
-        words = Context.partner_leave_message
-        reply.quick_pair(recipient_id, placeId, words)
-        message.delete_menu(recipient_id)
-    return "User leave"
+    return reply.quick_pair(userId, placeId, words)

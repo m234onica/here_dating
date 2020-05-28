@@ -4,36 +4,27 @@ from src.models import Pair
 from config import Config
 
 
-def is_noPair(pair):
-    if pair == None:
+def is_noPair(userId):
+    pair = filter.get_active_pair(userId)
+    pool = filter.get_active_pool(userId)
+
+    if pair == None and pool == None:
         return True
     else:
         return False
 
 
-def is_pairing(pair):
-    if pair.startedAt == None and pair.deletedAt == None:
+def is_pairing(userId):
+    pool = filter.get_active_pool(userId)
+    if pool != None:
         return True
     else:
         return False
 
 
-def is_pair_fail(pair):
-    if pair.startedAt == None and pair.deletedAt != None:
-        return True
-    else:
-        return False
-
-
-def is_paired(pair):
-    if pair.startedAt != None and pair.deletedAt == None:
-        return True
-    else:
-        return False
-
-
-def is_leaved(pair):
-    if pair.deletedAt - pair.startedAt < timedelta(minutes=Config.END_TIME):
+def is_paired(userId):
+    pair = filter.get_active_pair(userId)
+    if pair != None:
         return True
     else:
         return False

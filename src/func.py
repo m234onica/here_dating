@@ -1,6 +1,7 @@
 import os
 import requests
 from urllib.parse import urljoin
+from datetime import datetime, timedelta
 from flask import make_response
 
 from config import Config
@@ -19,3 +20,7 @@ def response(msg, payload, code):
         "payload": payload
     }, code)
     return response
+
+
+def expired_time(minutes):
+    return datetime.now() - timedelta(minutes=minutes)
