@@ -1,4 +1,4 @@
-from src.models import Pair, Pool
+from src.models import Place, Pair, Pool
 from src.tool import message
 from src.func import api_request, expired_time
 
@@ -59,3 +59,8 @@ def get_place_id(userId):
     pair = get_pair(userId)
     placeId = pair.placeId
     return placeId
+
+
+def get_place_name(placeId):
+    place = Place.query.filter(Place.id == placeId).first()
+    return place.name

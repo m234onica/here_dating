@@ -30,6 +30,13 @@ def verify_distance(placeId):
     return make_response({"status_msg": "Get placeId", "payload": True, "placeId": place.id}, 200)
 
 
+@api.route("/api/<userId>/placeName", methods=["GET"])
+def place_name(userId):
+    placeId = filter.get_place_id(userId)
+    placeName = filter.get_place_name(placeId)
+    return make_response({"status_msg": "Get place name", "placeName": placeName}, 200)
+
+
 @api.route("/api/pair/<placeId>/<userId>", methods=["POST"])
 def pair_user(placeId, userId):
 

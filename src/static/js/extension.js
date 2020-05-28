@@ -78,17 +78,20 @@ $("#pair-submit").on("click", function (e) {
 })
 
 
-function message_status(pairId) {
+function message_status(userId, pairId) {
     var timeout = config.SET_TIMEOUT;
     var status = get_status(userId).status;
     var current_pairId = get_status(userId).pairId;
+    var placeName = get_place_name(userId);
 
     if (status == "noPair") {
         $("#sended").css("display", "");
+        document.getElementById("send-placeName").innerHTML = placeName;
         window.setTimeout(close_Webview, timeout);
 
     } else if (current_pairId != pairId || status != "unSend") {
         $("#leave-pair").css("display", "");
+        document.getElementById("leave-placeName").innerHTML = placeName;
         window.setTimeout(close_Webview, timeout);
 
     } else {
@@ -96,6 +99,19 @@ function message_status(pairId) {
     }
 }
 
+function get_place_name(userId) {
+    var placeName = null;
+
+    $.ajax({
+        type: "GET",
+        url: base_url + "/api/" + userId + "/placeName",
+        async: false,
+        success: function (data) {
+            placeName = data.placeName
+        }
+    })
+    return placeName;
+}
 
 $("#message-submit").on("click", function (e) {
     e.preventDefault()
