@@ -13,8 +13,11 @@ def introduction(userId):
 
 def pairing(userId):
     persona_id = filter.get_persona_id()
+    placeId = filter.get_place_id(userId)
+    placeName = filter.get_place_name(placeId)
+    words = Context.waiting_pair
     return message.push_text(
-        id=userId, text=Context.waiting_pair, persona=persona_id)
+        id=userId, text=words.format(placeName=placeName), persona=persona_id)
 
 
 def paired(userId):
@@ -29,7 +32,7 @@ def paired(userId):
     return "paired success"
 
 
-def general_pair(userId):
+def general_pair(userId, text):
     persona_id = filter.get_persona_id()
     params = urlencode({"userId": userId})
     web_url_payload = "?".join(["pair.html", params])
@@ -37,7 +40,7 @@ def general_pair(userId):
     return message.push_button(
         id=userId,
         persona=persona_id,
-        text=Context.general_pair_message,
+        text=text,
         types="general_pair",
         payload=[web_url_payload],
         title=[Context.general_pair_button]

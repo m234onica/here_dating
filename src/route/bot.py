@@ -45,18 +45,20 @@ def webhook_handle():
             placeId = bothook.referral(postback)
             if placeId != None:
                 words = Context.qrcode_introduction
-                return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
+                placeName = filter.get_place_name(placeId)
+                return reply.quick_pair(userId, placeId, words.format(placeName=placeName))
 
             # general
-            return reply.general_pair(userId)
+            return reply.general_pair(userId, Context.general_pair_message)
 
         elif payload == "Quick_pair":
             words = Context.quick_pairing_message
             placeId = filter.get_place_id(userId)
-            return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
+            placeName = filter.get_place_name(placeId)
+            return reply.quick_pair(userId, placeId, words.format(placeName=placeName))
  
         elif payload == "General_pair":
-            return reply.general_pair(userId)
+            return reply.general_pair(userId, Context.general_pair_message)
 
         elif payload == "Leave":
             if status.is_pairing(userId) or status.is_paired(userId):
@@ -71,7 +73,7 @@ def webhook_handle():
 
     # 傳送聊天訊息or附件
     if status.is_noPair(userId):
-        return reply.general_pair(userId)
+        return reply.general_pair(userId, Context.no_pair_message)
 
     if status.is_pairing(userId) or status.is_paired(userId):
         timeout = broken.timeout(userId).json
@@ -104,6 +106,7 @@ def webhook_handle():
         placeId = bothook.referral(messaging)
         if placeId != None:
             words = Context.qrcode_introduction
-            return reply.quick_pair(userId, placeId, words.format(placeId=placeId))
+            placeName = filter.get_place_name(placeId)
+            return reply.quick_pair(userId, placeId, words.format(placeName=placeName))
         else:
-            return reply.general_pair(userId)
+            return reply.general_pair(userId, Context.no_pair_message)

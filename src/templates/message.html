@@ -9,7 +9,7 @@
     var pairId = serchParams.get("pairId");
     var status = get_status(userId).status;
 
-    message_status(pairId);
+    message_status(userId, pairId);
 </script>
 {% endblock message_script %}
 
@@ -18,17 +18,27 @@
 <form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off" style="display: none;">
     <span>{{message.title}}</span>
     <div class="form-group">
-        <label for="contact">  </label>
-        <input class="form-control" type="text" id="contact" name="contact" placeholder="{{message.contact}}"/>
+        <label for="contact"> </label>
+        <input class="form-control" type="text" id="contact" name="contact" placeholder="{{message.contact}}" />
     </div>
     <div class="form-group">
         <label></label>
-        <textarea class="form-control" id="lastWord" name="lastWord" placeholder="{{message.lastWord}}" required></textarea>
+        <textarea class="form-control" id="lastWord" name="lastWord" placeholder="{{message.lastWord}}"
+            required></textarea>
     </div>
     <button class="btn btn-primary btn-block btn-lg" id="message-submit" type="submit"
         name="submit">{{message.button}}</button>
 </form>
 
-<p id="sended" style="display: none;"> {{message.sended}} </p>
-<p id="leave-pair" style="display: none;"> {{message.leaved}} </p>
-{% endblock message %}
+<div id="sended" class="nowrap" style="display: none;">
+    <span> {{message.sended_top}} </span>
+    <span id="send-placeName"></span>
+    <span> {{message.sended_tail}} </span>
+</div>
+
+<div id="leave-pair" class="nowrap" style="display: none;">
+    <span>{{message.leaved_top}} </span>
+    <span id="leave-placeName"></span>
+    <span>{{message.leaved_tail}}</span>
+</div>
+    {% endblock message %}
