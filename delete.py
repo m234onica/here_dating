@@ -14,7 +14,7 @@ starttime = time.time()
 
 def send_expired_message(pool):
     userId = pool.userId
-    placeId = pool.placeIds
+    placeId = pool.placeId
 
     message.delete_menu(userId)
     return reply.quick_pair(userId, placeId, Context.wait_expired)
@@ -56,24 +56,15 @@ def delete(minutes):
     return {"status_msg": "delete success."}, 200
 
 
-# def main(event, context):
+def delete_here_dating(event, context):
+    print("""This Function was triggered by messageId {} published at {} """.format(
+        context.event_id, context.timestamp))
 
-#     print("""This Function was triggered by messageId {} published at {} """.format(
-#         context.event_id, context.timestamp))
-
-#     if 'data' in event:
-#         minutes = base64.b64decode(event['data']).decode('utf-8')
-#         minutes = minutes.split(",")
-#         for minute in minutes:
-#             delete(int(minute))
-#             db_session.remove()
-#             print("expired minutes: ", minute)
-#     return "success"
-
-
-# if __name__ == '__main__':
-#     while True:
-#         delete(Config.EXPIRED_TIME)
-#         delete(Config.END_TIME)
-#         db_session.remove()
-#         time.sleep(60.0 - ((time.time() - starttime) % 60))
+    if 'data' in event:
+        minutes = base64.b64decode(event['data']).decode('utf-8')
+        minutes = minutes.split(",")
+        for minute in minutes:
+            delete(int(minute))
+            db_session.remove()
+            print("expired minutes: ", minute)
+    return "success"
