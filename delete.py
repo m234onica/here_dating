@@ -24,16 +24,16 @@ def delete(minutes):
     time_diff = expired_time(minutes)
 
     if minutes == Config.EXPIRED_TIME:
-        expired_data = filter.get_expired_pool(time_diff)
+        expired_pool = filter.get_expired_pool(time_diff)
 
-        if expired_data == []:
+        if expired_pool == []:
             print("No expired pairing")
             return {"status_msg": "No expired pairing"}, 200
 
-        for expired in expired_pool:
-            expired.deletedAt = datetime.now()
-            send_expired_message(expired)
-            print("delete pairing:", expired)
+        for pool in expired_pool:
+            pool.deletedAt = datetime.now()
+            send_expired_message(pool)
+            print("delete pairing:", pool)
 
     if minutes == Config.END_TIME:
         expired_data = filter.get_expired_pair(time_diff)
@@ -42,14 +42,14 @@ def delete(minutes):
             print("No expired paired")
             return {"status_msg": "No expired paired"}, 200
 
-        for expired in expired_data:
-            expired.deletedAt = datetime.now()
-            expired.status = status_Enum(2)
+        for data in expired_data:
+            data.deletedAt = datetime.now()
+            data.status = status_Enum(2)
 
-            reply.timeout_message(expired.playerA)
-            reply.timeout_message(expired.playerB)
+            reply.timeout_message(data.playerA)
+            reply.timeout_message(data.playerB)
 
-            print("delete paired:", expired)
+            print("delete paired:", data)
 
     db_session.commit()
     print("delete success")
