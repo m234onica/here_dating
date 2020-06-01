@@ -11,9 +11,12 @@ start = message.get_started()
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+
 @app.teardown_request
-def shutdown_session(exception=None):
+def session_clear(exception=None):
     db_session.remove()
+    if exception and db_session.is_active:
+        db_session.rollback()
 
 
 def main(request):
