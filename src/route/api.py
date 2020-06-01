@@ -43,6 +43,9 @@ def pair_user(placeId, userId):
     pool = filter.get_active_pool(userId)
     pair = filter.get_active_pair(userId)
 
+    if status.is_place(placeId) == False:
+        return response(msg="Wrong place ID.", payload={"status": "noPair"}, code=200)
+
     if status.is_noPair(userId):
         db_session.add(Pool(placeId=placeId, userId=userId))
         db_session.commit()

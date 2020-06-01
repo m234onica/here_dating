@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from src.tool import filter
-from src.models import Pair
+from src.models import Pair, Place
 from config import Config
 
 
@@ -40,3 +40,11 @@ def is_send_last_message(userId):
         if pair.playerB_lastedAt != None:
             return True
         return False
+
+
+def is_place(placeId):
+    place = Place.query.filter(Place.id == placeId).first()
+    if place == None:
+        return False
+    else:
+        return True
