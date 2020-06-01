@@ -19,12 +19,12 @@ $("input#placeId")
     .on("keyup", function () {
         var placeId = $("#placeId").val().trim();
 
-        $(".placeId_error").remove();
+        $(".error").remove();
         $(".invalid-feedback").remove();
 
         if (placeId.length != 4) {
             $("#placeId").addClass("is-invalid")
-                .after("<div class='placeId_error invalid-feedback'>沒有這個地標編號，請再確認一次</div>");
+                .after("<div class='error invalid-feedback'>沒有這個地標編號，請再確認一次</div>");
             $("#pair-submit").attr("disabled", true);
 
         } else {
@@ -34,12 +34,12 @@ $("input#placeId")
 
                     if (status == "success") {
                         if (data.payload == true) {
-                            $(".placeId_error").remove();
+                            $(".error").remove();
                             $("#placeId").removeClass('is-invalid').addClass('is-valid')
                             $("#pair-submit").attr("disabled", false);
                         } else {
                             $("#placeId").addClass("is-invalid")
-                                .after("<div class='placeId_error invalid-feedback'>沒有這個地標編號，請再確認一次</div>");
+                                .after("<div class='error invalid-feedback'>沒有這個地標編號，請再確認一次</div>");
                             $("#pair-submit").attr("disabled", true);
                         }
                     }
@@ -47,7 +47,7 @@ $("input#placeId")
             )
         }
     }).on("keyup", function () {
-        $(".placeId_error").remove();
+        $(".error").remove();
         $("#placeId").removeClass("is-invalid").removeClass("is-valid")
     })
 
@@ -113,6 +113,17 @@ function get_place_name(userId) {
     return placeName;
 }
 
+
+$("#contact").on("keyup", function () {
+    $(".error").remove();
+    $("#contact").removeClass("is-invalid");
+})
+
+$("#lastWord").on("keyup", function () {
+    $(".error").remove();
+    $("#lastWord").removeClass("is-invalid");
+})
+
 $("#message-submit").on("click", function (e) {
     e.preventDefault()
 
@@ -125,20 +136,30 @@ $("#message-submit").on("click", function (e) {
                 "contact": $("#contact").val(),
                 "userId": userId,
             }
-            $.ajax({
-                type: "POST",
-                url: base_url + "/api/user/send",
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(data),
-            }).always(function (d) {
-                var payload = d.payload
-                if (payload.status == "success") {
-                    close_Webview()
-                } else {
-                    alert(JSON.stringify(payload));
+            var validate = true
+            $.each(data, function (key, value) {
+                if (value == null || value.trim() == '') {
+                    validate = false
+                    $("#" + key).addClass("is-invalid").after("<div class='error invalid-feedback'>此為必填選項</div>");
                 }
             })
+
+            if (validate == true) {
+                $.ajax({
+                    type: "POST",
+                    url: base_url + "/api/user/send",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(data),
+                }).always(function (d) {
+                    var payload = d.payload
+                    if (payload.status == "success") {
+                        close_Webview()
+                    } else {
+                        alert(JSON.stringify(payload));
+                    }
+                })
+            }
         },
         function error(err, errorMessage) {
             alert(JSON.stringify(errorMessage));
