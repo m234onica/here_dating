@@ -24,7 +24,7 @@ $("input#placeId")
 
         if (placeId.length != 4) {
             $("#placeId").addClass("is-invalid")
-                .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
+                .after("<div class='placeId_error invalid-feedback'>沒有這個地標編號，請再確認一次</div>");
             $("#pair-submit").attr("disabled", true);
 
         } else {
@@ -39,7 +39,7 @@ $("input#placeId")
                             $("#pair-submit").attr("disabled", false);
                         } else {
                             $("#placeId").addClass("is-invalid")
-                                .after("<div class='placeId_error invalid-feedback'>該店號不存在</div>");
+                                .after("<div class='placeId_error invalid-feedback'>沒有這個地標編號，請再確認一次</div>");
                             $("#pair-submit").attr("disabled", true);
                         }
                     }

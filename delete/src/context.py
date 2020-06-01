@@ -1,6 +1,6 @@
 class Context:
     menu_start = "開始使用"
-    menu_rule = "規則說明"
+    menu_rule = "常見問題"
     menu_leave = "我想離開"
     menu_waiting_cancel = "取消等待"
 
