@@ -21,11 +21,12 @@ src/templates/*
 static
 node_modules
 
+delete
+pairing_pool
+
 here.sql
 README.md
-delete.py
 pair.py
 config.sample.py
-cors-json-file.json
 package-lock.json
 run.py
