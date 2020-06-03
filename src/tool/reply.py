@@ -95,5 +95,8 @@ def last_message(userId, lastWord, hour, minute, contact):
 
     message.push_text(recipient_id, persona_id,
                       partner_message.format(hour=hour, minute=minute, username=username))
-    message.push_text(recipient_id, persona_id, Context.partner_contact_message + contact)
+    if contact != "":
+        message.push_text(recipient_id, persona_id,
+                          Context.partner_contact_message + contact)
+
     return "sended last message"

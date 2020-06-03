@@ -114,11 +114,6 @@ function get_place_name(userId) {
 }
 
 
-$("#contact").on("keyup", function () {
-    $(".error").remove();
-    $("#contact").removeClass("is-invalid");
-})
-
 $("#lastWord").on("keyup", function () {
     $(".error").remove();
     $("#lastWord").removeClass("is-invalid");
@@ -136,15 +131,11 @@ $("#message-submit").on("click", function (e) {
                 "contact": $("#contact").val(),
                 "userId": userId,
             }
-            var validate = true
-            $.each(data, function (key, value) {
-                if (value == null || value.trim() == '') {
-                    validate = false
-                    $("#" + key).addClass("is-invalid").after("<div class='error invalid-feedback'>此為必填選項</div>");
-                }
-            })
 
-            if (validate == true) {
+            if (data["lastWord"].trim() == "") {
+                $("#lastWord").addClass("is-invalid").after("<div class='error invalid-feedback'>此為必填選項</div>");
+
+            } else {
                 $.ajax({
                     type: "POST",
                     url: base_url + "/api/user/send",
