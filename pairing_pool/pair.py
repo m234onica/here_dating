@@ -110,7 +110,6 @@ async def pair(conn):
             raise err
 
     conn.close()
-    print(user_list)
     return user_list
 
 
