@@ -66,46 +66,49 @@ async def push_customer_menu(session, id):
 async def pair(conn):
     user_list = []
     async with conn.cursor() as cur:
+        try:
+            pool = ''' SELECT 
+                            placeId, 
+                            GROUP_CONCAT(userId SEPARATOR ",") as userId
+                        FROM
+                            pool 
+                        WHERE 
+                            deletedAt is NULL 
+                        GROUP BY 
+                            placeId; '''
+            await cur.execute(pool)
+            group = await cur.fetchall()
 
-        pool = ''' SELECT 
-                        placeId, 
-                        GROUP_CONCAT(userId SEPARATOR ",") as userId
-                    FROM
-                        pool 
-                    WHERE 
-                        deletedAt is NULL 
-                    GROUP BY 
-                        placeId; '''
-        await cur.execute(pool)
-        group = await cur.fetchall()
+            for i in range(len(group)):
 
-        for i in range(len(group)):
+                user = group[i][1].split(",")
 
-            user = group[i][1].split(",")
+                length = len(user)
 
-            length = len(user)
+                if length % 2 != 0:
+                    length -= 1
+                for id in range(0, length, 2):
+                    pair = '''INSERT INTO pair(placeId, playerA, playerB) values ({}, {}, {})'''
+                    placeId = group[i][0]
+                    playerA = user[id]
+                    playerB = user[id+1]
 
-            if length % 2 != 0:
-                length -= 1
-            for id in range(0, length, 2):
-                pair = '''INSERT INTO pair(placeId, playerA, playerB) values ({}, {}, {})'''
-                placeId = group[i][0]
-                playerA = user[id]
-                playerB = user[id+1]
+                    user_list.append(playerA)
+                    user_list.append(playerB)
 
-                user_list.append(playerA)
-                user_list.append(playerB)
+                    await cur.execute(pair.format(placeId, playerA, playerB))
+                    # await conn.commit()
 
-                await cur.execute(pair.format(placeId, playerA, playerB))
-                await conn.commit()
+                    pool = ''' UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE userId={} and deletedAt is NULL;'''
+                    await cur.execute(pool.format(user[id]))
+                    await cur.execute(pool.format(user[id+1]))
+                    result = await cur.fetchall()
+            await conn.commit()
 
-                pool = ''' UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE userId={} and deletedAt is NULL;'''
-                await cur.execute(pool.format(user[id]))
-                await cur.execute(pool.format(user[id+1]))
-                result = await cur.fetchall()
+        except BaseException as err:
+            await conn.rollback()
+            raise err
 
-
-        await conn.commit()
     conn.close()
     print(user_list)
     return user_list
@@ -123,8 +126,8 @@ async def pool(loop):
             await push_customer_menu(session, id)
     return user_list
 
-# if __name__ == "__main__":
-#     loop = asyncio.get_event_loop()
-#     loop.run_until_complete(pool(loop))
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(pool(loop))
 
 

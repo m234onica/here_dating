@@ -8,10 +8,10 @@ from src.db import db_session
 app = create_app()
 
 @app.teardown_request
-def session_clear(exception=None):
-    db_session.remove()
-    if exception and db_session.is_active:
+def session_clear(exception):
+    if exception:
         db_session.rollback()
+    db_session.remove()
 
 
 @app.route("/pair.html", methods=["GET"])

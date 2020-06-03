@@ -16,6 +16,7 @@ class Config:
     JSON_AS_ASCII = False
     TEMPLATES_AUTO_RELOAD = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    PRESERVE_CONTEXT_ON_EXCEPTION = False
 
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{USER}:{PASSWORD}@{HOST}/{NAME}?charset=utf8mb4".format(
         USER=mysql["username"],
