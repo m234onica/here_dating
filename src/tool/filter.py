@@ -34,6 +34,11 @@ def get_expired_pair(time_diff):
     return Pair.query.filter(Pair.deletedAt == None).filter(Pair.createdAt <= time_diff).all()
 
 
+def get_pair_end_time(userId):
+    pair = get_pair(userId)
+    return pair.deletedAt
+
+
 def get_recipient_id(userId):
     pair = get_pair(userId)
     if pair.playerA == userId:
