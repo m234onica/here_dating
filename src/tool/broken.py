@@ -16,8 +16,13 @@ def timeout(userId):
         time_diff = expired_time(Config.EXPIRED_TIME)
 
         if time_diff >= pool.createdAt:
-            pool.deletedAt = datetime.now()
-            db_session.commit()
+            try:
+                pool.deletedAt = datetime.now()
+            except:
+                db_session.rollback()
+                raise
+            else:
+                db_session.commit()
 
             message.delete_menu(userId)
             reply.quick_pair(userId, pool.placeId, Context.wait_expired)
@@ -28,9 +33,14 @@ def timeout(userId):
         time_diff = expired_time(Config.END_TIME)
 
         if time_diff >= pair.createdAt:
-            pair.deletedAt = datetime.now()
-            pair.status = status_Enum(2)
-            db_session.commit()
+            try:
+                pair.deletedAt = datetime.now()
+                pair.status = status_Enum(2)
+            except:
+                db_session.rollback()
+                raise
+            else:
+                db_session.commit()
 
             recipient_id = filter.get_recipient_id(userId)
             reply.timeout_message(userId)

@@ -9,8 +9,6 @@ app = create_app()
 
 @app.teardown_request
 def session_clear(exception):
-    if exception:
-        db_session.rollback()
     db_session.remove()
 
 

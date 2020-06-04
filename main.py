@@ -13,10 +13,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.teardown_request
 def session_clear(exception):
-    if exception:
-        db_session.rollback()
     db_session.remove()
-
 
 def main(request):
     print(request)

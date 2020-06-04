@@ -47,8 +47,13 @@ def pair_user(placeId, userId):
         return response(msg="Wrong place ID.", payload={"status": "noPair"}, code=200)
 
     if status.is_noPair(userId):
-        db_session.add(Pool(placeId=placeId, userId=userId))
-        db_session.commit()
+        try:
+            db_session.add(Pool(placeId=placeId, userId=userId))
+        except:
+            db_session.rollback()
+            raise
+        else:
+            db_session.commit()
 
         reply.pairing(userId)
         message.push_customer_menu(userId, Context.menu_waiting_cancel)
@@ -75,12 +80,16 @@ def send_last_word():
     pair = filter.get_pair(userId)
 
     if status.is_send_last_message(userId) == False:
-        if pair.playerA == userId:
-            pair.playerA_lastedAt = datetime.now()
+        try:
+            if pair.playerA == userId:
+                pair.playerA_lastedAt = datetime.now()
+            else:
+                pair.playerB_lastedAt = datetime.now()
+        except:
+            db_session.rollback()
+            raise
         else:
-            pair.playerB_lastedAt = datetime.now()
-
-        db_session.commit()
+            db_session.commit()
 
         reply.last_message(userId, lastWord, end_time.hour,
                            end_time.minute, contact)
@@ -115,24 +124,29 @@ def get_status(userId):
 # 用戶離開聊天室
 @api.route("/api/user/leave/<userId>", methods=["POST"])
 def leave(userId):
-    if status.is_pairing(userId):
-        data = filter.get_active_pool(userId)
-        placeId = data.placeId
-        words = Context.waiting_leave
+    try:
+        if status.is_pairing(userId):
+            data = filter.get_active_pool(userId)
+            placeId = data.placeId
+            words = Context.waiting_leave
 
-    elif status.is_paired(userId):
-        data = filter.get_active_pair(userId)
-        data.status = status_Enum(1)
+        elif status.is_paired(userId):
+            data = filter.get_active_pair(userId)
+            data.status = status_Enum(1)
 
-        placeId = data.placeId
-        recipient_id = filter.get_recipient_id(userId)
-        message.delete_menu(recipient_id)
-        reply.quick_pair(recipient_id, placeId, Context.partner_leave_message)
+            placeId = data.placeId
+            recipient_id = filter.get_recipient_id(userId)
+            message.delete_menu(recipient_id)
+            reply.quick_pair(recipient_id, placeId, Context.partner_leave_message)
 
-        words = Context.leave_message
+            words = Context.leave_message
 
-    data.deletedAt = datetime.now()
-    db_session.commit()
+        data.deletedAt = datetime.now()
+    except:
+        db_session.rollback()
+        raise
+    else:
+        db_session.commit()
 
     message.delete_menu(userId)
     return reply.quick_pair(userId, placeId, words)
