@@ -1,5 +1,19 @@
 {% extends 'base.html' %}
 {% block title %} {{rule.header}} {% endblock title %}
 {% block rule %}
-<p>我是規則...</p>
+<div class="card text-center" id="card-one">
+    {% for item in rule.content %}
+
+    <div class="card-header text-white bg-info mb-3">
+        {{item.question}}
+    </div>
+    <div class="card-body">
+        <p>{{item.answer}}</p>
+        {% if item.link | length %}
+            <a href="{{item.link}}" class="btn btn-outline-info"> {{item.button}} </a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+<br>
 {% endblock rule %}
