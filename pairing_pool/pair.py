@@ -13,14 +13,14 @@ async def pair(conn):
     user_list = []
     async with conn.cursor() as cur:
         try:
-            pool = ''' SELECT 
-                            placeId, 
-                            GROUP_CONCAT(userId SEPARATOR ",") as userId
+            pool = ''' SELECT
+                            placeId,
+                            GROUP_CONCAT(userId ORDER BY rand() SEPARATOR ",") as userId
                         FROM
-                            pool 
-                        WHERE 
-                            deletedAt is NULL 
-                        GROUP BY 
+                            pool
+                        WHERE
+                            deletedAt is NULL
+                        GROUP BY
                             placeId; '''
             await cur.execute(pool)
             group = await cur.fetchall()
@@ -73,6 +73,5 @@ async def pool(loop):
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(pool(loop))
-
-
+    future = asyncio.ensure_future(pool(loop))
+    loop.run_until_complete(future)

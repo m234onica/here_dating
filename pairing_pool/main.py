@@ -10,6 +10,7 @@ def main(event, context):
 
     print("The current loop is running!")
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(pool(loop))
+    future = asyncio.ensure_future(pool(loop))
+    loop.run_until_complete(future)
     print(base64.b64decode(event['data']).decode('utf-8'))
     return "success"
