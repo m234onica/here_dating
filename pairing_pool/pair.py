@@ -43,7 +43,6 @@ async def pair(conn):
                     user_list.append(playerB)
 
                     await cur.execute(pair.format(placeId, playerA, playerB))
-                    # await conn.commit()
 
                     pool = ''' UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE userId={} and deletedAt is NULL;'''
                     await cur.execute(pool.format(user[id]))
@@ -64,12 +63,13 @@ async def pool(loop):
     user_list = await pair(conn)
     sslcontext = ssl.create_default_context(cafile=certifi.where())
 
-    for id in user_list:
-        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=sslcontext)) as session:
-            await push_text(session, id)
-            await push_quick_reply(session, id)
-            await push_customer_menu(session, id)
-    return user_list
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=sslcontext)) as session:
+        tasks = []
+        for userId in user_list:
+            task = asyncio.create_task(message.customer_menu(session, userId))
+            tasks.append(task)
+        return await asyncio.gather(*tasks)
+
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
