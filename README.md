@@ -71,6 +71,7 @@
     END_TIME            # 配對聊天的時間到期
 
     SECRET_KEY          # 記得改自己的KEY
+    PAGE_VERIFY_TOKEN   # 用在驗證webhook
 
     # 可在 Messenger setting 取得
     APP_ID              # messenger ID
@@ -81,11 +82,15 @@
 ```
 
 ### Usage
+1. Local
 ```
 python3 run.py
 
 python3 async/run.py
 ```
+2. messenger settings
+    - 更改webhook URL
+    - Verify token (必須和config PAGE_VERIFY_TOKEN 一致)
 
 ### GCP
 1. Cloud functions
@@ -104,4 +109,3 @@ python3 async/run.py
 若有改動前端，記得用 `gulp` 來處理模板。
 - cors-json-file.json
 `gsutil cors set cors-json-file.json gs://here_dating`
-
