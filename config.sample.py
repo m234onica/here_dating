@@ -6,9 +6,10 @@ mysql = {
     "host": "",
     "database": "",
 }
+
 class Config:
     DEBUG = True
-
+    # your cecret key
     SECRET_KEY = ''
     FLASK_APP = os.environ.get('FLASK_APP')
     FLASK_ENV = os.environ.get('FLASK_ENV')
@@ -16,26 +17,31 @@ class Config:
     JSON_AS_ASCII = False
     TEMPLATES_AUTO_RELOAD = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    PRESERVE_CONTEXT_ON_EXCEPTION = False
 
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{USER}:{PASSWORD}@{HOST}/{NAME}?charset=utf8mb4".format(
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{USER}:{PASSWORD}@{HOST}/{DATABASE}?charset=utf8mb4".format(
         USER=mysql["username"],
         PASSWORD=mysql["password"],
         HOST=mysql["host"],
-        NAME=mysql["database"]
+        DATABASE=mysql["database"]
     )
 
-    BASE_URL = ""
-
-    # delete timing
+    # 尋找配對的時間到期
     EXPIRED_TIME = 1
+
+    # 配對聊天的時間到期
     END_TIME = 3
 
-    # Facebook messenger
+    # 可在 Messenger setting 取得
     APP_ID = ""
     PAGE_ACCESS_TOKEN = ""
+
+    # 用在驗證webhook
     PAGE_VERIFY_TOKEN = ""
+
     FB_API_URL = "https://graph.facebook.com/v6.0"
 
+    # front-end call api's url
     BASE_URL = ""
+
+    # webview link
     STATIC_URL = ""

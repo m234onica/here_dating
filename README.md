@@ -33,13 +33,30 @@
     PRIMARY KEY( id )
 ```
 
+### requirements.txt
+```
+aiohttp==3.6.2
+aiomysql==0.0.20
+Flask==1.1.1
+Flask-Cors==3.0.8
+Jinja2==2.10.3
+PyMySQL==0.9.2
+requests==2.22.0
+SQLAlchemy==1.3.12
+urllib3==1.25.8
+Werkzeug==0.16.0
+```
+
 ### How it works
 ```
-|- async
+|- delete
     |- delete.py                # delete pair
-    |- pair.py                  # pair user
-    |- run.py                   # delete and pairing main funciton
-    |- main.py                  # delete and pairing in GCF
+    |- main.py                  # GCF "delete_here_dating" main funtion
+
+|- pairing_pool
+    |- src/message.py           # async post nessebger api
+    |- pair.py                  # pairing user
+    |- main.py                  # GCF "pairing_here_dating" main funtion
 
 |- src
     |- static/data
@@ -65,22 +82,6 @@
 |- gulpfile.js                  # build front-end
 ```
 
-### Config
-```
-    EXPIRED_TIME        # 尋找配對的時間到期
-    END_TIME            # 配對聊天的時間到期
-
-    SECRET_KEY          # 記得改自己的KEY
-    PAGE_VERIFY_TOKEN   # 用在驗證webhook
-
-    # 可在 Messenger setting 取得
-    APP_ID              # messenger ID
-    PAGE_ACCESS_TOKEN   # messenger token
-
-    BASE_URL            # front-end call api's url
-    STATIC_URL          # webview link
-```
-
 ### Usage
 1. Local
 ```
@@ -89,23 +90,36 @@ python3 run.py
 python3 async/run.py
 ```
 2. messenger settings
-    - 更改webhook URL
-    - Verify token (必須和config PAGE_VERIFY_TOKEN 一致)
+    - 更改webhook URL: `config.BASE_URL/webhook`
+    - Verify token (必須和 `config.PAGE_VERIFY_TOKEN` 一致)
 
-### GCP
+### Deploy to GCP
 1. Cloud functions
     - here_dating
         - trigger: HTTP
-    - async_here_pairing (sub/pub)
+        - 用途：作為Here dating webhook，記得將url放到`config.py BASE_URL`
+    - pairing_here_pairing
         - trigger: Cloud Pub/Sub
-        - topic: here_dating_schedule
+        - topic: pairing_here_dating
+    - delete_here_pairing
+        - trigger: Cloud Pub/Sub
+        - topic: delete_here_dating
+3. Cloud Scheduler
+    - delete_here_dating
+        - Frequency: one minutes (* * * *)
+        - Timezone: taipei Standard Time
+        - Target: Pub/Sub
+    - pairing_here_dating
+        - Frequency: one minutes (* * * *)
+        - Timezone: taipei Standard Time
+        - Target: Pub/Sub
+
 2. Stroage
-    - here_dating
-        - static
-        - image
+    - Bucket name: here_dating
+    - file:
+        - static: Here dating static file(HTML, JS, CSS)
+        - image: Here dating images
 
 ### Others
 - Gulpfile.js
 若有改動前端，記得用 `gulp` 來處理模板。
-- cors-json-file.json
-`gsutil cors set cors-json-file.json gs://here_dating`
