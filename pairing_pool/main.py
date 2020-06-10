@@ -1,4 +1,4 @@
-from pair import pool
+from src import pair
 import base64
 import asyncio
 from config import Config
@@ -10,7 +10,7 @@ def main(event, context):
 
     print("The current loop is running!")
     loop = asyncio.get_event_loop()
-    future = asyncio.ensure_future(pool(loop))
+    future = asyncio.ensure_future(pair.main(loop))
     loop.run_until_complete(future)
     print(base64.b64decode(event['data']).decode('utf-8'))
     return "success"

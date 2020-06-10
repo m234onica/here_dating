@@ -82,9 +82,3 @@ async def main(loop):
             task = asyncio.create_task(message.customer_menu(session, userId))
             tasks.append(task)
         return await asyncio.gather(*tasks)
-
-
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    future = asyncio.ensure_future(main(loop))
-    loop.run_until_complete(future)
