@@ -9,11 +9,24 @@ from config import mysql, Config
 from src import message
 
 
-async def pair(conn):
+async def insert(loop, sql, data, pool):
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            try:
+                await cur.executemany(sql, data)
+            except BaseException as err:
+                await conn.rollback()
+                raise err
+            else:
+                await conn.commit()
+
+
+async def pair(loop, pool):
     user_list = []
-    async with conn.cursor() as cur:
-        try:
-            pool = ''' SELECT
+    data = []
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            get_pool_data = ''' SELECT
                             placeId,
                             GROUP_CONCAT(userId ORDER BY rand() SEPARATOR ",") as userId
                         FROM
@@ -22,7 +35,7 @@ async def pair(conn):
                             deletedAt is NULL
                         GROUP BY
                             placeId; '''
-            await cur.execute(pool)
+            await cur.execute(get_pool_data)
             group = await cur.fetchall()
 
             for i in range(len(group)):
@@ -34,7 +47,6 @@ async def pair(conn):
                 if length % 2 != 0:
                     length -= 1
                 for id in range(0, length, 2):
-                    pair = '''INSERT INTO pair(placeId, playerA, playerB) values ({}, {}, {})'''
                     placeId = group[i][0]
                     playerA = user[id]
                     playerB = user[id+1]
@@ -42,27 +54,28 @@ async def pair(conn):
                     user_list.append(playerA)
                     user_list.append(playerB)
 
-                    await cur.execute(pair.format(placeId, playerA, playerB))
+                    data.append((placeId, playerA, playerB),)
 
-                    pool = ''' UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE userId={} and deletedAt is NULL;'''
-                    await cur.execute(pool.format(user[id]))
-                    await cur.execute(pool.format(user[id+1]))
-                    result = await cur.fetchall()
-            await conn.commit()
+    pair_sql = '''INSERT INTO pair (placeId, playerA, playerB) values (%s, %s, %s);'''
+    pool_sql = '''UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE placeId=%s and userId=%s or userId=%s and deletedAt is NULL;'''
 
-        except BaseException as err:
-            await conn.rollback()
-            raise err
+    tasks = [
+        asyncio.create_task(
+            insert(loop=loop, sql=pair_sql, data=data, pool=pool)),
+        asyncio.create_task(
+            insert(loop=loop, sql=pool_sql, data=data, pool=pool))
+    ]
 
-    conn.close()
+    result = await asyncio.gather(*tasks)
     return user_list
 
 
-async def pool(loop):
-    conn = await aiomysql.connect(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)
-    user_list = await pair(conn)
-    sslcontext = ssl.create_default_context(cafile=certifi.where())
+async def main(loop):
+    pool = await aiomysql.create_pool(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)
+    user_list = await pair(loop, pool)
+    pool.close()
 
+    sslcontext = ssl.create_default_context(cafile=certifi.where())
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=sslcontext)) as session:
         tasks = []
         for userId in user_list:
@@ -73,5 +86,5 @@ async def pool(loop):
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    future = asyncio.ensure_future(pool(loop))
+    future = asyncio.ensure_future(main(loop))
     loop.run_until_complete(future)
