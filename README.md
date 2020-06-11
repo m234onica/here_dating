@@ -79,15 +79,21 @@ Werkzeug==0.16.0
 
 |- main.py                      # here dating in GCF
 |- run.py                       # main function
+
 |- gulpfile.js                  # build front-end
 ```
 
 ### Usage
 1. Local
 ```
+# Here dating main funcion
 python3 run.py
 
-python3 async/run.py
+# Pairing's main funcion
+python3 pairing_pool/run.py
+
+# Delete pairs main function
+python3 delete/delete.py
 ```
 2. messenger settings
     - 更改webhook URL: `config.BASE_URL/webhook`
@@ -121,5 +127,4 @@ python3 async/run.py
         - image: Here dating images
 
 ### Others
-- Gulpfile.js
-若有改動前端，記得用 `gulp` 來處理模板。
+- Gulpfile.js: 若有改動前端，記得用 `gulp` 來處理模板。
