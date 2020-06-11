@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 
 from src.db import db_session
@@ -7,6 +8,8 @@ from src.context import Context
 from src.tool import filter, reply, message, status
 from config import Config
 
+logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                    level=logging.WARNING)
 
 def timeout(userId):
     pair = filter.get_active_pair(userId)
@@ -18,9 +21,11 @@ def timeout(userId):
         if time_diff >= pool.createdAt:
             try:
                 pool.deletedAt = datetime.now()
-            except:
+
+            except BaseException as err:
                 db_session.rollback()
-                raise
+                logging.error("SQL is rollback. error is: {}", err)
+                raise err
             else:
                 db_session.commit()
 
@@ -36,9 +41,10 @@ def timeout(userId):
             try:
                 pair.deletedAt = datetime.now()
                 pair.status = status_Enum(2)
-            except:
+            except BaseException as err:
                 db_session.rollback()
-                raise
+                logging.error("SQL is rollback. error is: {}", err)
+                raise err
             else:
                 db_session.commit()
 

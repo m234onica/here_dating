@@ -3,10 +3,14 @@ import certifi
 import asyncio
 import aiomysql
 import aiohttp
+import logging
 from urllib.parse import urljoin
 
 from config import mysql, Config
 from src import message
+
+logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                    level=logging.WARNING)
 
 
 async def insert(loop, sql, data, pool):
@@ -15,6 +19,7 @@ async def insert(loop, sql, data, pool):
             try:
                 await cur.executemany(sql, data)
             except BaseException as err:
+                logging.error("SQL insert is rollback. Error: {}".format(err), exc_info=True)
                 await conn.rollback()
                 raise err
             else:

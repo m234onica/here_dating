@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import base64
 import time
+import logging
 
 from src.db import db_session
 from src.models import Pair, Pool, status_Enum
@@ -10,6 +11,8 @@ from src.context import Context
 from config import Config
 
 starttime = time.time()
+logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                    level=logging.WARNING)
 
 
 def send_expired_message(pool):
@@ -51,9 +54,10 @@ def delete(minutes):
                 reply.timeout_message(data.playerB)
 
                 print("delete paired:", data)
-    except:
+    except BaseException as err:
         db_session.rollback()
-        raise
+        logging.error("SQL is rollback. error is: {}", err)
+        raise err
     else:
         db_session.commit()
 

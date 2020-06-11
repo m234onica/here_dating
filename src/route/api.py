@@ -1,3 +1,4 @@
+import logging
 from flask import Blueprint, render_template, jsonify, request, g, redirect, flash, url_for, make_response
 from datetime import datetime, timedelta
 
@@ -7,6 +8,10 @@ from src.func import response
 from src.tool import message, filter, reply, status
 from src.context import Context
 from config import Config
+
+logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                    level=logging.WARNING)
+
 
 api = Blueprint("api", __name__)
 init_db()
@@ -49,9 +54,10 @@ def pair_user(placeId, userId):
     if status.is_noPair(userId):
         try:
             db_session.add(Pool(placeId=placeId, userId=userId))
-        except:
+        except BaseException as err:
             db_session.rollback()
-            raise
+            logging.error("SQL is rollback. error is: {}", err)
+            raise err
         else:
             db_session.commit()
 
@@ -76,7 +82,7 @@ def send_last_word():
     lastWord = request.json["lastWord"]
     contact = request.json["contact"]
     end_time = filter.get_pair_end_time(userId)
-    
+
     pair = filter.get_pair(userId)
 
     if status.is_send_last_message(userId) == False:
@@ -85,9 +91,11 @@ def send_last_word():
                 pair.playerA_lastedAt = datetime.now()
             else:
                 pair.playerB_lastedAt = datetime.now()
-        except:
+
+        except BaseException as err:
             db_session.rollback()
-            raise
+            logging.error("SQL is rollback. error is: {}", err)
+            raise err
         else:
             db_session.commit()
 
@@ -137,14 +145,17 @@ def leave(userId):
             placeId = data.placeId
             recipient_id = filter.get_recipient_id(userId)
             message.delete_menu(recipient_id)
-            reply.quick_pair(recipient_id, placeId, Context.partner_leave_message)
+            reply.quick_pair(recipient_id, placeId,
+                             Context.partner_leave_message)
 
             words = Context.leave_message
 
         data.deletedAt = datetime.now()
-    except:
+
+    except BaseException as err:
         db_session.rollback()
-        raise
+        logging.error("SQL is rollback. error is: {}", err)
+        raise err
     else:
         db_session.commit()
 
