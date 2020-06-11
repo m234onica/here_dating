@@ -19,7 +19,7 @@ async def insert(loop, sql, data, pool):
             try:
                 await cur.executemany(sql, data)
             except BaseException as err:
-                logging.error("SQL insert is rollback. Error: {}".format(err), exc_info=True)
+                logging.error("SQL insert is rollback.", exc_info=True)
                 await conn.rollback()
                 raise err
             else:
@@ -79,6 +79,7 @@ async def main(loop):
     pool = await aiomysql.create_pool(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)
     user_list = await pair(loop, pool)
     pool.close()
+    await pool.wait_closed()
 
     sslcontext = ssl.create_default_context(cafile=certifi.where())
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=sslcontext)) as session:
