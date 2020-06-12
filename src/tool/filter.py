@@ -19,6 +19,10 @@ def all_active_pair():
     return Pair.query.filter(Pair.deletedAt == None)
 
 
+def get_pool(userId):
+    return Pool.query.filter(Pool.userId == userId).order_by(Pool.id.desc()).first()
+
+
 def get_pair(userId):
     return Pair.query.filter((Pair.playerA == userId) | (
         Pair.playerB == userId)).order_by(Pair.id.desc()).first()

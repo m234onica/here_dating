@@ -4,6 +4,16 @@ from src.models import Pair, Place
 from config import Config
 
 
+def is_new_user(userId):
+    pair = filter.get_pair(userId)
+    pool = filter.get_pool(userId)
+
+    if pair == None and pool == None:
+        return True
+    else:
+        return False
+
+
 def is_noPair(userId):
     pair = filter.get_active_pair(userId)
     pool = filter.get_active_pool(userId)

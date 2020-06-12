@@ -52,11 +52,14 @@ def webhook_handle():
             return reply.general_pair(userId, Context.general_pair_message)
 
         elif payload == "Quick_pair":
-            words = Context.quick_pairing_message
-            placeId = filter.get_place_id(userId)
-            placeName = filter.get_place_name(placeId)
-            return reply.quick_pair(userId, placeId, words.format(placeName=placeName))
- 
+            if status.is_new_user(userId):
+                return reply.general_pair(userId, Context.no_pair_message)
+            else:
+                words = Context.quick_pairing_message
+                placeId = filter.get_place_id(userId)
+                placeName = filter.get_place_name(placeId)
+                return reply.quick_pair(userId, placeId, words.format(placeName=placeName))
+
         elif payload == "General_pair":
             return reply.general_pair(userId, Context.general_pair_message)
 
@@ -67,9 +70,13 @@ def webhook_handle():
                 return "User has no pair to leave"
  
         else:
-            payload = payload.split("@")
-            placeId = payload[1]
-            return api.pair_user(placeId, userId)
+            if status.is_new_user(userId):
+                return reply.general_pair(userId, Context.no_pair_message)
+            else:
+                payload = payload.split("@")
+                placeId = payload[1]
+                return api.pair_user(placeId, userId)
+
 
     # 傳送聊天訊息or附件
     if status.is_noPair(userId):
