@@ -7,17 +7,17 @@ from config import Config
 from src.context import Context
 
 json_file = Environment(loader=PackageLoader("src", "static/data"))
-
+FB_API_URL = "https://graph.facebook.com/v6.0"
 
 def get_persona_id():
-    url = urljoin(Config.FB_API_URL, "/me/personas")
+    url = urljoin(FB_API_URL, "/me/personas")
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     persona = requests.get(url=url, params=params).json()
     return persona["data"][0]["id"]
 
 
 async def text(session, userId):
-    url = urljoin(Config.FB_API_URL, "/me/messages")
+    url = urljoin(FB_API_URL, "/me/messages")
     persona_id = get_persona_id()
 
     template = json_file.get_template("data.json.jinja")
@@ -29,7 +29,7 @@ async def text(session, userId):
 
 
 async def quick_reply(session, userId):
-    url = urljoin(Config.FB_API_URL, "/me/messages")
+    url = urljoin(FB_API_URL, "/me/messages")
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     persona_id = get_persona_id()
 
@@ -43,7 +43,7 @@ async def quick_reply(session, userId):
 
 
 async def customer_menu(session, userId):
-    url = urljoin(Config.FB_API_URL, "/me/custom_user_settings")
+    url = urljoin(FB_API_URL, "/me/custom_user_settings")
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     static_url = urljoin(Config.STATIC_URL, "rule.html")
 

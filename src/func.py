@@ -6,9 +6,10 @@ from flask import make_response
 
 from config import Config
 
+FB_API_URL = "https://graph.facebook.com/v6.0"
 
 def api_request(method, urls, json=None, params={"access_token": Config.PAGE_ACCESS_TOKEN}): 
-    url = urljoin(Config.FB_API_URL,  "/".join(urls))
+    url = urljoin(FB_API_URL,  "/".join(urls))
     response = requests.request(
         method=method, url=url, params=params, json=json).json()
     return response
