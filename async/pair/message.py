@@ -4,12 +4,12 @@ import asyncio
 from urllib.parse import urljoin
 from jinja2 import Environment, PackageLoader
 from config import Config
-from src.context import Context
+from context import Context
 
 FB_API_URL = "https://graph.facebook.com/v6.0"
 params = {"access_token": Config.PAGE_ACCESS_TOKEN}
 
-json_file = Environment(loader=PackageLoader("src", "static/data"))
+json_file = Environment(loader=PackageLoader("pair", "static/data"))
 template = json_file.get_template("data.json.jinja")
 
 

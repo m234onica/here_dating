@@ -5,9 +5,9 @@ import asyncio
 from urllib.parse import urljoin, urlencode
 from jinja2 import Environment, PackageLoader
 from config import Config
-from src.context import Context
+from context import Context
 
-json_file = Environment(loader=PackageLoader("src", "static/data"))
+json_file = Environment(loader=PackageLoader("delete", "static/data"))
 template = json_file.get_template("data.json.jinja")
 FB_API_URL = "https://graph.facebook.com/v6.0"
 

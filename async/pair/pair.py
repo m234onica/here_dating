@@ -7,7 +7,7 @@ import logging
 from urllib.parse import urljoin
 
 from config import mysql, Config
-from src import message
+from pair import message
 
 logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
                     level=logging.WARNING)
@@ -37,10 +37,10 @@ async def pair(loop, pool):
                         FROM
                             pool
                         WHERE
-                            deletedAt is NULL
+                            deletedAt is NULL AND createdAt > CURRENT_TIME() - INTERVAL {} MINUTE
                         GROUP BY
                             placeId; '''
-            await cur.execute(get_pool_data)
+            await cur.execute(get_pool_data.format(Config.EXPIRED_TIME))
             group = await cur.fetchall()
 
             for i in range(len(group)):

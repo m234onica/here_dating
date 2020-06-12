@@ -6,7 +6,7 @@ import aiohttp
 import logging
 
 from config import mysql, Config
-from src import message
+from delete import message
 
 
 async def update(loop, sql, data, pool):
