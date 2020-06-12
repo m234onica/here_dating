@@ -1,111 +1,93 @@
-import requests
 import os
+import requests
 import json
+import asyncio
 from urllib.parse import urljoin, urlencode
 from jinja2 import Environment, PackageLoader
-
-from src.func import api_request
-from src.context import Context
 from config import Config
+from src.context import Context
 
 json_file = Environment(loader=PackageLoader("src", "static/data"))
+template = json_file.get_template("data.json.jinja")
+FB_API_URL = "https://graph.facebook.com/v6.0"
 
 
-def sender_action(id, action):
-    template = json_file.get_template("data.json.jinja")
-    rendered = template.module.sender_action(id=id, action=action)
-    data = json.loads(rendered)
-    return api_request("POST", urls=["me","messages"], json=data)
-
-
-def push_text(id, persona, text):
-    template = json_file.get_template("data.json.jinja")
-    rendered = template.module.push_text(id=id, persona=persona, text=text)
-    data = json.loads(rendered)
-    return api_request("POST", urls=["me","messages"], json=data)
-
-
-def push_quick_reply(id, persona, text):
-    template = json_file.get_template("data.json.jinja")
-    rendered = template.module.push_quick_reply(
-        id=id, persona=persona, text=text)
-    data = json.loads(rendered)
-    return api_request("POST", urls=["me","messages"], json=data)
-
-
-def push_attachment(id, persona, url):
-    template = json_file.get_template("data.json.jinja")
-    rendered = template.module.push_attachment(id=id, persona=persona, url=url)
-    data = json.loads(rendered)
-    return api_request("POST", urls=["me","messages"], json=data)
-
-
-def push_button(id, persona, text, types, title, payload):
-    template = json_file.get_template("data.json.jinja")
-    rendered = template.module.push_button(
-        id=id, persona=persona, text=text, types=types, payload=payload, title=title)
-    data = json.loads(rendered)
-    return api_request("POST", urls=["me","messages"], json=data)
-
-
-def get_started():
+def get_persona_id():
+    url = urljoin(FB_API_URL, "/me/personas")
     params = {"access_token": Config.PAGE_ACCESS_TOKEN}
+    persona = requests.get(url=url, params=params).json()
+    return persona["data"][0]["id"]
 
-    pair_url = urljoin(Config.STATIC_URL, "pair.html")
-    rule_url = urljoin(Config.STATIC_URL, "rule.html")
 
-    template = json_file.get_template("data.json.jinja")
-    rendered = template.module.get_started(
-        username="{{user_first_name}}",
-        menu_start=Context.menu_start, pair_url=pair_url,
-        menu_rule=Context.menu_rule, rule_url=rule_url)
-
+persona_id = get_persona_id()
+async def timeout_text(session, userId):
+    rendered = template.module.push_text(
+        id=userId, persona=persona_id, text=Context.timeout_text[0])
     data = json.loads(rendered)
-    get_start_responese = api_request(
-        "POST", urls=["me","messenger_profile"], json=data)
 
-    whitelisted_domains = {
-        "whitelisted_domains": [Config.BASE_URL, Config.STATIC_URL]}
-    whitelisted_domains_response = api_request(
-        "POST", urls=["me","messenger_profile"], json=whitelisted_domains)
-
-    response = [get_start_responese, whitelisted_domains_response]
-    return response
+    url = urljoin(FB_API_URL, "/me/messages")
+    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
+    return await session.post(url, params=params, json=data)
 
 
-def push_customer_menu(id, postback_title):
-    url = urljoin(Config.STATIC_URL, "rule.html")
+async def timeout_button(session, pairId, userId):
+    web_params = urlencode({"pairId": pairId, "userId": userId})
+    web_url_payload = "?".join(["message.html", web_params])
 
-    template = json_file.get_template("data.json.jinja")
-    rendered = template.module.custom_menu(id=id,
-                                           postback_title=postback_title,
-                                           url_title=Context.menu_rule, url=url)
+    rendered = template.module.push_button(
+        id=userId,
+        persona=persona_id,
+        text=Context.timeout_text[1],
+        types="timeout",
+        payload=[web_url_payload, "Quick_pair"],
+        title=[Context.send_partner_last_message_button,
+               Context.pair_again_button]
+    )
     data = json.loads(rendered)
-    return api_request("POST", urls=["me","custom_user_settings"], json=data)
+
+    await timeout_text(session, userId)
+
+    url = urljoin(FB_API_URL, "/me/messages")
+    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
+    return await session.post(url, params=params, json=data)
 
 
-def delete_menu(id):
+async def delet_pair_menu(session, pairId, userId):
+    url = urljoin(FB_API_URL, "/me/custom_user_settings")
     params = {
-        "psid": id,
+        "psid": userId,
         "params": '["persistent_menu"]',
         "access_token": Config.PAGE_ACCESS_TOKEN
     }
-    return api_request("DELETE", urls=["me","custom_user_settings"], params=params)
+    await timeout_button(session, pairId, userId)
+    return await session.delete(url, params=params)
 
 
-def persona():
-    template = json_file.get_template("data.json.jinja")
-    rendered = template.module.persona()
+async def pool_button(session, placeId, userId):
+    quick_pair_postback = "@".join(["Pair", placeId])
+    general_pair_postback = "General_pair"
+
+    rendered = template.module.push_button(
+        id=userId,
+        persona=persona_id,
+        text=Context.wait_expired,
+        types="quick_pair",
+        payload=[quick_pair_postback, general_pair_postback],
+        title=[Context.quick_pair_button, Context.pair_other_button]
+    )
     data = json.loads(rendered)
-    return api_request("POST", urls=["me","personas"], json=data)
+
+    url = urljoin(FB_API_URL, "/me/messages")
+    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
+    return await session.post(url, params=params, json=data)
 
 
-def get_username(userId):
-    params = urlencode(
-        {"fields": "first_name, last_name", "access_token": Config.PAGE_ACCESS_TOKEN})
-
-    user_profile = api_request(
-        "GET", urls=[userId], params=params)
-
-    username = user_profile["last_name"] + user_profile["first_name"]
-    return username
+async def delet_pool_menu(session, placeId, userId):
+    url = urljoin(FB_API_URL, "/me/custom_user_settings")
+    params = {
+        "psid": userId,
+        "params": '["persistent_menu"]',
+        "access_token": Config.PAGE_ACCESS_TOKEN
+    }
+    await pool_button(session, placeId, userId)
+    return await session.delete(url, params=params)
