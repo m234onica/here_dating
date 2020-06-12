@@ -83,21 +83,53 @@ Werkzeug==0.16.0
 |- gulpfile.js                  # build front-end
 ```
 
-### Usage
-1. Local
-```
-# Here dating main funcion
-python3 run.py
+### Local build
+1. Messenger developers settings
+    - 建立 Messener application
+    - 新增產品 Webhooks and Messenger
+    - 進入 Messenger settings 設定粉專以取得 PAGE_ACCESS_TOKEN (記得將 TOKEN 和 APP ID 放到 `config.py` & `config.js`)
 
-# Pairing's main funcion
-python3 pairing_pool/run.py
+2. Clone here_dating
+    ```
+    $ pip install -r requirements.txt
+    $ npm install
+    $ ngrok http 5000
 
-# Delete pairs main function
-python3 delete/delete.py
-```
-2. messenger settings
-    - 更改webhook URL: `config.BASE_URL/webhook`
-    - Verify token (必須和 `config.PAGE_VERIFY_TOKEN` 一致)
+    # config.sample.py 記得加上變數，並改名 config.py
+    # /src/static/js/config.sample.js 記得加上變數，並改名 config.js
+    # 將ngrok URL 放到 config.py & config.js => BASE_URL
+
+    $ gulp
+    # 產生 production static file
+    ```
+
+3. 將產生的 static 放上 GCP Storage
+    - 建立新的 bucket （權限設為公開）
+    - upload static
+    - create new folder `image`: 放置圖檔 (robo.png & user_pic.png)
+    ```
+    |- here_dating
+        |- image
+            |- robo.png
+            |- user_pic.png
+        |- static
+            |- ...
+    ```
+
+4. Start here_dating
+    ```
+    # Here dating main funcion
+    $ python3 run.py
+
+    # Pairing's main funcion
+    $ python3 pairing_pool/run.py
+
+    # Delete pairs main function
+    $ python3 delete/delete.py
+    ```
+2. Messenger settings
+    - 編輯 Webhooks URL `{{ BASE_URL }} + /webhook`
+    - Verify token (必須和 `config.py PAGE_VERIFY_TOKEN` 一致)
 
 ### Deploy to GCP
 1. Cloud functions
@@ -119,12 +151,6 @@ python3 delete/delete.py
         - Frequency: one minutes (* * * *)
         - Timezone: taipei Standard Time
         - Target: Pub/Sub
-
-2. Stroage
-    - Bucket name: here_dating
-    - file:
-        - static: Here dating static file(HTML, JS, CSS)
-        - image: Here dating images
 
 ### Others
 - Gulpfile.js: 若有改動前端，記得用 `gulp` 來處理模板。
