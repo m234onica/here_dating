@@ -18,15 +18,13 @@ src/static/js/*
 src/static/css/*
 src/templates/*
 
-static
+./static
 node_modules
 
-delete
-pairing_pool
+./async
 
 here.sql
 README.md
-pair.py
 config.sample.py
 package-lock.json
 run.py
