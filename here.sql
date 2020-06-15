@@ -32,3 +32,4 @@ CREATE TABLE pool(
 
 INSERT INTO place (id, name, longitude, latitude) VALUE ("2322", "木木卡門市", 25.066765, 121.526336);
 INSERT INTO pair (placeId, playerA) VALUE ("2332", "3564003720340673");
+INSERT INTO pool (placeId, userId, status) VALUE ("2322", "3564003720340673", 0), ("2322", "2933640686694174", 0);

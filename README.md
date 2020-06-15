@@ -49,14 +49,17 @@ Werkzeug==0.16.0
 
 ### How it works
 ```
-|- delete
-    |- delete.py                # delete pair
-    |- main.py                  # GCF "delete_here_dating" main funtion
+|- async
+    |- delete
+        |- message.py           # async post nessebger api
+        |- delete.py            # delete pair
 
-|- pairing_pool
-    |- src/message.py           # async post nessebger api
-    |- pair.py                  # pairing user
-    |- main.py                  # GCF "pairing_here_dating" main funtion
+    |- pair
+        |- message.py           # async post nessebger api
+        |- pair.py              # pairing user
+
+    |- main.py                  # GCP main function
+    |- run.py                   # local main function
 
 |- src
     |- static/data
@@ -87,7 +90,10 @@ Werkzeug==0.16.0
 1. Messenger developers settings
     - 建立 Messener application
     - 新增產品 Webhooks and Messenger
-    - 進入 Messenger settings 設定粉專以取得 PAGE_ACCESS_TOKEN (記得將 TOKEN 和 APP ID 放到 `config.py` & `config.js`)
+    - 進入 Messenger settings 設定粉專以取得 PAGE_ACCESS_TOKEN 
+    - 設定 webhooks 回傳欄位： messages, messaging_postbacks, messaging_referrals, message_reactions
+    - 將 PAGE_ACCESS_TOKEN 放到 config.py PAGE_ACCESS_TOKEN
+    - 將應用程式編號放到 config.py APP_ID 和 config.js APP_ID
 
 2. Clone here_dating
     ```
@@ -107,6 +113,7 @@ Werkzeug==0.16.0
     - 建立新的 bucket （權限設為公開）
     - upload static
     - create new folder `image`: 放置圖檔 (robo.png & user_pic.png)
+    - 將URL 放到 `config.py STATIC_URL`
     ```
     |- here_dating
         |- image

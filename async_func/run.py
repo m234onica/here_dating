@@ -2,7 +2,7 @@ import asyncio
 from pair import pair
 from delete import delete
 
-if __name__ == "__main__":
+def main():
     loop = asyncio.get_event_loop()
     future = [
         asyncio.ensure_future(pair.main(loop)),
