@@ -26,6 +26,19 @@ async def insert(loop, sql, data, pool):
                 await conn.commit()
 
 
+async def unpair_count(loop, pool):
+    status = 0
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            sql = ''' select placeId, count(*) from pool where deletedAt is NULL group by placeId; '''
+            await cur.execute(sql)
+            counts = await cur.fetchall()
+            for count in counts:
+                if int(count[1]) >= 2:
+                    status = 1
+    return status
+
+
 async def pair(loop, pool):
     user_list = []
     data = []
@@ -76,8 +89,11 @@ async def pair(loop, pool):
 
 
 async def main(loop):
-    pool = await aiomysql.create_pool(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)
-    user_list = await pair(loop, pool)
+    pool = await aiomysql.create_pool(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)    
+    status = await unpair_count(loop, pool)
+    while status != 0:
+        user_list = await pair(loop, pool)
+        status = await unpair_count(loop, pool)
     pool.close()
     await pool.wait_closed()
 
