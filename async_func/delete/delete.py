@@ -22,20 +22,22 @@ async def update(loop, sql, data, pool):
                 await conn.commit()
 
 
-async def delete(loop, pool):
-    # For update sql
-    all_poolId = []
-    all_pairId = []
-    # For messenger
-    pool_data = []
-    pair_data = []
+async def select_pool(loop, pool):
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
-            pool_expired_sql = '''
+            sql = '''
                         SELECT id, placeId, userId
                         FROM pool
                         WHERE deletedAt is NULL AND createdAt <= CURRENT_TIME() - INTERVAL {} MINUTE;'''
 
+            await cur.execute(sql.format(Config.EXPIRED_TIME))
+            return await cur.fetchall()
+
+
+async def select_pair(loop, pool):
+
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cur:
             pair_expired_sql = ''' 
                         SELECT id, playerA
                         FROM pair
@@ -44,38 +46,49 @@ async def delete(loop, pool):
                         SELECT id, playerB
                         FROM pair
                         WHERE deletedAt is NULL AND createdAt <= CURRENT_TIME() - INTERVAL 3 MINUTE;'''
-
-            await cur.execute(pool_expired_sql.format(Config.EXPIRED_TIME))
-            pool_datas = await cur.fetchall()
-
-            for data in pool_datas:
-                all_poolId.append(data[0])
-                pool_data.append(data[1:])
-
             await cur.execute(pair_expired_sql.format(Config.END_TIME, Config.END_TIME))
-            pair_data = await cur.fetchall()
-            pair_data = [list(row) for row in pair_data]
+            pair_list = await cur.fetchall()
+            return [list(row) for row in pair_list]
 
-            for data in pair_data:
-                all_pairId.append(data[0])
-            all_pairId = list(set(all_pairId))
 
-            delete_pool_sql = '''UPDATE pool set deletedAt=CURRENT_TIME() WHERE id=%s and deletedAt is NULL;'''
-            delete_pair_sql = '''UPDATE pair set deletedAt=CURRENT_TIME(), status='end' WHERE id=%s and deletedAt is NULL;'''
+async def delete(loop, pool):
+    # For update sql
+    pool_id = []
+    pair_id = []
+    # For messenger
+    pool_list = []
+    pair_list = []
 
-            tasks = [
-                asyncio.create_task(
-                    update(loop=loop, sql=delete_pool_sql, data=all_poolId, pool=pool)),
-                asyncio.create_task(
-                    update(loop=loop, sql=delete_pair_sql, data=all_pairId, pool=pool))
-            ]
-            result = await asyncio.gather(*tasks)
-        return pool_data, pair_data
+
+    pool_data = await select_pool(loop, pool)
+    for data in pool_data:
+        pool_id.append(data[0])
+        pool_list.append(data[1:])
+
+    pair_list = await select_pair(loop, pool)
+    for data in pair_list:
+        pair_id.append(data[0])
+    pair_id = list(set(pair_id))
+
+    delete_pool_sql = '''UPDATE pool set deletedAt=CURRENT_TIME() WHERE id=%s and deletedAt is NULL;'''
+    delete_pair_sql = '''UPDATE pair set deletedAt=CURRENT_TIME(), status='end' WHERE id=%s and deletedAt is NULL;'''
+
+    tasks = [
+        asyncio.create_task(
+            update(loop=loop, sql=delete_pool_sql, data=pool_id, pool=pool)),
+        asyncio.create_task(
+            update(loop=loop, sql=delete_pair_sql, data=pair_id, pool=pool))
+    ]
+    await asyncio.gather(*tasks)
+    return pool_list, pair_list
 
 
 async def main(loop):
+    pool_list = []
+    pair_list = []
+
     pool = await aiomysql.create_pool(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)
-    pool_data, pair_data = await delete(loop, pool)
+    pool_list, pair_list = await delete(loop, pool)
     pool.close()
     await pool.wait_closed()
 
@@ -84,12 +97,12 @@ async def main(loop):
         pool_tasks = []
         pair_tasks = []
 
-        for data in pool_data:
+        for data in pool_list:
             task = asyncio.create_task(
                 message.delet_pool_menu(session, data[0], data[1]))
             pool_tasks.append(task)
 
-        for data in pair_data:
+        for data in pair_list:
             task = asyncio.create_task(
                 message.delet_pair_menu(session, data[0], data[1]))
             pair_tasks.append(task)
