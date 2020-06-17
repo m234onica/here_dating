@@ -5,9 +5,11 @@ import aiomysql
 import aiohttp
 import logging
 from urllib.parse import urljoin
+import warnings
 from config import mysql, Config
 from pair import message
 
+warnings.filterwarnings("ignore", category=aiomysql.Warning)
 logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
                     level=logging.INFO)
 
@@ -52,6 +54,9 @@ async def unpair_count(loop, pool):
             for count in counts:
                 if int(count[1]) >= 2:
                     status = 1
+                if int(count[1]) > 56:
+                    logging.warning(
+                        "Row {} was cut by GROUP_CONCAT()".format(count[0]))
     return status
 
 
