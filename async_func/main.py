@@ -1,7 +1,7 @@
-from src import pair
+from pair import pair
+from delete import delete
 import base64
 import asyncio
-from config import Config
 
 
 def main(event, context):
