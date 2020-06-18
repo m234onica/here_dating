@@ -1,12 +1,19 @@
 import os
 import requests
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlencode, urlparse, urlunparse
 from datetime import datetime, timedelta
 from flask import make_response
 
 from config import Config
 
 FB_API_URL = "https://graph.facebook.com/v6.0"
+
+def build_url(base_url, path, args):
+    url_parts = list(urlparse(base_url))
+    url_parts[2] = path
+    url_parts[4] = urlencode(args)
+    return urlunparse(url_parts)
+
 
 def api_request(method, urls, json=None, params={"access_token": Config.PAGE_ACCESS_TOKEN}): 
     url = urljoin(FB_API_URL,  "/".join(urls))
