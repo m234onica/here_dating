@@ -4,10 +4,13 @@ import asyncio
 import aiomysql
 import aiohttp
 import logging
+from datetime import datetime
 
 from config import mysql, Config
 from delete import message
 
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s - %(message)s', level=logging.INFO)
 
 async def update(loop, sql, data, pool):
     async with pool.acquire() as conn:
@@ -35,7 +38,6 @@ async def select_pool(loop, pool):
 
 
 async def select_pair(loop, pool):
-
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
             pair_expired_sql = ''' 
@@ -58,7 +60,6 @@ async def delete(loop, pool):
     # For messenger
     pool_list = []
     pair_list = []
-
 
     pool_data = await select_pool(loop, pool)
     for data in pool_data:
@@ -84,6 +85,7 @@ async def delete(loop, pool):
 
 
 async def main(loop):
+    start_time = datetime.now()
     pool_list = []
     pair_list = []
 
@@ -106,5 +108,7 @@ async def main(loop):
             task = asyncio.create_task(
                 message.delet_pair_menu(session, data[0], data[1]))
             pair_tasks.append(task)
-
-        return await asyncio.gather(*pool_tasks, *pair_tasks)
+        await asyncio.gather(*pool_tasks, *pair_tasks)
+        end_time = datetime.now()
+        logging.info("Delete function execution time is {}".format(
+            end_time - start_time))

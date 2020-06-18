@@ -4,14 +4,15 @@ import asyncio
 import aiomysql
 import aiohttp
 import logging
-from urllib.parse import urljoin
 import warnings
+from urllib.parse import urljoin
+from datetime import datetime
 from config import mysql, Config
 from pair import message
 
 warnings.filterwarnings("ignore", category=aiomysql.Warning)
-logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s - %(message)s', level=logging.INFO)
 
 
 async def select(loop, pool):
@@ -98,6 +99,8 @@ async def pair(loop, pool):
 
 
 async def main(loop):
+    start_time = datetime.now()
+
     pool = await aiomysql.create_pool(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)
     user_list = []
     status = await unpair_count(loop, pool)
@@ -113,4 +116,8 @@ async def main(loop):
         for userId in user_list:
             task = asyncio.create_task(message.customer_menu(session, userId))
             tasks.append(task)
-        return await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks)
+
+    end_time = datetime.now()
+    logging.info("Pairing function execution time is {}".format(
+        end_time - start_time))
