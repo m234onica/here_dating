@@ -1,5 +1,5 @@
 import os
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urljoin
 
 from src.func import build_url
 from src.tool import message, filter
@@ -38,14 +38,15 @@ def paired(userId):
 def general_pair(userId, text):
     persona_id = filter.get_persona_id()
     params = {"userId": userId}
-    url = build_url(Config.BASE_URL, "/pair.html", params)
+    url = urljoin(Config.BASE_URL, "pair.html")
+    payload = build_url(url, params)
 
     return message.push_button(
         id=userId,
         persona=persona_id,
         text=text,
         types="general_pair",
-        payload=[url],
+        payload=[payload],
         title=[Context.general_pair_button]
     )
 
@@ -70,7 +71,8 @@ def timeout_message(userId):
     pairId = pair.id
 
     params = {"pairId": pairId, "userId": userId}
-    url = build_url(Config.BASE_URL, "/message.html", params)
+    url = urljoin(Config.BASE_URL, "messeage.html")
+    payload = build_url(url, params)
 
     message.delete_menu(userId)
     message.push_text(id=userId, persona=persona_id,
@@ -79,7 +81,7 @@ def timeout_message(userId):
         id=userId, persona=persona_id,
         text=Context.timeout_text[1],
         types="timeout",
-        payload=[url, "Quick_pair"],
+        payload=[payload, "Quick_pair"],
         title=[Context.send_partner_last_message_button,
                Context.pair_again_button]
     )
