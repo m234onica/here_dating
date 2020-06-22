@@ -15,22 +15,6 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s - %(message)s', level=logging.INFO)
 
 
-async def unpaired_list(loop, pool, userId, user_list):
-    recipient_list = []
-    async with pool.acquire() as conn:
-        async with conn.cursor() as cur:
-            sql = '''SELECT playerB FROM pair WHERE playerA="{userId}" 
-                    UNION ALL SELECT playerA FROM pair WHERE playerB="{userId}";'''
-            await cur.execute(sql.format(userId=userId))
-            data = await cur.fetchall()
-            recipient_list = list.copy(user_list)
-            for d in data:
-                if d[0] in recipient_list:
-                    recipient_list.remove(d[0])
-            recipient_list.remove(userId)
-            return recipient_list
-
-
 async def select(loop, pool):
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
@@ -75,6 +59,22 @@ async def unpair_count(loop, pool):
                     logging.warning(
                         "PlaceId: {} was cut by GROUP_CONCAT()".format(count[0]))
     return status
+
+
+async def unpaired_list(loop, pool, userId, user_list):
+    recipient_list = []
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            sql = '''SELECT playerB FROM pair WHERE playerA="{userId}" 
+                    UNION ALL SELECT playerA FROM pair WHERE playerB="{userId}";'''
+            await cur.execute(sql.format(userId=userId))
+            data = await cur.fetchall()
+            recipient_list = list.copy(user_list)
+            for d in data:
+                if d[0] in recipient_list:
+                    recipient_list.remove(d[0])
+            recipient_list.remove(userId)
+            return recipient_list
 
 
 async def pair(loop, pool):
