@@ -105,7 +105,8 @@ async def pair(loop, pool):
                 continue
 
     pair_sql = '''INSERT INTO pair (placeId, playerA, playerB) values (%s, %s, %s);'''
-    pool_sql = '''UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE placeId=%s and userId=%s or userId=%s and deletedAt is NULL;'''
+    pool_sql = '''UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE placeId=%s and userId=%s and deletedAt is NULL;
+                UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE userId=%s and deletedAt is NULL;'''
 
     tasks = [
         asyncio.create_task(
