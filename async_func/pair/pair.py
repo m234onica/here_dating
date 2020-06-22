@@ -15,6 +15,22 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s - %(message)s', level=logging.INFO)
 
 
+async def unpaired_list(loop, pool, userId, user_list):
+    recipient_list = []
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            sql = '''SELECT playerB FROM pair WHERE playerA="{userId}" 
+                    UNION ALL SELECT playerA FROM pair WHERE playerB="{userId}";'''
+            await cur.execute(sql.format(userId=userId))
+            data = await cur.fetchall()
+            recipient_list = list.copy(user_list)
+            for d in data:
+                if d[0] in recipient_list:
+                    recipient_list.remove(d[0])
+            recipient_list.remove(userId)
+            return recipient_list
+
+
 async def select(loop, pool):
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
@@ -57,7 +73,7 @@ async def unpair_count(loop, pool):
                     status = 1
                 if int(count[1]) > 56:
                     logging.warning(
-                        "Row {} was cut by GROUP_CONCAT()".format(count[0]))
+                        "PlaceId: {} was cut by GROUP_CONCAT()".format(count[0]))
     return status
 
 
@@ -67,22 +83,26 @@ async def pair(loop, pool):
 
     group = await select(loop, pool)
     for i in range(len(group)):
-
         user = group[i][1].split(",")
 
-        length = len(user)
+        while len(user) >= 2:
+            playerA = user[0]
+            recipient_list = await unpaired_list(loop, pool, playerA, user)
 
-        if length % 2 != 0:
-            length -= 1
-        for id in range(0, length, 2):
-            placeId = group[i][0]
-            playerA = user[id]
-            playerB = user[id+1]
+            if recipient_list != []:
+                placeId = group[i][0]
+                playerB = recipient_list[0]
 
-            user_list.append(playerA)
-            user_list.append(playerB)
+                user_list.append(playerA)
+                user_list.append(playerB)
+                data.append((placeId, playerA, playerB),)
 
-            data.append((placeId, playerA, playerB),)
+                user.remove(playerA)
+                user.remove(playerB)
+
+            else:
+                user.remove(playerA)
+                continue
 
     pair_sql = '''INSERT INTO pair (placeId, playerA, playerB) values (%s, %s, %s);'''
     pool_sql = '''UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE placeId=%s and userId=%s or userId=%s and deletedAt is NULL;'''
