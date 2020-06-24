@@ -72,8 +72,7 @@ async def unpaired_list(loop, pool, userId, user_list):
             for d in data:
                 if d[0] in recipient_list:
                     recipient_list.remove(d[0])
-            recipient_list.remove(userId)
-            return recipient_list
+            return recipient_list[-1]
 
 
 async def reset_pairing(loop, pool, placeId):
@@ -96,16 +95,13 @@ async def pair(loop, pool):
     data = []
 
     group = await select(loop, pool)
-    print("group", group)
     for i in range(len(group)):
         placeId = group[i][0]
         user = group[i][1].split(",")
         while len(user) > 1:
             playerA = user[0]
-            recipient_list = await unpaired_list(loop, pool, playerA, user)
-            if recipient_list != []:
-                playerB = recipient_list[0]
-
+            playerB = await unpaired_list(loop, pool, playerA, user)
+            if playerB != playerA:
                 user_list.append(playerA)
                 user_list.append(playerB)
                 data.append((placeId, playerA, playerB),)
@@ -114,7 +110,6 @@ async def pair(loop, pool):
             user.remove(playerA)
 
         reset_list = await reset_pairing(loop, pool, placeId)
-        print("reset{}, {}".format(i, reset_list))
         while len(reset_list) > 1:
             playerA, playerB = reset_list[:2]
 
