@@ -103,8 +103,8 @@ async def pair(loop, pool):
             playerA = pairing_list[0]
             playerB = await filter_accept_pairing(loop, pool, playerA, pairing_list)
             if playerB != playerA:
-                user_list.append(playerA)
-                user_list.append(playerB)
+                message_list.append(playerA)
+                message_list.append(playerB)
                 data.append((placeId, playerA, playerB),)
 
                 pairing_list.remove(playerB)
@@ -114,8 +114,8 @@ async def pair(loop, pool):
         while len(reset_list) > 1:
             playerA, playerB = reset_list[:2]
 
-            user_list.append(playerA)
-            user_list.append(playerB)
+            message_list.append(playerA)
+            message_list.append(playerB)
             data.append((placeId, playerA, playerB),)
 
             reset_list.remove(playerA)
@@ -133,19 +133,19 @@ async def pair(loop, pool):
     ]
 
     result = await asyncio.gather(*tasks)
-    return user_list
+    return message_list
 
 
 async def main(loop):
     start_time = datetime.now()
 
     pool = await aiomysql.create_pool(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)
-    user_list = []
+    message_list = []
     status = await unpair_count(loop, pool)
-    user_list = await pair(loop, pool)
+    message_list = await pair(loop, pool)
 
     while status == 1:
-        user_list = await pair(loop, pool)
+        message_list = await pair(loop, pool)
         status = await unpair_count(loop, pool)
 
     pool.close()
@@ -154,7 +154,7 @@ async def main(loop):
     sslcontext = ssl.create_default_context(cafile=certifi.where())
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=sslcontext)) as session:
         tasks = []
-        for userId in user_list:
+        for userId in message_list:
             task = asyncio.create_task(message.customer_menu(session, userId))
             tasks.append(task)
         await asyncio.gather(*tasks)
