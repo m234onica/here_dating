@@ -76,25 +76,24 @@ async def unpaired_list(loop, pool, userId, user_list):
             return recipient_list
 
 
-async def last_pairing_time(loop, pool, userId):
-    now_time = datetime.now()
+async def reset_pairing(loop, pool):
+    reset_list = []
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
-            sql = ''' SELECT deletedAt FROM pool WHERE userId="{userId}" ORDER BY deletedAt DESC LIMIT 1;'''
-            await cur.execute(sql.format(userId=userId))
-            deletedAt = await cur.fetchone()
-            if deletedAt[0] is None:
-                return None
-            elif deletedAt[0] <= now_time - timedelta(minutes=Config.RESET_PAIRING_TIME):
-                return True
-            else:
-                return False
+            sql = ''' SELECT userId
+                    FROM (SELECT userId, MAX(deletedAt) AS deletedAt FROM pool WHERE status=1 GROUP BY userId) AS last_pool
+                    WHERE deletedAt <= DATE_SUB(current_time(), INTERVAL {time} MINUTE) 
+                    ORDER BY RAND();'''
+            await cur.execute(sql.format(time=Config.RESET_PAIRING_TIME))
+            data = await cur.fetchall()
+            for d in data:
+                reset_list.append(d[0])
+    return reset_list
 
 
 async def pair(loop, pool):
     user_list = []
     data = []
-    pair_opportunity = 0
 
     group = await select(loop, pool)
     for i in range(len(group)):
@@ -110,12 +109,20 @@ async def pair(loop, pool):
                 user_list.append(playerB)
                 data.append((placeId, playerA, playerB),)
 
-                user.remove(playerA)
                 user.remove(playerB)
-            else:
-                user.remove(playerA)
-                pair_opportunity += 1
-                continue
+            user.remove(playerA)
+
+        reset_list = await reset_pairing(loop, pool)
+        while len(reset_list) > 1:
+            placeId = group[i][0]
+            playerA, playerB = reset_list[:2]
+
+            user_list.append(playerA)
+            user_list.append(playerB)
+            data.append((placeId, playerA, playerB),)
+
+            reset_list.remove(playerA)
+            reset_list.remove(playerB)
 
     pair_sql = '''INSERT INTO pair (placeId, playerA, playerB) values (%s, %s, %s);'''
     pool_sql = '''UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE placeId=%s and userId=%s and deletedAt is NULL;
@@ -129,7 +136,7 @@ async def pair(loop, pool):
     ]
 
     result = await asyncio.gather(*tasks)
-    return user_list, pair_opportunity
+    return user_list
 
 
 async def main(loop):
@@ -138,10 +145,10 @@ async def main(loop):
     pool = await aiomysql.create_pool(host=mysql["host"], port=3306, user=mysql["username"], password=mysql["password"], db=mysql["database"], loop=loop)
     user_list = []
     status = await unpair_count(loop, pool)
-    user_list, pair_opportunity = await pair(loop, pool)
+    user_list = await pair(loop, pool)
 
     while status == 1:
-        user_list, pair_opportunity = await pair(loop, pool)
+        user_list = await pair(loop, pool)
         status = await unpair_count(loop, pool)
 
     pool.close()

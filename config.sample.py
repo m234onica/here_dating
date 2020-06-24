@@ -17,6 +17,7 @@ class Config:
     # delete timing
     EXPIRED_TIME = 2
     END_TIME = 3
+    RESET_PAIRING_TIME = 15
 
     DEBUG = True
     SECRET_KEY = ""
