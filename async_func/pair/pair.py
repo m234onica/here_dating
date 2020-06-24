@@ -76,15 +76,15 @@ async def unpaired_list(loop, pool, userId, user_list):
             return recipient_list
 
 
-async def reset_pairing(loop, pool):
+async def reset_pairing(loop, pool, placeId):
     reset_list = []
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
             sql = ''' SELECT userId
-                    FROM (SELECT userId, MAX(deletedAt) AS deletedAt FROM pool WHERE status=1 GROUP BY userId) AS last_pool
+                    FROM (SELECT userId, MAX(deletedAt) AS deletedAt FROM pool WHERE status=1 and placeId={placeId} GROUP BY userId) AS last_pool
                     WHERE deletedAt <= DATE_SUB(current_time(), INTERVAL {time} MINUTE) 
                     ORDER BY RAND();'''
-            await cur.execute(sql.format(time=Config.RESET_PAIRING_TIME))
+            await cur.execute(sql.format(placeId=placeId, time=Config.RESET_PAIRING_TIME))
             data = await cur.fetchall()
             for d in data:
                 reset_list.append(d[0])
@@ -96,13 +96,14 @@ async def pair(loop, pool):
     data = []
 
     group = await select(loop, pool)
+    print("group", group)
     for i in range(len(group)):
+        placeId = group[i][0]
         user = group[i][1].split(",")
         while len(user) > 1:
             playerA = user[0]
             recipient_list = await unpaired_list(loop, pool, playerA, user)
             if recipient_list != []:
-                placeId = group[i][0]
                 playerB = recipient_list[0]
 
                 user_list.append(playerA)
@@ -112,9 +113,9 @@ async def pair(loop, pool):
                 user.remove(playerB)
             user.remove(playerA)
 
-        reset_list = await reset_pairing(loop, pool)
+        reset_list = await reset_pairing(loop, pool, placeId)
+        print("reset{}, {}".format(i, reset_list))
         while len(reset_list) > 1:
-            placeId = group[i][0]
             playerA, playerB = reset_list[:2]
 
             user_list.append(playerA)
