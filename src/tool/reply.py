@@ -34,7 +34,7 @@ def paired(userId):
 
 def general_pair(userId, text):
     params = {"userId": userId}
-    url = urljoin(Config.BASE_URL, "pair.html")
+    url = urljoin(Config.STATIC_URL, "pair.html")
     payload = build_url(url, params)
 
     return message.push_button(
@@ -65,7 +65,7 @@ def timeout_message(userId):
     pairId = pair.id
 
     params = {"pairId": pairId, "userId": userId}
-    url = urljoin(Config.BASE_URL, "messeage.html")
+    url = urljoin(Config.STATIC_URL, "messeage.html")
     payload = build_url(url, params)
 
     message.delete_menu(userId)
