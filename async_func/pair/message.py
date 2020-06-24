@@ -7,6 +7,7 @@ from config import Config
 from context import Context
 
 FB_API_URL = "https://graph.facebook.com/v6.0"
+url = urljoin(FB_API_URL, "/me/messages")
 params = {"access_token": Config.PAGE_ACCESS_TOKEN}
 
 json_file = Environment(loader=PackageLoader("pair", "static/data"))
@@ -22,8 +23,6 @@ def get_persona_id():
 persona_id = get_persona_id()
 
 async def text(session, userId):
-    url = urljoin(FB_API_URL, "/me/messages")
-
     rendered = template.module.push_text(
         id=userId, persona=persona_id, text=Context.waiting_success[0])
     data = json.loads(rendered)
@@ -31,8 +30,6 @@ async def text(session, userId):
 
 
 async def quick_reply(session, userId):
-    url = urljoin(FB_API_URL, "/me/messages")
-
     rendered = template.module.push_quick_reply(
         id=userId, persona=persona_id, text=Context.waiting_success[1])
     data = json.loads(rendered)

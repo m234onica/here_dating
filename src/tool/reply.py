@@ -7,14 +7,13 @@ from src.context import Context
 from config import Config
 
 
+persona_id = filter.get_persona_id()
 def introduction(userId):
-    persona_id = filter.get_persona_id()
     return message.push_text(
         id=userId, text=Context.introduction, persona=persona_id)
 
 
 def pairing(userId):
-    persona_id = filter.get_persona_id()
     pool = filter.get_active_pool(userId)
     placeId = pool.placeId
     placeName = filter.get_place_name(placeId)
@@ -24,8 +23,6 @@ def pairing(userId):
 
 
 def paired(userId):
-    persona_id = filter.get_persona_id()
-
     message.push_text(id=userId, persona=persona_id,
                       text=Context.waiting_success[0])
     message.push_quick_reply(
@@ -36,7 +33,6 @@ def paired(userId):
 
 
 def general_pair(userId, text):
-    persona_id = filter.get_persona_id()
     params = {"userId": userId}
     url = urljoin(Config.BASE_URL, "pair.html")
     payload = build_url(url, params)
@@ -52,7 +48,6 @@ def general_pair(userId, text):
 
 
 def quick_pair(userId, placeId, words):
-    persona_id = filter.get_persona_id()
     quick_pair_postback = "@".join(["Pair", placeId])
     general_pair_postback = "General_pair"
     return message.push_button(
@@ -66,7 +61,6 @@ def quick_pair(userId, placeId, words):
 
 
 def timeout_message(userId):
-    persona_id = filter.get_persona_id()
     pair = filter.get_pair(userId)
     pairId = pair.id
 
@@ -89,7 +83,6 @@ def timeout_message(userId):
 
 
 def last_message(userId, lastWord, hour, minute, contact):
-    persona_id = filter.get_persona_id()
     recipient_id = filter.get_recipient_id(userId)
 
     message.push_text(userId, persona_id, Context.user_last_message)

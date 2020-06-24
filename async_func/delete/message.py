@@ -8,9 +8,12 @@ from config import Config
 from context import Context
 from func import build_url
 
+FB_API_URL = "https://graph.facebook.com/v6.0"
+url = urljoin(FB_API_URL, "/me/messages")
+params = {"access_token": Config.PAGE_ACCESS_TOKEN}
+
 json_file = Environment(loader=PackageLoader("delete", "static/data"))
 template = json_file.get_template("data.json.jinja")
-FB_API_URL = "https://graph.facebook.com/v6.0"
 
 
 def get_persona_id():
@@ -25,16 +28,13 @@ async def timeout_text(session, userId):
     rendered = template.module.push_text(
         id=userId, persona=persona_id, text=Context.timeout_text[0])
     data = json.loads(rendered)
-
-    url = urljoin(FB_API_URL, "/me/messages")
-    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     return await session.post(url, params=params, json=data)
 
 
 async def timeout_button(session, pairId, userId):
-    params = {"pairId": pairId, "userId": userId}
-    url = urljoin(Config.BASE_URL, "messeage.html")
-    payload = build_url(url, params)
+    web_url = urljoin(Config.BASE_URL, "messeage.html")
+    web_params = {"pairId": pairId, "userId": userId}
+    payload = build_url(web_url, web_params)
 
     rendered = template.module.push_button(
         id=userId,
@@ -48,9 +48,6 @@ async def timeout_button(session, pairId, userId):
     data = json.loads(rendered)
 
     await timeout_text(session, userId)
-
-    url = urljoin(FB_API_URL, "/me/messages")
-    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     return await session.post(url, params=params, json=data)
 
 
@@ -79,8 +76,6 @@ async def pool_button(session, placeId, userId):
     )
     data = json.loads(rendered)
 
-    url = urljoin(FB_API_URL, "/me/messages")
-    params = {"access_token": Config.PAGE_ACCESS_TOKEN}
     return await session.post(url, params=params, json=data)
 
 
