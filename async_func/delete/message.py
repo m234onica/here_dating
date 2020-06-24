@@ -32,7 +32,7 @@ async def timeout_text(session, userId):
 
 
 async def timeout_button(session, pairId, userId):
-    web_url = urljoin(Config.BASE_URL, "messeage.html")
+    web_url = urljoin(Config.STATIC_URL, "message.html")
     web_params = {"pairId": pairId, "userId": userId}
     payload = build_url(web_url, web_params)
 
