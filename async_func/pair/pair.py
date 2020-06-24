@@ -60,19 +60,20 @@ async def unpair_count(loop, pool):
     return status
 
 
-async def unpaired_list(loop, pool, userId, user_list):
-    recipient_list = []
+async def filter_accept_pairing(loop, pool, userId, user_list):
+    accept_pairing_list = []
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
             sql = '''SELECT playerB FROM pair WHERE playerA="{userId}" 
                     UNION ALL SELECT playerA FROM pair WHERE playerB="{userId}";'''
             await cur.execute(sql.format(userId=userId))
-            data = await cur.fetchall()
-            recipient_list = list.copy(user_list)
-            for d in data:
-                if d[0] in recipient_list:
-                    recipient_list.remove(d[0])
-            return recipient_list[-1]
+            has_paired_list = await cur.fetchall()
+
+            accept_pairing_list = list.copy(user_list)
+            for userId in has_paired_list:
+                if userId[0] in accept_pairing_list:
+                    accept_pairing_list.remove(userId[0])
+            return accept_pairing_list[-1]
 
 
 async def reset_pairing(loop, pool, placeId):
@@ -97,17 +98,17 @@ async def pair(loop, pool):
     group = await select(loop, pool)
     for i in range(len(group)):
         placeId = group[i][0]
-        user = group[i][1].split(",")
-        while len(user) > 1:
-            playerA = user[0]
-            playerB = await unpaired_list(loop, pool, playerA, user)
+        pairing_list = group[i][1].split(",")
+        while len(pairing_list) > 1:
+            playerA = pairing_list[0]
+            playerB = await filter_accept_pairing(loop, pool, playerA, pairing_list)
             if playerB != playerA:
                 user_list.append(playerA)
                 user_list.append(playerB)
                 data.append((placeId, playerA, playerB),)
 
-                user.remove(playerB)
-            user.remove(playerA)
+                pairing_list.remove(playerB)
+            pairing_list.remove(playerA)
 
         reset_list = await reset_pairing(loop, pool, placeId)
         while len(reset_list) > 1:
