@@ -36,6 +36,10 @@ def webhook_handle():
     # 接收type=postback的回應
     postback = bothook.postback(messaging)
     if postback != None:
+        if status.is_pairing(userId):
+            return reply.pairing(userId)
+        elif status.is_paired:
+            return reply.paired_warning(userId)
 
         payload = postback["payload"]
         if payload == "Start":
@@ -76,44 +80,40 @@ def webhook_handle():
                 payload = payload.split("@")
                 placeId = payload[1]
                 return api.pair_user(placeId, userId)
-
-
-    # 傳送聊天訊息or附件
-    if status.is_noPair(userId):
-        return reply.general_pair(userId, Context.no_pair_message)
-
-    if status.is_pairing(userId) or status.is_paired(userId):
-        timeout = broken.timeout(userId).json
-        paylaod = timeout["payload"]["status"]
-
-        if paylaod == "pairing":
-            return reply.pairing(userId)
-
-        elif paylaod == "paired":
-            # tpying action
-            recipient_id = filter.get_recipient_id(userId)
-            message.sender_action(recipient_id, "typing_on")
-
-            messages = messaging["message"]
-            text = bothook.texts(messages)
-            attachment = bothook.attachments(messages)
-
-            if text != None:
-                return message.push_text(recipient_id, "", text)
-
-            if attachment != None:
-                attachment_url = bothook.attachments(messages)
-                return message.push_attachment(
-                    recipient_id, "", attachment_url)
-
-        return "Send message"
-
-    # status = {leave, pairing_fail, unsend}
     else:
-        placeId = bothook.referral(messaging)
-        if placeId != None:
-            words = Context.qrcode_introduction
-            placeName = filter.get_place_name(placeId)
-            return reply.quick_pair(userId, placeId, words.format(placeName=placeName))
-        else:
-            return reply.general_pair(userId, Context.no_pair_message)
+        # 傳送聊天訊息or附件
+        if status.is_noPair(userId):
+            placeId = bothook.referral(messaging)
+            if placeId != None:
+                words = Context.qrcode_introduction
+                placeName = filter.get_place_name(placeId)
+                return reply.quick_pair(userId, placeId, words.format(placeName=placeName))
+            else:
+                return reply.general_pair(userId, Context.no_pair_message)
+
+
+        elif status.is_pairing(userId) or status.is_paired(userId):
+            timeout = broken.timeout(userId).json
+            paylaod = timeout["payload"]["status"]
+
+            if paylaod == "pairing":
+                return reply.pairing(userId)
+
+            elif paylaod == "paired":
+                # tpying action
+                recipient_id = filter.get_recipient_id(userId)
+                message.sender_action(recipient_id, "typing_on")
+
+                messages = messaging["message"]
+                text = bothook.texts(messages)
+                attachment = bothook.attachments(messages)
+
+                if text != None:
+                    return message.push_text(recipient_id, "", text)
+
+                if attachment != None:
+                    attachment_url = bothook.attachments(messages)
+                    return message.push_attachment(
+                        recipient_id, "", attachment_url)
+
+            return "Send message"

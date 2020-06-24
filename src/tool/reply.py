@@ -32,6 +32,11 @@ def paired(userId):
     return "paired success"
 
 
+def paired_warning(userId):
+    return message.push_text(id=userId, persona=persona_id,
+                             text=Context.paired_warning)
+
+
 def general_pair(userId, text):
     params = {"userId": userId}
     url = urljoin(Config.STATIC_URL, "pair.html")
