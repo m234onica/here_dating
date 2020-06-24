@@ -6,6 +6,7 @@ from urllib.parse import urljoin, urlencode
 from jinja2 import Environment, PackageLoader
 from config import Config
 from context import Context
+from func import build_url
 
 json_file = Environment(loader=PackageLoader("delete", "static/data"))
 template = json_file.get_template("data.json.jinja")
@@ -31,15 +32,16 @@ async def timeout_text(session, userId):
 
 
 async def timeout_button(session, pairId, userId):
-    web_params = urlencode({"pairId": pairId, "userId": userId})
-    web_url_payload = "?".join(["message.html", web_params])
+    params = {"pairId": pairId, "userId": userId}
+    url = urljoin(Config.BASE_URL, "messeage.html")
+    payload = build_url(url, params)
 
     rendered = template.module.push_button(
         id=userId,
         persona=persona_id,
         text=Context.timeout_text[1],
         types="timeout",
-        payload=[web_url_payload, "Quick_pair"],
+        payload=[payload, "Quick_pair"],
         title=[Context.send_partner_last_message_button,
                Context.pair_again_button]
     )
