@@ -46,6 +46,7 @@ async def unpair_count(loop, pool):
 async def pair(loop, pool):
     message_list = []
     data = []
+    reset_list = []
 
     group = await select.all_pairing(loop, pool)
     for i in range(len(group)):
@@ -60,10 +61,14 @@ async def pair(loop, pool):
                 data.append((placeId, playerA, playerB),)
 
                 pairing_list.remove(playerB)
-            pairing_list.remove(playerA)
 
-        reset_list = await select.reset_pairing(loop, pool, placeId)
+            else:
+                reset = await select.reset_pairing(loop, pool, placeId)
+                if playerA in reset:
+                    reset_list.append(playerA)
+            pairing_list.remove(playerA)
         while len(reset_list) > 1:
+
             playerA, playerB = reset_list[:2]
 
             message_list.append(playerA)
