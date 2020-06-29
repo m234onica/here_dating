@@ -28,8 +28,6 @@ def webhook_handle():
     messaging = data["entry"][0]["messaging"][0]
     userId = messaging["sender"]["id"]
 
-    pair = filter.get_pair(userId)
-
     # 已讀
     message.sender_action(userId, "mark_seen")
 
@@ -110,7 +108,8 @@ def webhook_handle():
         attachment = bothook.attachments(messages)
 
         if text != None:
-            return message.push_text(recipient_id, "", text)
+            push_text = message.push_text(recipient_id, "", text)
+            return push_text
         else:
             attachment_url = bothook.attachments(messages)
             return message.push_attachment(
