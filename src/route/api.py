@@ -111,7 +111,7 @@ def get_status(userId):
         return response(msg="User does not pair.", payload={"status": "noPair"}, code=200)
 
     if status.is_pairing(userId):
-        payload = {"status": "pairing", "pairId": pair.id}
+        payload = {"status": "pairing"}
         return response(msg="User is pairing", payload=payload, code=200)
 
     elif status.is_paired(userId):
