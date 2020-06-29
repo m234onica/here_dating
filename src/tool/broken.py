@@ -54,4 +54,4 @@ def timeout(userId):
         else:
             return response(msg="User is paired", payload={"status": "paired"}, code=200)
 
-    return response(msg="Timeout to breaked pair", payload={"status": "pair_broken"}, code=200)
+    return response(msg="Timeout to breaked pair", payload={"status": "Broken"}, code=200)

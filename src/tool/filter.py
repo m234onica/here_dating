@@ -66,8 +66,11 @@ def get_persona_id():
 
 def get_place_id(userId):
     pair = get_pair(userId)
-    placeId = pair.placeId
-    return placeId
+    if pair == None:
+        return None
+    else:
+        placeId = pair.placeId
+        return placeId
 
 
 def get_place_name(placeId):
