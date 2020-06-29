@@ -8,7 +8,7 @@ def is_new_user(userId):
     pair = filter.get_pair(userId)
     pool = filter.get_pool(userId)
 
-    if pair == None or pool == None:
+    if pair == None and pool == None:
         return True
     else:
         return False
