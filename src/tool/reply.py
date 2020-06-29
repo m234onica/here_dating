@@ -70,7 +70,7 @@ def timeout_message(userId):
     pairId = pair.id
 
     params = {"pairId": pairId, "userId": userId}
-    url = urljoin(Config.STATIC_URL, "messeage.html")
+    url = urljoin(Config.STATIC_URL, "message.html")
     payload = build_url(url, params)
 
     message.delete_menu(userId)
