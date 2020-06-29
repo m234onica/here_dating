@@ -107,9 +107,7 @@ def send_last_word():
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
-    pair = filter.get_pair(userId)
-
-    if pair == None:
+    if status.is_noPair(userId) or status.is_new_user(userId):
         return response(msg="User does not pair.", payload={"status": "noPair"}, code=200)
 
     if status.is_pairing(userId):
