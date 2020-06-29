@@ -107,10 +107,13 @@ def send_last_word():
 
 @api.route("/api/user/status/<userId>", methods=["GET"])
 def get_status(userId):
-    if status.is_noPair(userId) or status.is_new_user(userId):
-        return response(msg="User does not pair.", payload={"status": "noPair"}, code=200)
+    pair = filter.get_pair(userId)
 
-    if status.is_pairing(userId):
+    if status.is_new_user(userId):
+        payload = {"status": "noPair"}
+        return response(msg="User does not pair.", payload=payload, code=200)
+
+    elif status.is_pairing(userId):
         payload = {"status": "pairing"}
         return response(msg="User is pairing", payload=payload, code=200)
 
@@ -118,11 +121,10 @@ def get_status(userId):
         payload = {"status": "paired", "pairId": pair.id}
         return response(msg="User is chating", payload=payload, code=200)
 
+    elif status.is_send_last_message(userId) is False:
+        payload = {"status": "unSend", "pairId": pair.id}
+        return response(msg="Timeout but not send last word.", payload=payload, code=200)
     else:
-        if status.is_send_last_message(userId) is False:
-            payload = {"status": "unSend", "pairId": pair.id}
-            return response(msg="Timeout but not send last word.", payload=payload, code=200)
-
         payload = {"status": "noPair", "pairId": pair.id}
         return response(msg="User does not pair.", payload=payload, code=200)
 
