@@ -99,8 +99,8 @@ def send_last_word():
         else:
             db_session.commit()
 
-        reply.last_message(userId, lastWord, end_time.hour,
-                           end_time.minute, contact)
+        reply.last_message(userId, end_time.hour,
+                           end_time.minute, lastWord, contact)
 
     return response(msg="Send palyer's last word.", payload={"status": "success"}, code=200)
 

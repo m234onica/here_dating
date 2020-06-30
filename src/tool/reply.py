@@ -87,7 +87,7 @@ def timeout_message(userId):
     return "reply of timeout"
 
 
-def last_message(userId, lastWord, hour, minute, contact):
+def last_message(userId, hour, minute, lastWord, contact):
     recipient_id = filter.get_recipient_id(userId)
 
     message.push_text(userId, persona_id, Context.user_last_message)
