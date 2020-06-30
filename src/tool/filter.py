@@ -1,3 +1,6 @@
+from pytz import timezone
+from datetime import datetime
+
 from src.models import Place, Pair, Pool
 from src.tool import message
 from src.func import api_request, expired_time
@@ -40,7 +43,10 @@ def get_expired_pair(time_diff):
 
 def get_pair_end_time(userId):
     pair = get_pair(userId)
-    return pair.deletedAt
+    end_dt = pair.deletedAt
+    local_tz = timezone("Asia/Taipei")
+    local_end_dt = end_dt.astimezone(local_tz)
+    return local_end_dt
 
 
 def get_recipient_id(userId):
