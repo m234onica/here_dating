@@ -8,15 +8,12 @@ async def all_pairing(loop, pool):
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
             group = []
-            get_pool_data = ''' SELECT
-                            placeId,
-                            GROUP_CONCAT(userId ORDER BY rand() SEPARATOR ",") as userId
-                        FROM
-                            pool
-                        WHERE
-                            deletedAt is NULL AND createdAt > CURRENT_TIME() - INTERVAL {} MINUTE
-                        GROUP BY
-                            placeId; '''
+            get_pool_data = ''' SELECT placeId,
+                                GROUP_CONCAT(userId ORDER BY rand() SEPARATOR ",") as userId
+                                FROM pool
+                                WHERE deletedAt is NULL 
+                                AND createdAt > CURRENT_TIME() - INTERVAL {} MINUTE
+                                GROUP BY placeId; '''
             await cur.execute(get_pool_data.format(Config.EXPIRED_TIME))
             return await cur.fetchall()
 
@@ -41,7 +38,7 @@ async def reset_pairing(loop, pool, placeId):
     reset_list = []
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
-            sql = ''' SELECT userId
+            sql = '''SELECT userId
                     FROM (SELECT userId, MAX(deletedAt) AS deletedAt FROM pool WHERE status=1 and placeId={placeId} GROUP BY userId) AS last_pool
                     WHERE deletedAt <= DATE_SUB(current_time(), INTERVAL {time} MINUTE) 
                     ORDER BY RAND();'''

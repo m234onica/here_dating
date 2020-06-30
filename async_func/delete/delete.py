@@ -28,10 +28,9 @@ async def update(loop, sql, data, pool):
 async def select_pool(loop, pool):
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
-            sql = '''
-                        SELECT id, placeId, userId
-                        FROM pool
-                        WHERE deletedAt is NULL AND createdAt <= CURRENT_TIME() - INTERVAL {} MINUTE;'''
+            sql = '''SELECT id, placeId, userId
+                    FROM pool
+                    WHERE deletedAt IS NULL AND createdAt <= CURRENT_TIME() - INTERVAL {} MINUTE;'''
 
             await cur.execute(sql.format(Config.EXPIRED_TIME))
             return await cur.fetchall()
@@ -43,11 +42,11 @@ async def select_pair(loop, pool):
             pair_expired_sql = ''' 
                         SELECT id, playerA
                         FROM pair
-                        WHERE deletedAt is NULL AND createdAt <= CURRENT_TIME() - INTERVAL 3 MINUTE
+                        WHERE deletedAt IS NULL AND createdAt <= CURRENT_TIME() - INTERVAL 3 MINUTE
                         UNION ALL
                         SELECT id, playerB
                         FROM pair
-                        WHERE deletedAt is NULL AND createdAt <= CURRENT_TIME() - INTERVAL 3 MINUTE;'''
+                        WHERE deletedAt IS NULL AND createdAt <= CURRENT_TIME() - INTERVAL 3 MINUTE;'''
             await cur.execute(pair_expired_sql.format(Config.END_TIME, Config.END_TIME))
             pair_list = await cur.fetchall()
             return [list(row) for row in pair_list]
@@ -71,8 +70,8 @@ async def delete(loop, pool):
         pair_id.append(data[0])
     pair_id = list(set(pair_id))
 
-    delete_pool_sql = '''UPDATE pool set deletedAt=CURRENT_TIME() WHERE id=%s and deletedAt is NULL;'''
-    delete_pair_sql = '''UPDATE pair set deletedAt=CURRENT_TIME(), status='end' WHERE id=%s and deletedAt is NULL;'''
+    delete_pool_sql = '''UPDATE pool SET deletedAt=CURRENT_TIME() WHERE id=%s AND deletedAt IS NULL;'''
+    delete_pair_sql = '''UPDATE pair SET deletedAt=CURRENT_TIME(), status='end' WHERE id=%s AND deletedAt IS NULL;'''
 
     tasks = [
         asyncio.create_task(
