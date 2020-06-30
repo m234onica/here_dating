@@ -111,7 +111,10 @@ def webhook_handle():
             push_text = message.push_text(recipient_id, "", text)
             return push_text
         else:
+            push_attachment = []
             attachment_url = bothook.attachments(messages)
-            return message.push_attachment(
-                recipient_id, "", attachment_url)
-
+            for url in attachment_url:
+                response = message.push_attachment(
+                    recipient_id, "", url)
+                push_attachment.append(response)
+            return json.dumps(push_attachment)

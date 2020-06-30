@@ -21,7 +21,11 @@ def texts(message):
 
 
 def attachments(message):
+    url_list = []
     if "attachments" in message.keys():
-        return message["attachments"][0]["payload"]["url"]
+        file_url = message["attachments"]
+        for data in file_url:
+            url_list.append(data["payload"]["url"])
+        return url_list
     else:
         return None
