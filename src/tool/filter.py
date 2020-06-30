@@ -44,9 +44,7 @@ def get_expired_pair(time_diff):
 def get_pair_end_time(userId):
     pair = get_pair(userId)
     end_dt = pair.deletedAt
-    local_tz = timezone("Asia/Taipei")
-    local_end_dt = end_dt.astimezone(local_tz)
-    return local_end_dt
+    return end_dt.astimezone(timezone("Asia/Taipei"))
 
 
 def get_recipient_id(userId):
