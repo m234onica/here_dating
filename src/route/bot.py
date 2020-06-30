@@ -27,11 +27,10 @@ def webhook_handle():
 
     messaging = data["entry"][0]["messaging"][0]
     userId = messaging["sender"]["id"]
+    postback = bothook.postback(messaging)
 
     # 已讀
     message.sender_action(userId, "mark_seen")
-
-    postback = bothook.postback(messaging)
 
     if status.is_new_user(userId) or status.is_noPair(userId):
         if postback == None:
@@ -62,6 +61,9 @@ def webhook_handle():
 
         elif payload == "General_pair":
             return reply.general_pair(userId, Context.general_pair_message)
+
+        elif payload == "Leave":
+            return api.leave(userId)
 
         # 再次進行配對
         else:
@@ -110,6 +112,7 @@ def webhook_handle():
         if text != None:
             push_text = message.push_text(recipient_id, "", text)
             return push_text
+
         else:
             push_attachment = []
             attachment_url = bothook.attachments(messages)
