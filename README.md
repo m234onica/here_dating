@@ -33,23 +33,9 @@
     PRIMARY KEY( id )
 ```
 
-### requirements.txt
-```
-aiohttp==3.6.2
-aiomysql==0.0.20
-Flask==1.1.1
-Flask-Cors==3.0.8
-Jinja2==2.10.3
-PyMySQL==0.9.2
-requests==2.22.0
-SQLAlchemy==1.3.12
-urllib3==1.25.8
-Werkzeug==0.16.0
-```
-
 ### How it works
 ```
-|- async
+|- async_func
     |- delete
         |- message.py           # async post nessebger api
         |- delete.py            # delete pair
@@ -57,6 +43,7 @@ Werkzeug==0.16.0
     |- pair
         |- message.py           # async post nessebger api
         |- pair.py              # pairing user
+        |- select.py            # select data
 
     |- main.py                  # GCP main function
     |- run.py                   # local main function
@@ -87,74 +74,92 @@ Werkzeug==0.16.0
 ```
 
 ### Local build
-1. Messenger developers settings
-    - 建立 Messener application
-    - 新增產品 Webhooks and Messenger
-    - 進入 Messenger settings 設定粉專以取得 PAGE_ACCESS_TOKEN 
-    - 設定 webhooks 回傳欄位： messages, messaging_postbacks, messaging_referrals, message_reactions
-    - 將 PAGE_ACCESS_TOKEN 放到 config.py PAGE_ACCESS_TOKEN
-    - 將應用程式編號放到 config.py APP_ID 和 config.js APP_ID
 
-2. Clone here_dating
-    ```
-    $ pip install -r requirements.txt
-    $ npm install
+前置作業：run ngrok
+
     $ ngrok http 5000
 
-    # config.sample.py 記得加上變數，並改名 config.py
-    # /src/static/js/config.sample.js 記得加上變數，並改名 config.js
-    # 將ngrok URL 放到 config.py & config.js => BASE_URL
+**Build here_dating**
 
-    $ gulp
-    # 產生 production static file
-    ```
+    $ git clone git@github.com:momokatw/here-dating.git
 
-3. 將產生的 static 放上 GCP Storage
-    - 建立新的 bucket （權限設為公開）
-    - upload static
-    - create new folder `image`: 放置圖檔 (robo.png & user_pic.png)
-    - 將URL 放到 `config.py STATIC_URL`
-    ```
-    |- here_dating
-        |- image
-            |- robo.png
-            |- user_pic.png
-        |- static
-            |- ...
-    ```
+    # create virtual env and active
+    $ pip install -r requirements.txt
 
-4. Start here_dating
-    ```
-    # Here dating main funcion
+    $ cp config.sample.py config.py
+    # Edit config: mysql, SECRET_KEY, PAGE_VERIFY_TOKEN, PAGE_ACCESS_TOKEN(從messenger取得，稍後解釋)
+    # BASE_URL: 將 ngrok url 放上
+    # STATIC_URL: 將前端的 url 放上
+
     $ python3 run.py
 
-    # Pairing's main funcion
-    $ python3 pairing_pool/run.py
+**Messenger developers settings**
+- 建立 Messener application
+- 新增產品 Webhooks, Messenger
+- Messenger
+    - 連結粉專
+    - 產生權杖 access token（並將此 token 放上 `config.py` PAGE_ACCESS_TOKEN）
+    - 新增回呼網址：放上 `ngrok url + /webhook` (eg. `https://xxx.ngrok/webhook`)，以及 PAGE_VERIFY_TOKEN，驗證並儲存
+    - 新增訂閱欄位
+        - messages
+        - messaging_postbacks
+        - messaging_referrals
+        - message_reactions
+- 到這裡就能去messenger bot測試訊息了。
 
-    # Delete pairs main function
-    $ python3 delete/delete.py
-    ```
-2. Messenger settings
-    - 編輯 Webhooks URL `{{ BASE_URL }} + /webhook`
-    - Verify token (必須和 `config.py PAGE_VERIFY_TOKEN` 一致)
+**Build Static file**
+
+    $ npm install gulp -g
+    $ npm install
+    $ cp src/static/js/config.sample.js src/static/js/config.js
+    # edit config.js
+    # APP_ID: 應用程式編號，在Messenger developers settings 可取得
+    # BASE_URL: 放上ngrok url
+
+    $ mkdir static
+    $ gulp
+
+- 想在本地端測試static file的話，修改flask template_folder & static_folder 路徑即可
+
+**Bulid async_here_dating**
+
+    $ cp config.py async_func/config.py
+    $ python3 async_func/run.py
+
+**將產生的 static 放上 GCP Storage**
+
+- 建立新的 bucket （權限設為公開）
+- upload `./static/**`
+- create new folder `image`: 放置圖檔 (robo.png & user_pic.png)
+- 將URL 放到 `config.py STATIC_URL`
+```
+|- here_dating
+    |- image
+        |- robo.png
+        |- user_pic.png
+    |- static
+        |- ...
+```
+
+**Start here_dating**
+```
+# Here dating main funcion
+$ python3 run.py
+
+# async's main funcion
+$ python3 async_func/run.py
+```
 
 ### Deploy to GCP
 1. Cloud functions
     - here_dating
         - trigger: HTTP
         - 用途：作為Here dating webhook，記得將url放到`config.py BASE_URL`
-    - pairing_here_pairing
+    - async_here_dating
         - trigger: Cloud Pub/Sub
-        - topic: pairing_here_dating
-    - delete_here_pairing
-        - trigger: Cloud Pub/Sub
-        - topic: delete_here_dating
-3. Cloud Scheduler
-    - delete_here_dating
-        - Frequency: one minutes (* * * *)
-        - Timezone: taipei Standard Time
-        - Target: Pub/Sub
-    - pairing_here_dating
+        - topic: async_here_dating
+2. Cloud Scheduler
+    - async_here_dating
         - Frequency: one minutes (* * * *)
         - Timezone: taipei Standard Time
         - Target: Pub/Sub
