@@ -1,6 +1,7 @@
 
 var gulp = require("gulp"),
     rev = require("gulp-rev"),
+    imagemin = require("gulp-imagemin"),
     clean = require("gulp-clean"),
     revCollector = require("gulp-rev-collector"),
     fs = require("fs");
@@ -23,7 +24,7 @@ gulp.task('compile', function (done) {
                 pair: data.pair
             }
         }))
-        .pipe(gulp.dest("./static/templates"))
+        .pipe(gulp.dest("./static"))
 
     gulp.src("./src/templates/message.html")
         .pipe(twig({
@@ -31,7 +32,7 @@ gulp.task('compile', function (done) {
                 message: data.message
             }
         }))
-        .pipe(gulp.dest("./static/templates"))
+        .pipe(gulp.dest("./static"))
 
     gulp.src("./src/templates/rule.html")
         .pipe(twig(
@@ -41,7 +42,7 @@ gulp.task('compile', function (done) {
                 }
             }
         ))
-        .pipe(gulp.dest("./static/templates"))
+        .pipe(gulp.dest("./static"))
 
     done();
     return "done"
@@ -69,7 +70,14 @@ gulp.task("replace", function () {
         .pipe(revCollector({
             replaceReved: true
         }))
-        .pipe(gulp.dest("./static/templates"));
+        .pipe(gulp.dest("./static"));
+})
+
+gulp.task("imagemin", function () {
+    return gulp.src("./src/static/images/**/*")
+        .pipe(imagemin())
+        .pipe(gulp.dest("./static/images/"))
+
 })
 
 gulp.task("webserver", function () {
@@ -84,7 +92,8 @@ gulp.task("webserver", function () {
     }, 1000);
 })
 
-gulp.task('default', gulp.series("clean", "compile", "revsion", "replace", function (done) {
+
+gulp.task('default', gulp.series("clean", "compile", "revsion", "replace", "imagemin", function (done) {
     done();
 }));
 
