@@ -72,41 +72,27 @@
 
 |- gulpfile.js                  # build front-end
 ```
+### Toolkit
+    python3.7
+    pip3
+    npm
+    node
+    gulp
 
 ### Local build
 
-前置作業：run ngrok
-
+**前置作業**
+1. run ngrok
+    ```
     $ ngrok http 5000
+    ```
 
-**Build here_dating**
-
-    $ git clone git@github.com:momokatw/here-dating.git
-
-    # create virtual env and active
-    $ pip install -r requirements.txt
-
-    $ cp config.sample.py config.py
-    # Edit config: mysql, SECRET_KEY, PAGE_VERIFY_TOKEN, PAGE_ACCESS_TOKEN(從messenger取得，稍後解釋)
-    # BASE_URL: 將 ngrok url 放上
-    # STATIC_URL: 將前端的 url 放上
-
-    $ python3 run.py
-    # 此時 會出現錯誤無法執行。因為 PAGE_ACCESS_TOKEN 未填寫
-
-**Messenger developers settings** 
-1. 建立 Messener application
-2. 新增產品 Webhooks, Messenger
-3. Messenger
-    - 新增粉專
-    - 產生權杖 access token（並將此 token 放上 `config.py` PAGE_ACCESS_TOKEN，此時 here_dating 可以順利運行）
-    - 新增回呼網址：放上 `ngrok url + /webhook` (eg. `https://xxx.ngrok/webhook`)，以及 PAGE_VERIFY_TOKEN，驗證並儲存
-    - 新增訂閱欄位
-        - messages
-        - messaging_postbacks
-        - messaging_referrals
-        - message_reactions
-- 到這裡就能去messenger bot測試訊息了。
+2. Messenger developers settings
+    - 建立 Messener application
+    - 新增產品 Webhooks, Messenger
+    - Messenger
+        - 新增粉專
+        - 產生權杖 access token
 
 **Build Static file**
 
@@ -120,19 +106,11 @@
     $ mkdir static
     $ gulp
 
-- 想在本地端測試static file的話，修改flask template_folder & static_folder 路徑即可
-
-**Bulid async_here_dating**
-
-    $ cp config.py async_func/config.py
-    $ python3 async_func/run.py
-
 **將產生的 static 放上 GCP Storage**
 
 - 建立新的 bucket （權限設為公開）
 - upload `./static/**`
 - create new folder `image`: 放置圖檔 (robo.png & user_pic.png)
-- 將URL 放到 `config.py STATIC_URL`
 ```
 |- here_dating
     |- image
@@ -142,15 +120,36 @@
         |- ...
 ```
 
-**Start here_dating**
+**Build here_dating**
 
-```
-# Here dating main funcion
-$ python3 run.py
+    $ git clone git@github.com:momokatw/here-dating.git
 
-# async's main funcion
-$ python3 async_func/run.py
-```
+    # create virtual env and active
+    $ pip3 install -r requirements.txt
+
+    $ cp config.sample.py config.py
+    # Edit config: mysql, SECRET_KEY, PAGE_VERIFY_TOKEN
+    # PAGE_ACCESS_TOKEN: Messenger's access token
+    # BASE_URL: ngrok url
+    # STATIC_URL: GCP storage's url + /here_dating/static/templates
+
+    $ python3 run.py
+
+
+**Verify Messenger Webhook**
+
+- Messenger settings
+    - 新增回呼網址：放上 `ngrok url + /webhook` (eg. `https://xxx.ngrok/webhook`)，以及 PAGE_VERIFY_TOKEN，驗證並儲存
+    - 新增訂閱欄位
+        - messages
+        - messaging_postbacks
+        - messaging_referrals
+        - message_reactions
+
+**Bulid async_here_dating**
+
+    $ cp config.py async_func/config.py
+    $ python3 async_func/run.py
 
 ### Deploy to GCP
 
