@@ -17,8 +17,8 @@
     playerB             VARCHAR( 100 ),
     createdAt           DATETIME        	NOT NULL    DEFAULT  CURRENT_TIMESTAMP,
     deletedAt           DATETIME,                                -- 結束配對的時間
-    playerA_lastedAt    DATETIME,                                -- plyaerA留遺言的時間
-    playerB_lastedAt    DATETIME,                                -- plyaerB留遺言的時間
+    playerA_lastedAt    DATETIME,                                -- plyaerA 留遺言的時間
+    playerB_lastedAt    DATETIME,                                -- plyaerB 留遺言的時間
     status              ENUM("wait_expired", "leave", "end"),    -- 僅供數據分析使用
     PRIMARY KEY( id )
 ```
@@ -100,8 +100,8 @@
     $ npm install
     $ cp src/static/js/config.sample.js src/static/js/config.js
     # edit config.js
-    # APP_ID: 應用程式編號，在Messenger developers settings 可取得
-    # BASE_URL: 放上ngrok url
+    # APP_ID: 應用程式編號，在 Messenger developers settings 可取得
+    # BASE_URL: 放上 ngrok url
 
     $ mkdir static
     $ gulp
@@ -146,6 +146,17 @@
         - messaging_referrals
         - message_reactions
 
+**Test in Local**
+
+基於 Google Storage 有不可抗力的快取因素，在本地端測試 webview 會比較快速。
+```
+# src/__init__.py
+    app = Flask(__name__, template_folder="../static/templates", static_folder="../static/js")
+
+# config.py
+    STATIC_URL 改成 ngrok url (同 BASE_URL)
+```
+
 **Bulid async_here_dating**
 
     $ cp config.py async_func/config.py
@@ -156,7 +167,7 @@
 1. Cloud functions
     - here_dating
         - trigger: HTTP
-        - 用途：作為Here dating webhook，記得將url放到`config.py BASE_URL`
+        - 用途：作為 Here dating webhook，記得將 url 放到 `config.py BASE_URL`
     - async_here_dating
         - trigger: Cloud Pub/Sub
         - topic: async_here_dating
