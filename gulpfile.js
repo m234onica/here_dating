@@ -51,7 +51,8 @@ gulp.task("revsion", function () {
     return gulp.src(
         [
             "./src/static/**/*.css",
-            "./src/static/**/*.js",
+            "./src/static/**/config.js",
+            "./src/static/**/extension.js",
             "./src/static/rev/*.json"
         ],
     )
