@@ -20,9 +20,6 @@ class Config:
     RESET_PAIRING_TIME = 15
 
     DEBUG = True
-    SECRET_KEY = ""
-    FLASK_APP = os.environ.get("FLASK_APP")
-    FLASK_ENV = os.environ.get("FLASK_ENV")
 
     # here_dating messenger settings
     PAGE_VERIFY_TOKEN = ""
