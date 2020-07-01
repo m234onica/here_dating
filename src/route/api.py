@@ -109,7 +109,7 @@ def send_last_word():
 def get_status(userId):
     pair = filter.get_pair(userId)
 
-    if status.is_new_user(userId):
+    if status.is_new_user(userId) or status.is_noPair(userId):
         payload = {"status": "noPair"}
         return response(msg="User does not pair.", payload=payload, code=200)
 
