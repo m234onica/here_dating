@@ -92,13 +92,14 @@
     # STATIC_URL: 將前端的 url 放上
 
     $ python3 run.py
+    # 此時 會出現錯誤無法執行。因為 PAGE_ACCESS_TOKEN 未填寫
 
-**Messenger developers settings**
-- 建立 Messener application
-- 新增產品 Webhooks, Messenger
-- Messenger
-    - 連結粉專
-    - 產生權杖 access token（並將此 token 放上 `config.py` PAGE_ACCESS_TOKEN）
+**Messenger developers settings** 
+1. 建立 Messener application
+2. 新增產品 Webhooks, Messenger
+3. Messenger
+    - 新增粉專
+    - 產生權杖 access token（並將此 token 放上 `config.py` PAGE_ACCESS_TOKEN，此時 here_dating 可以順利運行）
     - 新增回呼網址：放上 `ngrok url + /webhook` (eg. `https://xxx.ngrok/webhook`)，以及 PAGE_VERIFY_TOKEN，驗證並儲存
     - 新增訂閱欄位
         - messages
@@ -142,6 +143,7 @@
 ```
 
 **Start here_dating**
+
 ```
 # Here dating main funcion
 $ python3 run.py
@@ -151,6 +153,7 @@ $ python3 async_func/run.py
 ```
 
 ### Deploy to GCP
+
 1. Cloud functions
     - here_dating
         - trigger: HTTP
