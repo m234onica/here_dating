@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, json
 
-from src.db import init_db, db_session
+from src.db import db_session
 from src.models import Place, Pair
 from src.route import api
 from src.tool import message, filter, reply, broken, status, bothook
@@ -9,7 +9,6 @@ from config import Config
 
 
 bot = Blueprint("bot", __name__)
-init_db()
 
 
 @bot.route("/webhook", methods=["GET"])

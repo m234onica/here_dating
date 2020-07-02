@@ -2,7 +2,7 @@ import logging
 from flask import Blueprint, render_template, jsonify, request, g, redirect, flash, url_for, make_response
 from datetime import datetime, timedelta
 
-from src.db import init_db, db_session
+from src.db import db_session
 from src.models import Place, Pair, Pool, status_Enum
 from src.func import response
 from src.tool import message, filter, reply, status
@@ -14,7 +14,6 @@ logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(leve
 
 
 api = Blueprint("api", __name__)
-init_db()
 
 
 @api.route("/api/place/<placeId>", methods=["GET"])

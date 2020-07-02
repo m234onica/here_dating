@@ -3,7 +3,8 @@ import werkzeug.datastructures
 from flask_cors import CORS
 
 from src import create_app
-from src.db import db_session
+from src.db import init_db, db_session
+from src.models import Place
 from src.tool import message
 
 app = create_app()
@@ -14,6 +15,21 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 @app.teardown_request
 def session_clear(exception):
     db_session.remove()
+
+
+@app.before_first_request
+def seed():
+    init_db()
+    place_count = Place.query.filter().count()
+    if place_count == 0:
+        db_session.add(Place(
+            id="1111",
+            name="木木卡的黑店",
+            longitude="25.066765",
+            latitude="121.526336"
+        ))
+        db_session.commit()
+
 
 def main(request):
     print(request)
