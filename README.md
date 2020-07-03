@@ -115,11 +115,12 @@
 - create new folder `image`: 放置圖檔 (robo.png & user_pic.png)
 ```
 |- here_dating
-    |- image
-        |- robo.png
-        |- user_pic.png
     |- static
-        |- ...
+        |- *.html
+        |- /js /rev /css
+        |- image
+            |- robo.png
+            |- user_pic.png
 ```
 
 **Build here_dating**
@@ -133,7 +134,7 @@
     # Edit config: mysql, SECRET_KEY, PAGE_VERIFY_TOKEN
     # PAGE_ACCESS_TOKEN: Messenger's access token
     # BASE_URL: ngrok url
-    # STATIC_URL: GCP storage's url + /here_dating/static/templates
+    # STATIC_URL: GCP storage's url + /here_dating/static
 
     $ python3 run.py
 
@@ -153,7 +154,7 @@
 基於 Google Storage 有不可抗力的快取因素，在本地端測試 webview 會比較快速。
 ```
 # src/__init__.py
-    app = Flask(__name__, template_folder="../static/templates", static_folder="../static/js")
+    app = Flask(__name__, template_folder="../static", static_folder="../static/js")
 
 # config.py
     STATIC_URL 改成 ngrok url (同 BASE_URL)
