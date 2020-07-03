@@ -33,6 +33,14 @@ def webhook_handle():
 
     if status.is_new_user(userId) or status.is_noPair(userId):
         if postback == None:
+            placeId = bothook.referral(messaging)
+            # Qrcode
+            if placeId != None:
+                words = Context.qrcode_introduction
+                placeName = filter.get_place_name(placeId)
+                return reply.quick_pair(userId, placeId, words.format(placeName=placeName),
+                                        Context.qrcode_pair_button, Context.qrcode_other_button)
+            # general
             return reply.general_pair(userId, Context.no_pair_message)
 
         payload = postback["payload"]
