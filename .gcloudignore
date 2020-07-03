@@ -13,6 +13,7 @@
 .git
 .env
 .vscode
+.env.sample
 
 migration
 alembic.ini
@@ -25,10 +26,14 @@ src/templates/*
 
 node_modules
 /static
+/doc
 gulpfile.js
 package.json
 package-lock.json
 cors-json-file.json
+
+Pipfile
+Pipfile.lock
 
 test.sql
 here.sql
