@@ -3,7 +3,7 @@
 ### Tables
 - place
 ```
-    id                  VARCHAR( 50 )       NOT NULL,
+    id                  CHAR( 4 )           NOT NULL,
     name                VARCHAR( 50 )       NOT NULL,
     longitude           DECIMAL( 10, 6 )    NOT NULL,   -- 經度
     latitude            DECIMAL( 10, 6 )    NOT NULL,   -- 緯度
@@ -12,7 +12,7 @@
 - pair
 ```
     id                  INT                 NOT NULL    AUTO_INCREMENT,
-    placeId             VARCHAR( 50 )       NOT NULL,
+    placeId             CHAR( 4 )           NOT NULL,
     playerA             VARCHAR( 100 )      NOT NULL,
     playerB             VARCHAR( 100 ),
     createdAt           DATETIME        	NOT NULL    DEFAULT  CURRENT_TIMESTAMP,
@@ -25,7 +25,7 @@
 - pool
 ```
     id                  INT                 NOT NULL    AUTO_INCREMENT,
-    placeId             VARCHAR( 50 )       NOT NULL,
+    placeId             CHAR( 4 )           NOT NULL,
     userId              VARCHAR( 100 )      NOT NULL,
     createdAt           DATETIME        	NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     deletedAt           DATETIME,                                                   
@@ -35,6 +35,7 @@
 
 ### How it works
 ```
+|- migration                    # alembic
 |- async_func
     |- delete
         |- message.py           # async post nessebger api
@@ -78,6 +79,7 @@
     npm
     node
     gulp
+    alembic
 
 ### Local build
 
@@ -179,3 +181,20 @@
 
 ### Others
 - Gulpfile.js: 若有改動前端，記得用 `gulp` 來處理模板。
+- alembic
+    ```
+    ./alembic.ini
+    # edit sqlalchemy.url
+
+    # 修改完 models.py 後產生新 alembic 腳本
+    $ alembic revision --autogenerate -m "script_title"
+
+    # 升級 alembic 腳本
+    $ alembic upgrade head
+
+    # 降級 alembic 腳本至上一版
+    $ alembic downgrade -1
+
+    # 查看當前 alembic 腳本
+    $ alembic current
+    ```
