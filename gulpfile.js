@@ -1,17 +1,9 @@
 
 var gulp = require("gulp"),
-    rev = require("gulp-rev"),
     imagemin = require("gulp-imagemin"),
-    clean = require("gulp-clean"),
-    revCollector = require("gulp-rev-collector"),
     fs = require("fs");
 
-var webserver = require("gulp-webserver");
-
-gulp.task("clean", function () {
-    return gulp.src("./static/")
-        .pipe(clean())
-})
+var version = "static-v1";
 
 gulp.task('compile', function (done) {
     "use strict";
@@ -24,7 +16,7 @@ gulp.task('compile', function (done) {
                 pair: data.pair
             }
         }))
-        .pipe(gulp.dest("./static"))
+        .pipe(gulp.dest("./doc/" + version))
 
     gulp.src("./src/templates/message.html")
         .pipe(twig({
@@ -32,7 +24,7 @@ gulp.task('compile', function (done) {
                 message: data.message
             }
         }))
-        .pipe(gulp.dest("./static"))
+        .pipe(gulp.dest("./doc/" + version))
 
     gulp.src("./src/templates/rule.html")
         .pipe(twig(
@@ -42,47 +34,36 @@ gulp.task('compile', function (done) {
                 }
             }
         ))
-        .pipe(gulp.dest("./static"))
+        .pipe(gulp.dest("./doc/" + version))
 
     done();
     return "done"
 })
 
-gulp.task("revsion", function () {
+
+gulp.task("pack_js_css", function() {
     return gulp.src(
         [
             "./src/static/**/*.css",
             "./src/static/**/config.js",
             "./src/static/**/extension.js",
-            "./src/static/rev/*.json"
-        ],
-    )
-        .pipe(rev())
-        .pipe(gulp.dest('static/'))
-        .pipe(rev.manifest())
-        .pipe(gulp.dest('static/rev/'))
-
+        ]
+    ).pipe(gulp.dest("./doc/" + version))
 })
 
-
-gulp.task("replace", function () {
-    return gulp.src(["static/rev/*.json", "static/*.html"])
-        .pipe(revCollector({
-            replaceReved: true
-        }))
-        .pipe(gulp.dest("./static"));
-})
 
 gulp.task("imagemin", function () {
     return gulp.src("./src/static/images/**/*")
         .pipe(imagemin())
-        .pipe(gulp.dest("./static/images/"))
+        .pipe(gulp.dest("./doc/" + version + "/images/"))
 
 })
 
+
+
 gulp.task("webserver", function () {
     setTimeout(function () {
-        gulp.src("static")                   // 預設開啟路徑
+        gulp.src("doc")                   // 預設開啟路徑
             .pipe(webserver({                     // 啟動 webserver
                 livereload: true,                   // Livereload 的功能
                 open: false,                        // 是否自動開啟 瀏覽器
@@ -93,7 +74,7 @@ gulp.task("webserver", function () {
 })
 
 
-gulp.task('default', gulp.series("clean", "compile", "revsion", "replace", "imagemin", function (done) {
+gulp.task('default', gulp.series("compile", "pack_js_css", "imagemin", function (done) {
     done();
 }));
 

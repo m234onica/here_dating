@@ -5,7 +5,7 @@ node_modules
 .env
 Pipfile.lock
 
-/static
+/doc
 
 /alembic.ini
 config.py
