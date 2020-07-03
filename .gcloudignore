@@ -14,17 +14,24 @@
 .env
 .vscode
 
+migration
+alembic.ini
+
+async_func
+
 src/static/js/*
 src/static/css/*
 src/templates/*
 
-./static
 node_modules
+/static
+gulpfile.js
+package.json
+package-lock.json
+cors-json-file.json
 
-./async
-
+test.sql
 here.sql
 README.md
 config.sample.py
-package-lock.json
 run.py
