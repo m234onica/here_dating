@@ -62,21 +62,7 @@ async def pair(loop, pool):
 
                 pairing_list.remove(playerB)
 
-            else:
-                reset = await select.reset_pairing(loop, pool, placeId)
-                if playerA in reset:
-                    reset_list.append(playerA)
             pairing_list.remove(playerA)
-        while len(reset_list) > 1:
-
-            playerA, playerB = reset_list[:2]
-
-            message_list.append(playerA)
-            message_list.append(playerB)
-            data.append((placeId, playerA, playerB),)
-
-            reset_list.remove(playerA)
-            reset_list.remove(playerB)
 
     pair_sql = '''INSERT INTO pair (placeId, playerA, playerB) values (%s, %s, %s);'''
     pool_sql = '''UPDATE pool set deletedAt=CURRENT_TIME(), status=1 WHERE placeId=%s and userId=%s and deletedAt is NULL;

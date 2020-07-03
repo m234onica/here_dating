@@ -22,9 +22,9 @@ async def filter_accept_pairing(loop, pool, userId, user_list):
     accept_pairing_list = []
     async with pool.acquire() as conn:
         async with conn.cursor() as cur:
-            sql = '''SELECT playerB FROM pair WHERE playerA="{userId}" 
-                    UNION ALL SELECT playerA FROM pair WHERE playerB="{userId}";'''
-            await cur.execute(sql.format(userId=userId))
+            sql = '''SELECT playerB FROM pair WHERE playerA="{userId}" AND deletedAt >= DATE_SUB(now(), INTERVAL {time} MINUTE) 
+                    UNION ALL SELECT playerA FROM pair WHERE playerB="{userId}" AND deletedAt >= DATE_SUB(now(), INTERVAL {time} MINUTE); '''
+            await cur.execute(sql.format(userId=userId, time=Config.RESET_PAIRING_TIME))
             has_paired_list = await cur.fetchall()
 
             accept_pairing_list = list.copy(user_list)
@@ -32,18 +32,3 @@ async def filter_accept_pairing(loop, pool, userId, user_list):
                 if userId[0] in accept_pairing_list:
                     accept_pairing_list.remove(userId[0])
             return accept_pairing_list[-1]
-
-
-async def reset_pairing(loop, pool, placeId):
-    reset_list = []
-    async with pool.acquire() as conn:
-        async with conn.cursor() as cur:
-            sql = '''SELECT userId
-                    FROM (SELECT userId, MAX(deletedAt) AS deletedAt FROM pool WHERE status=1 and placeId={placeId} GROUP BY userId) AS last_pool
-                    WHERE deletedAt <= DATE_SUB(current_time(), INTERVAL {time} MINUTE) 
-                    ORDER BY RAND();'''
-            await cur.execute(sql.format(placeId=placeId, time=Config.RESET_PAIRING_TIME))
-            data = await cur.fetchall()
-            for d in data:
-                reset_list.append(d[0])
-    return reset_list
