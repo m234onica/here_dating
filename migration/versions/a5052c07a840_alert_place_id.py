@@ -27,6 +27,7 @@ def upgrade():
                     existing_type=sa.String(length=50),
                     type_=sa.CHAR(length=4),
                     primary_key=True,
+                    existing_nullable=False,
                     existing_comment='商店代號')
     op.alter_column('pool', 'placeId',
                     existing_type=sa.String(length=50),
@@ -47,6 +48,7 @@ def downgrade():
                     existing_type=sa.CHAR(length=4),
                     type_=sa.String(length=50),
                     primary_key=True,
+                    existing_nullable=False,
                     existing_comment='商店代號')
     op.alter_column('pair', 'placeId',
                     existing_type=sa.CHAR(length=4),
