@@ -1,6 +1,6 @@
 USE hereDB;
 CREATE TABLE place(
-    id                  VARCHAR( 50 )       NOT NULL,
+    id                  CHAR( 4 )           NOT NULL,
     name                VARCHAR( 50 )       NOT NULL,
     longitude           DECIMAL( 10, 6 )    NOT NULL,   -- 經度
     latitude            DECIMAL( 10, 6 )    NOT NULL,   -- 緯度
@@ -9,7 +9,7 @@ CREATE TABLE place(
 
 CREATE TABLE pair(
     id                  INT                 NOT NULL    AUTO_INCREMENT,
-    placeId             VARCHAR( 50 )       NOT NULL,
+    placeId             CHAR( 4 )           NOT NULL,
     playerA             VARCHAR( 100 )      NOT NULL,
     playerB             VARCHAR( 100 ),
     createdAt           DATETIME        	NOT NULL    DEFAULT     CURRENT_TIMESTAMP,
@@ -22,7 +22,7 @@ CREATE TABLE pair(
 
 CREATE TABLE pool(
     id                  INT                 NOT NULL    AUTO_INCREMENT,
-    placeId             VARCHAR( 50 )       NOT NULL,
+    placeId             CHAR( 4 )           NOT NULL,
     userId              VARCHAR( 100 )      NOT NULL,
     createdAt           DATETIME        	NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     deletedAt           DATETIME,                                                   
