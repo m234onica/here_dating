@@ -31,7 +31,7 @@ class Context:
 
     user_last_message = "留言發送成功！"
     partner_contact_message = "聯絡資訊："
-    partner_last_message = "這是{hour}點{minute}分的{username}傳來的最後一段話：\n"
+    partner_last_message = "這是{hour}點{minute}分的{placeName}聊天對象傳來的最後一段話：\n"
     pair_again_button = "開啟新的對話"
     pair_again_text = "請問您想要找下個人聊天，再認識一位新朋友嗎？"
 

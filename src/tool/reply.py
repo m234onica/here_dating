@@ -89,6 +89,8 @@ def timeout_message(userId):
 
 def last_message(userId, hour, minute, lastWord, contact):
     recipient_id = filter.get_recipient_id(userId)
+    placeId = filter.get_place_id(userId)
+    placeName = filter.get_place_name(placeId)
 
     message.push_text(userId, persona_id, Context.user_last_message)
 
@@ -96,7 +98,7 @@ def last_message(userId, hour, minute, lastWord, contact):
     partner_message = Context.partner_last_message + lastWord
 
     message.push_text(recipient_id, persona_id,
-                      partner_message.format(hour=hour, minute=minute, username=username))
+                      partner_message.format(hour=hour, minute=minute, placeName=placeName))
     if contact != "":
         message.push_text(recipient_id, persona_id,
                           Context.partner_contact_message + contact)
