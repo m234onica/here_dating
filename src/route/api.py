@@ -108,7 +108,7 @@ def send_last_word():
 def get_status(userId):
     pair = filter.get_pair(userId)
 
-    if status.is_new_user(userId) or status.is_noPair(userId):
+    if status.is_new_user(userId):
         payload = {"status": "noPair"}
         return response(msg="User does not pair.", payload=payload, code=200)
 
@@ -124,7 +124,7 @@ def get_status(userId):
         payload = {"status": "unSend", "pairId": pair.id}
         return response(msg="Timeout but not send last word.", payload=payload, code=200)
     else:
-        payload = {"status": "noPair", "pairId": pair.id}
+        payload = {"status": "noPair"}
         return response(msg="User does not pair.", payload=payload, code=200)
 
 
@@ -132,14 +132,15 @@ def get_status(userId):
 @api.route("/api/user/leave/<userId>", methods=["POST"])
 def leave(userId):
     message.delete_menu(userId)
-    data = filter.get_active_pool(userId)
 
     try:
         if status.is_pairing(userId):
+            data = filter.get_active_pool(userId)
             placeId = data.placeId
             words = Context.waiting_leave
 
         elif status.is_paired(userId):
+            data = filter.get_active_pair(userId)
             placeId = data.placeId
             data.status = status_Enum(1)
 
