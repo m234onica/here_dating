@@ -66,7 +66,7 @@ gulp.task("revsion", function () {
 
 
 gulp.task("replace", function () {
-    return gulp.src(["static/rev/*.json", "static/templates/*.html"])
+    return gulp.src(["static/rev/*.json", "static/*.html"])
         .pipe(revCollector({
             replaceReved: true
         }))
