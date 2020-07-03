@@ -180,9 +180,9 @@
 }
 {% endmacro %}
 
-{% macro persona() %}
+{% macro persona(static_url) %}
 {
     "name": "小天使",
-    "profile_picture_url": "https://storage.googleapis.com/here_dating/static/images/user_pic.png"
+    "profile_picture_url": "{{static_url}}/images/user_pic.png"
 }
 {% endmacro %}

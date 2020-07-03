@@ -88,7 +88,7 @@ def delete_menu(id):
 
 
 def persona():
-    rendered = template.module.persona()
+    rendered = template.module.persona(static_url=Config.STATIC_URL)
     data = json.loads(rendered)
     return api_request("POST", urls=["me", "personas"], json=data)
 
