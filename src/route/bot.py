@@ -52,7 +52,8 @@ def webhook_handle():
             if placeId != None:
                 words = Context.qrcode_introduction
                 placeName = filter.get_place_name(placeId)
-                return reply.quick_pair(userId, placeId, words.format(placeName=placeName))
+                return reply.quick_pair(userId, placeId, words.format(placeName=placeName),
+                                        Context.qrcode_pair_button, Context.qrcode_other_button)
 
             # general
             return reply.general_pair(userId, Context.general_pair_message)

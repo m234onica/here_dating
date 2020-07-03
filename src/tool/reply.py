@@ -52,7 +52,7 @@ def general_pair(userId, text):
     )
 
 
-def quick_pair(userId, placeId, words):
+def quick_pair(userId, placeId, words, pair_again=Context.quick_pair_button, pair_other=Context.pair_other_button):
     quick_pair_postback = "@".join(["Pair", placeId])
     general_pair_postback = "General_pair"
     return message.push_button(
@@ -61,7 +61,7 @@ def quick_pair(userId, placeId, words):
         text=words,
         types="quick_pair",
         payload=[quick_pair_postback, general_pair_postback],
-        title=[Context.quick_pair_button, Context.pair_other_button]
+        title=[pair_again, pair_other]
     )
 
 

@@ -9,9 +9,8 @@ class Context:
     general_pair_button = "開始使用"
 
     qrcode_introduction = "你目前所在地為「{placeName}」交誼廳，是否開始配對聊天呢？"
-    place_id_title = "#好奇心"
-    qrcode_check_button = "確定"
-    qrcode_intro_button = "使用其他編號"
+    qrcode_pair_button = "開始進行配對"
+    qrcode_other_button = "使用其他編號"
 
     quick_pair_button = "再次進行配對"
     pair_other_button = "使用其他編號"
@@ -20,8 +19,8 @@ class Context:
     wait_expired = "由於超過 2 分鐘沒有找到聊天對象，小天使跟你說掰掰囉。若想重新尋找聊天對象請再次按下按鈕開始聊天。"
     waiting_leave = "你已經離開交誼廳了，要不要重新開始找人聊天呢？"
     waiting_success = ["已為你找到聊天對象囉！現在開始你們有10分鐘可以聊天認識，把握時間。", "先試著說聲「Hi」吧！"]
-    paired_warning = "對方還在跟你聊天喔！快回去吧～"
 
+    paired_warning = "對方還在跟你聊天喔！快回去吧～"
 
     leave_message = "你已經離開對話了，要不要再重新找人聊天呢？"
     partner_leave_message = "哎呀！對方選擇離開對話，要不要再重新找人聊天呢？"
@@ -32,7 +31,7 @@ class Context:
 
     user_last_message = "留言發送成功！"
     partner_contact_message = "聯絡資訊："
-    partner_last_message = "這是{hour}點{minute}分的{username}傳來的最後一段話：\n"
+    partner_last_message = "這是{hour}點{minute}分的{placeName}聊天對象傳來的最後一段話：\n"
     pair_again_button = "開啟新的對話"
     pair_again_text = "請問您想要找下個人聊天，再認識一位新朋友嗎？"
 
