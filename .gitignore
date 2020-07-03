@@ -4,6 +4,7 @@ node_modules
 
 /static
 
+/alembic.ini
 config.py
 
 package-lock.json
