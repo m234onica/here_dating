@@ -1,0 +1,79 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title> 即將離開交誼廳 </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <!-- bootstrap 4.3.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <script type="text/javascript" src="./js/config.js"></script>
+    <script type="text/javascript">
+        var base_url = config.BASE_URL;
+        var app_id = config.APP_ID;
+
+        $(document).ready(function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, "script", "Messenger"));
+    </script>
+
+
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-6 col-sm-12">
+                                                <br>
+<form class="form" method="POST" id="message-form" role="form" novalidate autocomplete="off" style="display: none;">
+    <span>你可以選填要留下最後一段訊息給對方，如果覺得聊天過程很愉快，不妨和對方交個朋友吧！</span>
+    <div class="form-group">
+        <label for="contact"> </label>
+        <input class="form-control" type="text" id="contact" name="contact" placeholder="聯絡方式" />
+    </div>
+    <div class="form-group">
+        <label></label>
+        <textarea class="form-control" id="lastWord" name="lastWord" placeholder="最後的訊息"
+            required></textarea>
+    </div>
+    <button class="btn btn-primary btn-block btn-lg" id="message-submit" type="submit"
+        name="submit">送出</button>
+</form>
+
+<div id="sended" class="nowrap" style="display: none;">
+    <span> 地標編號「 </span>
+    <span id="send-placeName"></span>
+    <span> 」交誼廳的對方已經收過你的最後留言，無法再重覆留言。 </span>
+</div>
+
+<div id="leave-pair" class="nowrap" style="display: none;">
+    <span>已經錯過的無法再追回，地標編號「 </span>
+    <span id="leave-placeName"></span>
+    <span>」交誼廳的對方已經離開對話，對方無法收到你的思念，下次請把握這難得的緣分。</span>
+</div>
+                                </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="./js/extension.js"></script>
+        <script type="text/javascript">
+    var base_url = config.BASE_URL;
+    var serchParams = new URLSearchParams(window.location.search);
+    var userId = serchParams.get("userId");
+    var pairId = serchParams.get("pairId");
+    var status = get_status(userId).status;
+
+    message_status(userId, pairId);
+</script>
+</body>
+
+</html>
