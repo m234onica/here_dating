@@ -5,10 +5,10 @@ node_modules
 .env
 Pipfile.lock
 
+docs
+
 /alembic.ini
 config.py
-config.js
-
 package-lock.json
 src/static/js/config.js
 cors-json-file.json
