@@ -16,7 +16,7 @@ gulp.task('compile', function (done) {
                 pair: data.pair
             }
         }))
-        .pipe(gulp.dest("./doc/" + version))
+        .pipe(gulp.dest("./docs/" + version))
 
     gulp.src("./src/templates/message.html")
         .pipe(twig({
@@ -24,7 +24,7 @@ gulp.task('compile', function (done) {
                 message: data.message
             }
         }))
-        .pipe(gulp.dest("./doc/" + version))
+        .pipe(gulp.dest("./docs/" + version))
 
     gulp.src("./src/templates/rule.html")
         .pipe(twig(
@@ -34,7 +34,7 @@ gulp.task('compile', function (done) {
                 }
             }
         ))
-        .pipe(gulp.dest("./doc/" + version))
+        .pipe(gulp.dest("./docs/" + version))
 
     done();
     return "done"
@@ -48,14 +48,14 @@ gulp.task("pack_js_css", function() {
             "./src/static/**/config.js",
             "./src/static/**/extension.js",
         ]
-    ).pipe(gulp.dest("./doc/" + version))
+    ).pipe(gulp.dest("./docs/" + version))
 })
 
 
 gulp.task("imagemin", function () {
     return gulp.src("./src/static/images/**/*")
         .pipe(imagemin())
-        .pipe(gulp.dest("./doc/" + version + "/images/"))
+        .pipe(gulp.dest("./docs/" + version + "/images/"))
 
 })
 
@@ -63,7 +63,7 @@ gulp.task("imagemin", function () {
 
 gulp.task("webserver", function () {
     setTimeout(function () {
-        gulp.src("doc")                   // 預設開啟路徑
+        gulp.src("docs")                   // 預設開啟路徑
             .pipe(webserver({                     // 啟動 webserver
                 livereload: true,                   // Livereload 的功能
                 open: false,                        // 是否自動開啟 瀏覽器
