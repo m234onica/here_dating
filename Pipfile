@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-aiohttp = "==3.6.2"
+aiohttp = "==3.7.4"
 aiomysql = "==0.0.20"
 alembic = "==1.4.2"
 astroid = "==2.4.2"
